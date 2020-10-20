@@ -6,6 +6,7 @@ import com.procurement.requisition.lib.EnumElementProvider
 
 enum class CommandType(@JsonValue override val key: String) : EnumElementProvider.Key, Action {
 
+    CREATE_PCR("createPcr"),
     VALIDATE_PCR_DATA("validatePcrData");
 
     override fun toString(): String = key
