@@ -6,10 +6,9 @@ import com.procurement.requisition.lib.EnumElementProvider
 
 enum class OperationType(@JsonValue override val key: String) : EnumElementProvider.Key {
 
-    QUALIFICATION("qualification"),
-    QUALIFICATION_CONSIDERATION("qualificationConsideration"),
-    QUALIFICATION_DECLARE_NON_CONFLICT_OF_INTEREST("qualificationDeclareNonConflictOfInterest"),
-    QUALIFICATION_PROTOCOL("qualificationProtocol");
+    CREATE_PCR("createPcr"),
+    TENDER_PERIOD_END_IN_PCR("tenderPeriodEndInPcr"),
+    TENDER_PERIOD_END_AUCTION_IN_PCR("tenderPeriodEndAuctionInPcr");
 
     override fun toString(): String = key
 

@@ -35,7 +35,7 @@ class CassandraRuleRepositoryIT {
 
         private const val COUNTRY = "MD"
         private val PMD = ProcurementMethodDetails.GPA
-        private val OPERATION_TYPE = OperationType.QUALIFICATION_CONSIDERATION
+        private val OPERATION_TYPE = OperationType.CREATE_PCR
         private const val PARAMETER = "PARAM"
         private const val VALUE = "VAL"
     }
