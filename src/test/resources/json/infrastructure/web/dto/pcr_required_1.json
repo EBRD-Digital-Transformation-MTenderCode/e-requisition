@@ -1,0 +1,109 @@
+{
+  "tender": {
+    "title": "string",
+    "description": "string",
+    "classification": {
+      "id": "string",
+      "scheme": "CPV"
+    },
+    "lots": [
+      {
+        "id": "string",
+        "title": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "CPV"
+        },
+        "variants": {
+          "hasVariants": true
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "string",
+        "description": "string",
+        "quantity": 0.001,
+        "classification": {
+          "id": "string",
+          "scheme": "CPV"
+        },
+        "unit": {
+          "id": "string"
+        },
+        "relatedLot": "string"
+      }
+    ],
+    "targets": [
+      {
+        "id": "string",
+        "title": "string",
+        "relatesTo": "lot",
+        "relatedItem": "string",
+        "observations": [
+          {
+            "id": "string",
+            "measure": "number",
+            "unit": {
+              "id": "string"
+            },
+            "dimensions": {
+              "requirementClassIdPR": "string"
+            },
+            "notes": "string"
+          }
+        ]
+      }
+    ],
+    "criteria": [
+      {
+        "id": "string",
+        "title": "string",
+        "requirementGroups": [
+          {
+            "id": "string",
+            "requirements": [
+              {
+                "id": "string",
+                "title": "string",
+                "dataType": "integer",
+                "expectedValue": 10
+              },
+              {
+                "id": "string",
+                "title": "string",
+                "dataType": "integer",
+                "minValue": 1,
+                "maxValue": 5
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "conversions": [
+      {
+        "id": "string",
+        "relatedItem": "string",
+        "relatesTo": "requirement",
+        "rationale": "string",
+        "coefficients": [
+          {
+            "value": 3,
+            "id": "string",
+            "coefficient": 0.5
+          }
+        ]
+      }
+    ],
+    "documents": [
+      {
+        "id": "string",
+        "title": "string",
+        "documentType": "tenderNotice"
+      }
+    ],
+    "awardCriteria": "priceOnly",
+    "awardCriteriaDetails": "automated"
+  }
+}
