@@ -2,7 +2,7 @@ package com.procurement.requisition.application.service.create
 
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.create.model.CreatePCR
+import com.procurement.requisition.application.service.create.model.CreatePCRCommand
 import com.procurement.requisition.application.service.create.model.CreatedPCR
 import com.procurement.requisition.application.service.create.model.StateFE
 import com.procurement.requisition.application.service.create.model.convertToCreatedPCR
@@ -76,19 +76,19 @@ import org.springframework.stereotype.Service
 @Service
 class CreatePCRService(val uriProperties: UriProperties, val pcrRepository: PCRRepository, val transform: Transform) {
 
-    fun create(createPCR: CreatePCR): Result<CreatedPCR, Failure> {
+    fun create(command: CreatePCRCommand): Result<CreatedPCR, Failure> {
 
-        val lotsMapping: Map<String, LotId> = createPCR.tender.lots
+        val lotsMapping: Map<String, LotId> = command.tender.lots
             .asSequence()
             .map { lot -> lot.id to LotId.generate() }
             .toMap()
 
-        val itemsMapping: Map<String, ItemId> = createPCR.tender.items
+        val itemsMapping: Map<String, ItemId> = command.tender.items
             .asSequence()
             .map { item -> item.id to ItemId.generate() }
             .toMap()
 
-        val requirementsMapping: Map<String, RequirementId> = createPCR.tender.criteria
+        val requirementsMapping: Map<String, RequirementId> = command.tender.criteria
             .asSequence()
             .flatMap { criterion -> criterion.requirementGroups.asSequence() }
             .flatMap { requirementGroup -> requirementGroup.requirements }
@@ -97,33 +97,33 @@ class CreatePCRService(val uriProperties: UriProperties, val pcrRepository: PCRR
 
         val tender = Tender(
             id = TenderId.generate(),
-            status = tenderStatus(createPCR.stateFE),
-            statusDetails = tenderStatusDetails(createPCR.stateFE),
-            date = createPCR.date,
-            title = createPCR.tender.title,
-            description = createPCR.tender.description,
-            classification = createPCR.tender.classification,
-            lots = lots(createPCR, lotsMapping),
-            items = items(createPCR, lotsMapping, itemsMapping),
-            targets = targets(createPCR, lotsMapping, itemsMapping, requirementsMapping),
-            criteria = criteria(createPCR, lotsMapping, itemsMapping, requirementsMapping),
-            conversions = conversions(createPCR, requirementsMapping),
+            status = tenderStatus(command.stateFE),
+            statusDetails = tenderStatusDetails(command.stateFE),
+            date = command.date,
+            title = command.tender.title,
+            description = command.tender.description,
+            classification = command.tender.classification,
+            lots = lots(command, lotsMapping),
+            items = items(command, lotsMapping, itemsMapping),
+            targets = targets(command, lotsMapping, itemsMapping, requirementsMapping),
+            criteria = criteria(command, lotsMapping, itemsMapping, requirementsMapping),
+            conversions = conversions(command, requirementsMapping),
             procurementMethodModalities =
-            ProcurementMethodModalities(createPCR.tender.procurementMethodModalities.toList()),
-            awardCriteria = createPCR.tender.awardCriteria,
-            awardCriteriaDetails = createPCR.tender.awardCriteriaDetails,
-            documents = documents(createPCR, lotsMapping),
-            value = value(createPCR)
+            ProcurementMethodModalities(command.tender.procurementMethodModalities.toList()),
+            awardCriteria = command.tender.awardCriteria,
+            awardCriteriaDetails = command.tender.awardCriteriaDetails,
+            documents = documents(command, lotsMapping),
+            value = value(command)
         )
 
-        val relatedProcesses = relatedProcesses(createPCR, uriProperties)
+        val relatedProcesses = relatedProcesses(command, uriProperties)
 
-        val ocid: Ocid = Ocid.generate(cpid = createPCR.cpid, stage = Stage.PC, timestamp = nowDefaultUTC())
+        val ocid: Ocid = Ocid.generate(cpid = command.cpid, stage = Stage.PC, timestamp = nowDefaultUTC())
         val pcr = PCR(
-            cpid = createPCR.cpid,
+            cpid = command.cpid,
             ocid = ocid,
             token = Token.generate(),
-            owner = createPCR.owner,
+            owner = command.owner,
             tender = tender,
             relatedProcesses = relatedProcesses
         )
@@ -135,7 +135,7 @@ class CreatePCRService(val uriProperties: UriProperties, val pcrRepository: PCRR
             .onFailure { return it }
 
         pcrRepository.saveNew(
-            cpid = createPCR.cpid,
+            cpid = command.cpid,
             ocid = ocid,
             token = pcr.token,
             owner = pcr.owner,
@@ -178,7 +178,7 @@ fun criteriaRelatedItem(
     CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem).underlying
 }
 
-fun lots(createPCR: CreatePCR, lotsMapping: Map<String, LotId>) = createPCR.tender.lots
+fun lots(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>) = createPCR.tender.lots
     .map { lot ->
         Lot(
             id = lotsMapping.getValue(lot.id),
@@ -199,7 +199,7 @@ fun lots(createPCR: CreatePCR, lotsMapping: Map<String, LotId>) = createPCR.tend
     }
     .let { Lots(it) }
 
-fun items(createPCR: CreatePCR, lotsMapping: Map<String, LotId>, itemsMapping: Map<String, ItemId>) =
+fun items(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>, itemsMapping: Map<String, ItemId>) =
     createPCR.tender.items
         .map { item ->
             Item(
@@ -218,7 +218,7 @@ fun items(createPCR: CreatePCR, lotsMapping: Map<String, LotId>, itemsMapping: M
         .let { Items(it) }
 
 fun criteria(
-    createPCR: CreatePCR,
+    createPCR: CreatePCRCommand,
     lotsMapping: Map<String, LotId>,
     itemsMapping: Map<String, ItemId>,
     requirementsMapping: Map<String, RequirementId>
@@ -269,7 +269,7 @@ fun criteria(
     }
     .let { Criteria(it) }
 
-fun conversions(createPCR: CreatePCR, requirementsMapping: Map<String, RequirementId>) = createPCR.tender.conversions
+fun conversions(createPCR: CreatePCRCommand, requirementsMapping: Map<String, RequirementId>) = createPCR.tender.conversions
     .map { conversion ->
         Conversion(
             id = ConversionId.generate(),
@@ -291,7 +291,7 @@ fun conversions(createPCR: CreatePCR, requirementsMapping: Map<String, Requireme
     .let { Conversions(it) }
 
 fun targets(
-    createPCR: CreatePCR,
+    createPCR: CreatePCRCommand,
     lotsMapping: Map<String, LotId>,
     itemsMapping: Map<String, ItemId>,
     requirementsMapping: Map<String, RequirementId>
@@ -337,7 +337,7 @@ fun targets(
     }
     .let { Targets(it) }
 
-fun documents(createPCR: CreatePCR, lotsMapping: Map<String, LotId>) = createPCR.tender.documents
+fun documents(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>) = createPCR.tender.documents
     .map { document ->
         Document(
             id = document.id,
@@ -350,7 +350,7 @@ fun documents(createPCR: CreatePCR, lotsMapping: Map<String, LotId>) = createPCR
     }
     .let { Documents(it) }
 
-fun value(createPCR: CreatePCR) = createPCR.tender.value
+fun value(createPCR: CreatePCRCommand) = createPCR.tender.value
     .let { value ->
         Value(
             amount = null,
@@ -358,7 +358,7 @@ fun value(createPCR: CreatePCR) = createPCR.tender.value
         )
     }
 
-fun relatedProcesses(createPCR: CreatePCR, uriProperties: UriProperties) = RelatedProcesses(
+fun relatedProcesses(createPCR: CreatePCRCommand, uriProperties: UriProperties) = RelatedProcesses(
     RelatedProcess(
         id = RelatedProcessId.generate(),
         scheme = RelatedProcessScheme.OCID,

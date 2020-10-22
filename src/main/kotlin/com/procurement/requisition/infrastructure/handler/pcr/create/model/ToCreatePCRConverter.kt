@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.pcr.create.model
 
-import com.procurement.requisition.application.service.create.model.CreatePCR
+import com.procurement.requisition.application.service.create.model.CreatePCRCommand
 import com.procurement.requisition.application.service.create.model.StateFE
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.Cpid
@@ -24,7 +24,7 @@ import com.procurement.requisition.lib.functional.Result.Companion.failure
 import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.mapIndexedOrEmpty
 
-fun CreatePCRRequest.convert(): Result<CreatePCR, Failure> {
+fun CreatePCRRequest.convert(): Result<CreatePCRCommand, Failure> {
     val cpid = Cpid.tryCreateOrNull(cpid)
         ?: return failure(
             JsonErrors.DataFormatMismatch(
@@ -43,7 +43,7 @@ fun CreatePCRRequest.convert(): Result<CreatePCR, Failure> {
     val tender = tender.convert("#/tender")
         .onFailure { return it }
 
-    return CreatePCR(
+    return CreatePCRCommand(
         cpid = cpid,
         date = date,
         stateFE = stateFE,
@@ -55,7 +55,7 @@ fun CreatePCRRequest.convert(): Result<CreatePCR, Failure> {
 /**
  * Tender
  */
-fun CreatePCRRequest.Tender.convert(path: String): Result<CreatePCR.Tender, Failure> {
+fun CreatePCRRequest.Tender.convert(path: String): Result<CreatePCRCommand.Tender, Failure> {
     val classification = classification.convert(path = "$path/classification")
         .onFailure { return it }
 
@@ -110,7 +110,7 @@ fun CreatePCRRequest.Tender.convert(path: String): Result<CreatePCR.Tender, Fail
             document.convert(path = "$path/documents[$idx]").onFailure { return it }
         }
 
-    return CreatePCR.Tender(
+    return CreatePCRCommand.Tender(
         title = title,
         description = description,
         classification = classification,
@@ -123,7 +123,7 @@ fun CreatePCRRequest.Tender.convert(path: String): Result<CreatePCR.Tender, Fail
         awardCriteria = awardCriteria,
         awardCriteriaDetails = awardCriteriaDetails,
         documents = documents,
-        value = value.let { CreatePCR.Tender.Value(currency = it.currency) }
+        value = value.let { CreatePCRCommand.Tender.Value(currency = it.currency) }
     ).asSuccess()
 }
 
@@ -139,17 +139,17 @@ fun CreatePCRRequest.Classification.convert(path: String): Result<Classification
 /**
  * Unit
  */
-fun CreatePCRRequest.Unit.convert(path: String): Result<CreatePCR.Unit, Failure> =
-    CreatePCR.Unit(id = id, name = name).asSuccess()
+fun CreatePCRRequest.Unit.convert(path: String): Result<CreatePCRCommand.Unit, Failure> =
+    CreatePCRCommand.Unit(id = id, name = name).asSuccess()
 
 /**
  * Lot
  */
-fun CreatePCRRequest.Tender.Lot.convert(path: String): Result<CreatePCR.Tender.Lot, Failure> {
+fun CreatePCRRequest.Tender.Lot.convert(path: String): Result<CreatePCRCommand.Tender.Lot, Failure> {
     val classification = classification.convert(path = "$path/classification").onFailure { return it }
     val variants = variants.convert(path = "$path/variants").onFailure { return it }
 
-    return CreatePCR.Tender.Lot(
+    return CreatePCRCommand.Tender.Lot(
         id = id,
         internalId = internalId,
         title = title,
@@ -159,17 +159,17 @@ fun CreatePCRRequest.Tender.Lot.convert(path: String): Result<CreatePCR.Tender.L
     ).asSuccess()
 }
 
-fun CreatePCRRequest.Tender.Lot.Variant.convert(path: String): Result<CreatePCR.Tender.Lot.Variant, Failure> =
-    CreatePCR.Tender.Lot.Variant(hasVariants = hasVariants, variantsDetails = variantsDetails).asSuccess()
+fun CreatePCRRequest.Tender.Lot.Variant.convert(path: String): Result<CreatePCRCommand.Tender.Lot.Variant, Failure> =
+    CreatePCRCommand.Tender.Lot.Variant(hasVariants = hasVariants, variantsDetails = variantsDetails).asSuccess()
 
 /**
  * Item
  */
-fun CreatePCRRequest.Tender.Item.convert(path: String): Result<CreatePCR.Tender.Item, Failure> {
+fun CreatePCRRequest.Tender.Item.convert(path: String): Result<CreatePCRCommand.Tender.Item, Failure> {
     val classification = classification.convert("$path/classification").onFailure { return it }
     val unit = unit.convert("$path/unit").onFailure { return it }
 
-    return CreatePCR.Tender.Item(
+    return CreatePCRCommand.Tender.Item(
         id = id,
         internalId = internalId,
         description = description,
@@ -183,7 +183,7 @@ fun CreatePCRRequest.Tender.Item.convert(path: String): Result<CreatePCR.Tender.
 /**
  * Target
  */
-fun CreatePCRRequest.Tender.Target.convert(path: String): Result<CreatePCR.Tender.Target, Failure> {
+fun CreatePCRRequest.Tender.Target.convert(path: String): Result<CreatePCRCommand.Tender.Target, Failure> {
     val relatesTo = relatesTo.asEnum(target = TargetRelatesTo, path = "$path/relatesTo")
         .onFailure { return it }
 
@@ -193,7 +193,7 @@ fun CreatePCRRequest.Tender.Target.convert(path: String): Result<CreatePCR.Tende
             observation.convert("$path/observations[$observationIdx]").onFailure { return it }
         }
 
-    return CreatePCR.Tender.Target(
+    return CreatePCRCommand.Tender.Target(
         id = id,
         title = title,
         relatesTo = relatesTo,
@@ -203,7 +203,7 @@ fun CreatePCRRequest.Tender.Target.convert(path: String): Result<CreatePCR.Tende
 }
 
 fun CreatePCRRequest.Tender.Target.Observation.convert(path: String):
-    Result<CreatePCR.Tender.Target.Observation, Failure> {
+    Result<CreatePCRCommand.Tender.Target.Observation, Failure> {
 
     val period = period?.convert(path = "$path/period")?.onFailure { return it }
     val measure = measure.asEnum(target = ObservationMeasure, path = "$path/measure")
@@ -211,7 +211,7 @@ fun CreatePCRRequest.Tender.Target.Observation.convert(path: String):
     val unit = unit.convert(path = "$path/unit").onFailure { return it }
     val dimensions = dimensions.convert(path = "$path/dimensions").onFailure { return it }
 
-    return CreatePCR.Tender.Target.Observation(
+    return CreatePCRCommand.Tender.Target.Observation(
         id = id,
         period = period,
         measure = measure,
@@ -223,7 +223,7 @@ fun CreatePCRRequest.Tender.Target.Observation.convert(path: String):
 }
 
 fun CreatePCRRequest.Tender.Target.Observation.Period.convert(path: String):
-    Result<CreatePCR.Tender.Target.Observation.Period, Failure> {
+    Result<CreatePCRCommand.Tender.Target.Observation.Period, Failure> {
 
     val startDate = endDate.asLocalDateTime(path = "$path/startDate")
         .onFailure { return it }
@@ -231,17 +231,17 @@ fun CreatePCRRequest.Tender.Target.Observation.Period.convert(path: String):
     val endDate = endDate.asLocalDateTime(path = "$path/endDate")
         .onFailure { return it }
 
-    return CreatePCR.Tender.Target.Observation.Period(startDate = startDate, endDate = endDate).asSuccess()
+    return CreatePCRCommand.Tender.Target.Observation.Period(startDate = startDate, endDate = endDate).asSuccess()
 }
 
 fun CreatePCRRequest.Tender.Target.Observation.Dimensions.convert(path: String):
-    Result<CreatePCR.Tender.Target.Observation.Dimensions, Failure> =
-    CreatePCR.Tender.Target.Observation.Dimensions(requirementClassIdPR = requirementClassIdPR).asSuccess()
+    Result<CreatePCRCommand.Tender.Target.Observation.Dimensions, Failure> =
+    CreatePCRCommand.Tender.Target.Observation.Dimensions(requirementClassIdPR = requirementClassIdPR).asSuccess()
 
 /**
  * Criterion
  */
-fun CreatePCRRequest.Tender.Criterion.convert(path: String): Result<CreatePCR.Tender.Criterion, Failure> {
+fun CreatePCRRequest.Tender.Criterion.convert(path: String): Result<CreatePCRCommand.Tender.Criterion, Failure> {
     val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo, path = "$path/relatesTo")
         ?.onFailure { return it }
     val requirementGroups = requirementGroups
@@ -250,7 +250,7 @@ fun CreatePCRRequest.Tender.Criterion.convert(path: String): Result<CreatePCR.Te
             requirementGroup.convert(path = "$path/requirementGroups[$idx]").onFailure { return it }
         }
 
-    return CreatePCR.Tender.Criterion(
+    return CreatePCRCommand.Tender.Criterion(
         id = id,
         title = title,
         description = description,
@@ -260,8 +260,8 @@ fun CreatePCRRequest.Tender.Criterion.convert(path: String): Result<CreatePCR.Te
     ).asSuccess()
 }
 
-fun CreatePCRRequest.Tender.Criterion.RequirementGroup.convert(path: String): Result<CreatePCR.Tender.Criterion.RequirementGroup, Failure> =
-    CreatePCR.Tender.Criterion.RequirementGroup(
+fun CreatePCRRequest.Tender.Criterion.RequirementGroup.convert(path: String): Result<CreatePCRCommand.Tender.Criterion.RequirementGroup, Failure> =
+    CreatePCRCommand.Tender.Criterion.RequirementGroup(
         id = id,
         description = description,
         requirements = requirements.toList(),
@@ -270,7 +270,7 @@ fun CreatePCRRequest.Tender.Criterion.RequirementGroup.convert(path: String): Re
 /**
  * Conversion
  */
-fun CreatePCRRequest.Tender.Conversion.convert(path: String): Result<CreatePCR.Tender.Conversion, Failure> {
+fun CreatePCRRequest.Tender.Conversion.convert(path: String): Result<CreatePCRCommand.Tender.Conversion, Failure> {
     val relatesTo = relatesTo.asEnum(target = ConversionRelatesTo, path = "$path/relatesTo")
         .onFailure { return it }
 
@@ -280,7 +280,7 @@ fun CreatePCRRequest.Tender.Conversion.convert(path: String): Result<CreatePCR.T
             coefficient.convert(path = "$path/coefficients[$idx]").onFailure { return it }
         }
 
-    return CreatePCR.Tender.Conversion(
+    return CreatePCRCommand.Tender.Conversion(
         id = id,
         relatesTo = relatesTo,
         relatedItem = relatedItem,
@@ -290,13 +290,13 @@ fun CreatePCRRequest.Tender.Conversion.convert(path: String): Result<CreatePCR.T
     ).asSuccess()
 }
 
-fun CreatePCRRequest.Tender.Conversion.Coefficient.convert(path: String): Result<CreatePCR.Tender.Conversion.Coefficient, Failure> =
-    CreatePCR.Tender.Conversion.Coefficient(id = id, value = value, coefficient = coefficient).asSuccess()
+fun CreatePCRRequest.Tender.Conversion.Coefficient.convert(path: String): Result<CreatePCRCommand.Tender.Conversion.Coefficient, Failure> =
+    CreatePCRCommand.Tender.Conversion.Coefficient(id = id, value = value, coefficient = coefficient).asSuccess()
 
 /**
  * Document
  */
-fun CreatePCRRequest.Tender.Document.convert(path: String): Result<CreatePCR.Tender.Document, Failure> {
+fun CreatePCRRequest.Tender.Document.convert(path: String): Result<CreatePCRCommand.Tender.Document, Failure> {
     val id = DocumentId.orNull(id)
         ?: return failure(
             JsonErrors.DataFormatMismatch(
@@ -310,7 +310,7 @@ fun CreatePCRRequest.Tender.Document.convert(path: String): Result<CreatePCR.Ten
     val documentType = documentType.asEnum(target = DocumentType, path = "$path/documentType")
         .onFailure { return it }
 
-    return CreatePCR.Tender.Document(
+    return CreatePCRCommand.Tender.Document(
         id = id,
         documentType = documentType,
         title = title,
