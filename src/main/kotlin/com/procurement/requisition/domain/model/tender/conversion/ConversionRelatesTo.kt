@@ -1,20 +1,13 @@
 package com.procurement.requisition.domain.model.tender.conversion
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.requisition.lib.EnumElementProvider
+import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
-enum class ConversionRelatesTo(@JsonValue override val key: String) : EnumElementProvider.Key {
+enum class ConversionRelatesTo(override val key: String) : EnumElementProvider.Element {
     REQUIREMENT("requirement"),
     OBSERVATION("observation"),
     OPTION("option");
 
     override fun toString(): String = key
 
-    companion object : EnumElementProvider<ConversionRelatesTo>(info = info()) {
-
-        @JvmStatic
-        @JsonCreator
-        fun creator(name: String) = ConversionRelatesTo.orThrow(name)
-    }
+    companion object : EnumElementProvider<ConversionRelatesTo>(info = info())
 }

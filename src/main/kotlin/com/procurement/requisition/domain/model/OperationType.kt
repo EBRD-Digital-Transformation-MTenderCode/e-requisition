@@ -1,10 +1,8 @@
 package com.procurement.requisition.domain.model
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.requisition.lib.EnumElementProvider
+import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
-enum class OperationType(@JsonValue override val key: String) : EnumElementProvider.Key {
+enum class OperationType(override val key: String) : EnumElementProvider.Element {
 
     CREATE_PCR("createPcr"),
     TENDER_PERIOD_END_IN_PCR("tenderPeriodEndInPcr"),
@@ -12,10 +10,5 @@ enum class OperationType(@JsonValue override val key: String) : EnumElementProvi
 
     override fun toString(): String = key
 
-    companion object : EnumElementProvider<OperationType>(info = info()) {
-
-        @JvmStatic
-        @JsonCreator
-        fun creator(name: String) = orThrow(name)
-    }
+    companion object : EnumElementProvider<OperationType>(info = info())
 }

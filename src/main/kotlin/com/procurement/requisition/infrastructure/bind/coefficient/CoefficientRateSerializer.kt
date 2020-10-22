@@ -10,7 +10,7 @@ import java.math.BigDecimal
 
 class CoefficientRateSerializer : JsonSerializer<CoefficientRate>() {
     companion object {
-        fun serialize(CoefficientRate: CoefficientRate): BigDecimal = CoefficientRate.rate
+        fun serialize(coefficientRate: CoefficientRate): BigDecimal = coefficientRate.rate
     }
 
     @Throws(IOException::class, JsonProcessingException::class)

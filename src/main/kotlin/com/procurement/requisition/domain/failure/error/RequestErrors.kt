@@ -1,8 +1,8 @@
 package com.procurement.requisition.domain.failure.error
 
 import com.procurement.requisition.domain.extension.dot
-import com.procurement.requisition.infrastructure.web.dto.ApiVersion
-import com.procurement.requisition.infrastructure.web.dto.CommandId
+import com.procurement.requisition.infrastructure.handler.model.ApiVersion
+import com.procurement.requisition.infrastructure.handler.model.CommandId
 import com.procurement.requisition.lib.fail.Failure
 import java.util.*
 
@@ -13,8 +13,8 @@ class RequestErrors(
     val id: CommandId = UUID.randomUUID().toString(),
     val path: String = "",
     val body: String,
-    reason: Exception?
-) : Failure.Error(reason = reason) {
+    override val reason: Exception?
+) : Failure.Error() {
 
     override val description: String
         get() = "${underlying.dot()} Request body: ${body}."

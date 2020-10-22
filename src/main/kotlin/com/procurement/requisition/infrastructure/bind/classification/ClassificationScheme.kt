@@ -1,10 +1,8 @@
 package com.procurement.requisition.infrastructure.bind.classification
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.requisition.lib.EnumElementProvider
+import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
-enum class ClassificationScheme(@JsonValue override val key: String) : EnumElementProvider.Key {
+enum class ClassificationScheme(override val key: String) : EnumElementProvider.Element {
     CPV("CPV"),
     CPVS("CPVS"),
     GSIN("GSIN"),
@@ -15,10 +13,5 @@ enum class ClassificationScheme(@JsonValue override val key: String) : EnumEleme
 
     override fun toString(): String = key
 
-    companion object : EnumElementProvider<ClassificationScheme>(info = info()) {
-
-        @JvmStatic
-        @JsonCreator
-        fun creator(name: String) = ClassificationScheme.orThrow(name)
-    }
+    companion object : EnumElementProvider<ClassificationScheme>(info = info())
 }

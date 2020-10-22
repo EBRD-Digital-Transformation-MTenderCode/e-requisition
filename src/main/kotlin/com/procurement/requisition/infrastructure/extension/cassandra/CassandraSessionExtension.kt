@@ -12,11 +12,11 @@ import com.procurement.requisition.lib.functional.Result.Companion.success
 fun BoundStatement.tryExecute(session: Session): Result<ResultSet, DatabaseIncident> = try {
     success(session.execute(this))
 } catch (expected: Exception) {
-    failure(DatabaseIncident.access(description = "", cause = expected))
+    failure(DatabaseIncident.Access(description = "", reason = expected))
 }
 
 fun BatchStatement.tryExecute(session: Session): Result<ResultSet, DatabaseIncident> = try {
     success(session.execute(this))
 } catch (expected: Exception) {
-    failure(DatabaseIncident.access(description = "", cause = expected))
+    failure(DatabaseIncident.Access(description = "", reason = expected))
 }

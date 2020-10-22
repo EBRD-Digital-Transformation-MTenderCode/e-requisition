@@ -6,24 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.domain.model.requirement.RequirementRsValue
+import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
 import com.procurement.requisition.infrastructure.bind.coefficient.value.CoefficientValueSerializer
-import com.procurement.requisition.infrastructure.bind.date.JsonDateTimeDeserializer
-import com.procurement.requisition.infrastructure.bind.date.JsonDateTimeSerializer
 import com.procurement.requisition.infrastructure.bind.requirement.RequirementValueDeserializer
 import com.procurement.requisition.infrastructure.bind.requirement.RequirementValueSerializer
-import java.time.LocalDateTime
 
 fun ObjectMapper.configuration() {
     val module = SimpleModule().apply {
-        /**
-         * Serializer/Deserializer for LocalDateTime type
-         */
-        addSerializer(LocalDateTime::class.java, JsonDateTimeSerializer())
-        addDeserializer(LocalDateTime::class.java, JsonDateTimeDeserializer())
-
         addSerializer(RequirementRsValue::class.java, RequirementValueSerializer())
         addDeserializer(RequirementRsValue::class.java, RequirementValueDeserializer())
 

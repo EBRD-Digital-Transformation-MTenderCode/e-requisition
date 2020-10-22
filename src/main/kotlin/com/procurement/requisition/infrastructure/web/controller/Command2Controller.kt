@@ -5,7 +5,7 @@ import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.domain.failure.error.RequestErrors
 import com.procurement.requisition.infrastructure.handler.Handlers
 import com.procurement.requisition.infrastructure.handler.parseRequestBody
-import com.procurement.requisition.infrastructure.web.dto.generateRequestErrorResponse
+import com.procurement.requisition.infrastructure.handler.model.generateRequestErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping

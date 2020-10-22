@@ -7,10 +7,6 @@ import com.procurement.requisition.infrastructure.bind.classification.Classifica
 data class Classification(
     override val id: ClassificationId,
     val scheme: ClassificationScheme,
+    val description: String,
+    val uri: String? = null
 ) : EntityBase<ClassificationId>()
-
-fun Classification.equals(other: Classification, n: Int): Boolean {
-    if (scheme != other.scheme) return false
-    if (id.length != other.id.length) return false
-    return id.startsWith(prefix = other.id.substring(0, n), ignoreCase = true)
-}

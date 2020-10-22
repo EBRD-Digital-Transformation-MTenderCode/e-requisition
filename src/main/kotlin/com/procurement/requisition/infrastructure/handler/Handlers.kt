@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler
 
-import com.procurement.requisition.infrastructure.web.dto.ApiVersion
+import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 
 data class HandlerDescription(val version: ApiVersion, val action: Action, val handler: Handler)
 

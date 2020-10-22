@@ -1,28 +1,26 @@
 package com.procurement.requisition.domain.model.document
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
+import com.procurement.requisition.domain.model.UUID_PATTERN
+import com.procurement.requisition.domain.model.isUUID
 import java.io.Serializable
 
-class DocumentId private constructor(private val value: String) : Serializable {
+class DocumentId private constructor(val underlying: String) : Serializable {
+
+    companion object {
+        const val pattern = UUID_PATTERN
+        fun validate(text: String): Boolean = true //TODO
+        fun orNull(text: String): DocumentId? = if (validate(text)) DocumentId(text) else null
+    }
 
     override fun equals(other: Any?): Boolean {
         return if (this !== other)
             other is DocumentId
-                && this.value == other.value
+                && this.underlying == other.underlying
         else
             true
     }
 
-    override fun hashCode(): Int = value.hashCode()
+    override fun hashCode(): Int = underlying.hashCode()
 
-    @JsonValue
-    override fun toString(): String = value
-
-    companion object {
-
-        @JvmStatic
-        @JsonCreator
-        fun create(text: String): DocumentId = DocumentId(text)
-    }
+    override fun toString(): String = underlying
 }
