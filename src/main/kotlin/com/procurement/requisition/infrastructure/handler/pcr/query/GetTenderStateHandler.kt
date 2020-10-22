@@ -1,32 +1,30 @@
-package com.procurement.requisition.infrastructure.handler.pcr.create
+package com.procurement.requisition.infrastructure.handler.pcr.query
 
 import com.procurement.requisition.application.extension.tryMapping
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.create.CreatePCRService
+import com.procurement.requisition.application.service.get.tender.state.GetTenderStateService
 import com.procurement.requisition.domain.failure.error.RequestErrors
-import com.procurement.requisition.infrastructure.handler.AbstractHistoricalHandler
+import com.procurement.requisition.infrastructure.handler.AbstractQueryHandler
 import com.procurement.requisition.infrastructure.handler.getParams
 import com.procurement.requisition.infrastructure.handler.model.ApiRequest
 import com.procurement.requisition.infrastructure.handler.model.ApiResponse
-import com.procurement.requisition.infrastructure.handler.pcr.create.model.CreatePCRParams
-import com.procurement.requisition.infrastructure.handler.pcr.create.model.convert
-import com.procurement.requisition.infrastructure.service.HistoryRepository
+import com.procurement.requisition.infrastructure.handler.pcr.query.model.GetTenderStateRequest
+import com.procurement.requisition.infrastructure.handler.pcr.query.model.convert
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
-class CreatePCRHandler(
+class GetTenderStateHandler(
     override val logger: Logger,
     override val transform: Transform,
-    override val historyRepository: HistoryRepository,
-    val createPCRService: CreatePCRService
-) : AbstractHistoricalHandler() {
+    private val getTenderStateService: GetTenderStateService
+) : AbstractQueryHandler() {
 
     override fun execute(request: ApiRequest): Result<ApiResponse, Failure> {
 
-        val params = request.node.getParams()
+        val command = request.node.getParams()
             .onFailure { failure -> return failure }
-            .tryMapping<CreatePCRParams>(transform)
+            .tryMapping<GetTenderStateRequest>(transform)
             .mapFailure { failure ->
                 RequestErrors(
                     code = "RQ-1",
@@ -42,7 +40,7 @@ class CreatePCRHandler(
             .convert()
             .onFailure { failure -> return failure }
 
-        return createPCRService.create(params)
+        return getTenderStateService.get(command)
             .map { result ->
                 ApiResponse.Success(version = request.version, id = request.id, result = result.convert())
             }

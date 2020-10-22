@@ -1,5 +1,6 @@
 package com.procurement.requisition.application.repository.pcr
 
+import com.procurement.requisition.application.repository.pcr.model.TenderState
 import com.procurement.requisition.domain.failure.incident.DatabaseIncident
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
@@ -19,4 +20,6 @@ interface PCRRepository {
         statusDetails: TenderStatusDetails,
         data: String
     ): Result<Boolean, DatabaseIncident>
+
+    fun getTenderState(cpid: Cpid, ocid: Ocid): Result<TenderState?, DatabaseIncident>
 }
