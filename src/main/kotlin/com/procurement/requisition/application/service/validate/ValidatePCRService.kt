@@ -1,7 +1,7 @@
 package com.procurement.requisition.application.service.validate
 
 import com.procurement.requisition.application.service.validate.error.ValidatePCRErrors
-import com.procurement.requisition.application.service.validate.model.ValidatePCRData
+import com.procurement.requisition.application.service.validate.model.ValidatePCRDataCommand
 import com.procurement.requisition.domain.model.isNotUniqueIds
 import com.procurement.requisition.domain.model.requirement.RangeValue
 import com.procurement.requisition.domain.model.requirement.RequirementDataType
@@ -16,15 +16,15 @@ import java.math.BigDecimal
 @Service
 class ValidatePCRService {
 
-    fun validate(data: ValidatePCRData): ValidationResult<ValidatePCRErrors> {
+    fun validate(command: ValidatePCRDataCommand): ValidationResult<ValidatePCRErrors> {
         // VR.COM-17.1.1
-        if (data.tender.lots.isNotUniqueIds())
+        if (command.tender.lots.isNotUniqueIds())
             return ValidationResult.error(ValidatePCRErrors.Lot.DuplicateId())
 
-        data.tender.lots
+        command.tender.lots
             .forEach { lot ->
                 // VR.COM-17.1.2
-                if (lot.classification.equalsId(data.tender.classification, 4))
+                if (lot.classification.equalsId(command.tender.classification, 4))
                     return ValidationResult.error(ValidatePCRErrors.Lot.InvalidClassificationId())
 
                 // VR.COM-17.1.3
@@ -33,15 +33,15 @@ class ValidatePCRService {
             }
 
         // VR.COM-17.1.4
-        if (data.tender.items.isNotUniqueIds())
+        if (command.tender.items.isNotUniqueIds())
             return ValidationResult.error(ValidatePCRErrors.Item.DuplicateId())
 
-        val lotIds = data.tender.lots.toSet { it.id }
+        val lotIds = command.tender.lots.toSet { it.id }
 
-        data.tender.items
+        command.tender.items
             .forEach { item ->
                 // VR.COM-17.1.5
-                if (item.classification.equalsId(data.tender.classification, 4))
+                if (item.classification.equalsId(command.tender.classification, 4))
                     return ValidationResult.error(ValidatePCRErrors.Item.InvalidClassificationId())
 
                 // VR.COM-17.1.6
@@ -54,18 +54,18 @@ class ValidatePCRService {
             }
 
         // VR.COM-17.1.29
-        val itemsByRelatedLot = data.tender.items.toSet { it.relatedLot }
-        data.tender.lots.forEach { lot ->
+        val itemsByRelatedLot = command.tender.items.toSet { it.relatedLot }
+        command.tender.lots.forEach { lot ->
             if (lot.id !in itemsByRelatedLot)
                 return ValidationResult.error(ValidatePCRErrors.Lot.MissingItem())
         }
 
-        val itemsById = data.tender.items.associateBy { it.id }
+        val itemsById = command.tender.items.associateBy { it.id }
 
         // VR.COM-17.1.8
-        if (data.tender.targets.isNotUniqueIds())
+        if (command.tender.targets.isNotUniqueIds())
             return ValidationResult.error(ValidatePCRErrors.Target.DuplicateId())
-        data.tender.targets
+        command.tender.targets
             .forEach { target ->
 
                 // VR.COM-17.1.9
@@ -92,10 +92,10 @@ class ValidatePCRService {
                     }
             }
 
-        if (data.tender.criteria.isNotUniqueIds())
+        if (command.tender.criteria.isNotUniqueIds())
             return ValidationResult.error(ValidatePCRErrors.Criterion.DuplicateId())
 
-        data.tender.criteria
+        command.tender.criteria
             .forEach { criterion ->
                 // VR.COM-17.1.15
                 if (criterion.relatesTo == null && criterion.relatedItem != null)
@@ -140,16 +140,16 @@ class ValidatePCRService {
             }
 
         // VR.COM-17.1.22
-        if (data.tender.conversions.isNotUniqueIds())
+        if (command.tender.conversions.isNotUniqueIds())
             return ValidationResult.error(ValidatePCRErrors.Conversion.DuplicateId())
 
-        val requirementIds = data.tender.criteria.asSequence()
+        val requirementIds = command.tender.criteria.asSequence()
             .flatMap { criterion -> criterion.requirementGroups.asSequence() }
             .flatMap { requirementGroup -> requirementGroup.requirements.asSequence() }
             .map { requirement -> requirement.id to requirement }
             .toMap()
 
-        data.tender.conversions
+        command.tender.conversions
             .forEach { conversion ->
                 // VR.COM-17.1.23
                 if (conversion.relatedItem !in requirementIds)
@@ -167,7 +167,7 @@ class ValidatePCRService {
                     }
             }
 
-        data.tender.targets
+        command.tender.targets
             .forEach { target ->
                 target.observations
                     .forEach { observation ->
@@ -180,10 +180,10 @@ class ValidatePCRService {
             }
 
         // VR.COM-17.1.26
-        if (data.tender.documents.isNotUniqueIds())
+        if (command.tender.documents.isNotUniqueIds())
             return ValidationResult.error(ValidatePCRErrors.Document.DuplicateId())
 
-        data.tender.documents
+        command.tender.documents
             .forEach { document ->
                 // VR.COM-17.1.27
                 if (document.relatedLots.isNotEmpty())
@@ -194,7 +194,7 @@ class ValidatePCRService {
             }
 
         // VR.COM-17.1.28
-        if (data.tender.procurementMethodModalities.size > 1)
+        if (command.tender.procurementMethodModalities.size > 1)
             return ValidationResult.error(ValidatePCRErrors.ProcurementMethodModality.MultiValue())
 
         return ValidationResult.ok()
@@ -214,7 +214,7 @@ class ValidatePCRService {
             ValidationResult.ok()
     }
 
-    fun ValidatePCRData.Classification.equalsId(other: ValidatePCRData.Classification, n: Int): Boolean {
+    fun ValidatePCRDataCommand.Classification.equalsId(other: ValidatePCRDataCommand.Classification, n: Int): Boolean {
         if (scheme != other.scheme) return false
         if (id.length != other.id.length) return false
         return id.startsWith(prefix = other.id.substring(0, n), ignoreCase = true)
