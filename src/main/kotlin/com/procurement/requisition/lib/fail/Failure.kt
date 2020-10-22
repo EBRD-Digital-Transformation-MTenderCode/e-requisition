@@ -1,17 +1,17 @@
 package com.procurement.requisition.lib.fail
 
-import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.requisition.application.service.Logger
-import com.procurement.requisition.lib.EnumElementProvider
+import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
-sealed class Failure(val reason: Exception?) {
+sealed class Failure {
     abstract val code: String
     abstract val description: String
+    abstract val reason: Exception?
     abstract val loggingMessage: String
 
     abstract fun logging(logger: Logger)
 
-    abstract class Error(reason: Exception?) : Failure(reason = reason) {
+    abstract class Error : Failure() {
 
         override val loggingMessage: String
             get() = "Error Code: '$code', description: '$description'."
@@ -21,8 +21,7 @@ sealed class Failure(val reason: Exception?) {
         }
     }
 
-    abstract class Incident(val level: Level, number: String, reason: Exception?) :
-        Failure(reason = reason) {
+    abstract class Incident(val level: Level, number: String) : Failure() {
 
         override val code: String = "INC-$number"
 
@@ -37,7 +36,7 @@ sealed class Failure(val reason: Exception?) {
             }
         }
 
-        enum class Level(@JsonValue override val key: String) : EnumElementProvider.Key {
+        enum class Level(override val key: String) : EnumElementProvider.Element {
             ERROR("error"),
             WARNING("warning"),
             INFO("info");

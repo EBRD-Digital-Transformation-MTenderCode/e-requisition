@@ -7,9 +7,10 @@ import com.procurement.requisition.domain.failure.error.RequestErrors
 import com.procurement.requisition.infrastructure.extension.tryGetAttribute
 import com.procurement.requisition.infrastructure.extension.tryGetAttributeAsEnum
 import com.procurement.requisition.infrastructure.extension.tryGetTextAttribute
-import com.procurement.requisition.infrastructure.web.dto.ApiRequest
-import com.procurement.requisition.infrastructure.web.dto.ApiVersion
-import com.procurement.requisition.infrastructure.web.dto.CommandId
+import com.procurement.requisition.infrastructure.handler.model.CommandType
+import com.procurement.requisition.infrastructure.handler.model.ApiRequest
+import com.procurement.requisition.infrastructure.handler.model.ApiVersion
+import com.procurement.requisition.infrastructure.handler.model.CommandId
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
 

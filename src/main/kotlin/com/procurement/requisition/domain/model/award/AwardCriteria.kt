@@ -1,10 +1,8 @@
 package com.procurement.requisition.domain.model.award
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.requisition.lib.EnumElementProvider
+import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
-enum class AwardCriteria(@JsonValue override val key: String) : EnumElementProvider.Key {
+enum class AwardCriteria(override val key: String) : EnumElementProvider.Element {
     PRICE_ONLY("priceOnly"),
     COST_ONLY("costOnly"),
     QUALITY_ONLY("qualityOnly"),
@@ -12,10 +10,5 @@ enum class AwardCriteria(@JsonValue override val key: String) : EnumElementProvi
 
     override fun toString(): String = key
 
-    companion object : EnumElementProvider<AwardCriteria>(info = info()) {
-
-        @JvmStatic
-        @JsonCreator
-        fun creator(name: String) = AwardCriteria.orThrow(name)
-    }
+    companion object : EnumElementProvider<AwardCriteria>(info = info())
 }

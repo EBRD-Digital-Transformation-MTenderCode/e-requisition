@@ -1,10 +1,8 @@
 package com.procurement.requisition.domain.model
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.requisition.lib.EnumElementProvider
+import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
-enum class Stage(@JsonValue override val key: String) : EnumElementProvider.Key {
+enum class Stage(override val key: String) : EnumElementProvider.Element {
 
     AC("AC"),
     AP("AP"),
@@ -19,10 +17,5 @@ enum class Stage(@JsonValue override val key: String) : EnumElementProvider.Key 
 
     override fun toString(): String = key
 
-    companion object : EnumElementProvider<Stage>(info = info()) {
-
-        @JvmStatic
-        @JsonCreator
-        fun creator(name: String) = orThrow(name)
-    }
+    companion object : EnumElementProvider<Stage>(info = info())
 }

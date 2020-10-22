@@ -1,10 +1,8 @@
 package com.procurement.requisition.domain.model.tender.criterion
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.requisition.lib.EnumElementProvider
+import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
-enum class CriterionSource(@JsonValue override val key: String) : EnumElementProvider.Key {
+enum class CriterionSource(override val key: String) : EnumElementProvider.Element {
 
     BUYER("buyer"),
     PROCURING_ENTITY("procuringEntity"),
@@ -12,10 +10,5 @@ enum class CriterionSource(@JsonValue override val key: String) : EnumElementPro
 
     override fun toString(): String = key
 
-    companion object : EnumElementProvider<CriterionSource>(info = info()) {
-
-        @JvmStatic
-        @JsonCreator
-        fun creator(name: String) = orThrow(name)
-    }
+    companion object : EnumElementProvider<CriterionSource>(info = info())
 }

@@ -1,0 +1,34 @@
+{
+  "cpid": "ocds-t1s2t3-MD-1543525135421",
+  "date": "2020-10-19T10:22:42Z",
+  "stateFE": "evaluation",
+  "owner": "d0da4c24-1a2a-4b39-a1fd-034cb887c93b",
+  "tender": {
+    "title": "string",
+    "description": "string",
+    "classification": {
+      "id": "string",
+      "scheme": "CPV",
+      "description": "string"
+    },
+    "lots": [
+      {
+        "id": "string",
+        "title": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "CPV",
+          "description": "string"
+        },
+        "variants": {
+          "hasVariants": true
+        }
+      }
+    ],
+    "awardCriteria": "priceOnly",
+    "awardCriteriaDetails": "automated",
+    "value": {
+      "currency": "MDL"
+    }
+  }
+}

@@ -1,22 +1,22 @@
 package com.procurement.requisition.application.service.validate
 
+import com.procurement.requisition.application.service.validate.error.ValidatePCRErrors
+import com.procurement.requisition.application.service.validate.model.ValidatePCRData
 import com.procurement.requisition.domain.model.isNotUniqueIds
 import com.procurement.requisition.domain.model.requirement.RangeValue
 import com.procurement.requisition.domain.model.requirement.RequirementDataType
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
-import com.procurement.requisition.domain.model.tender.equals
-import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.lib.functional.ValidationResult
-import com.procurement.requisition.lib.toSetBy
+import com.procurement.requisition.lib.toSet
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 
 @Service
 class ValidatePCRService {
 
-    fun validate(data: ValidationPCRData): ValidationResult<ValidatePCRErrors> {
+    fun validate(data: ValidatePCRData): ValidationResult<ValidatePCRErrors> {
         // VR.COM-17.1.1
         if (data.tender.lots.isNotUniqueIds())
             return ValidationResult.error(ValidatePCRErrors.Lot.DuplicateId())
@@ -24,7 +24,7 @@ class ValidatePCRService {
         data.tender.lots
             .forEach { lot ->
                 // VR.COM-17.1.2
-                if (lot.classification.equals(data.tender.classification, 4))
+                if (lot.classification.equalsId(data.tender.classification, 4))
                     return ValidationResult.error(ValidatePCRErrors.Lot.InvalidClassificationId())
 
                 // VR.COM-17.1.3
@@ -36,12 +36,12 @@ class ValidatePCRService {
         if (data.tender.items.isNotUniqueIds())
             return ValidationResult.error(ValidatePCRErrors.Item.DuplicateId())
 
-        val lotIds = data.tender.lots.toSetBy { it.id }
+        val lotIds = data.tender.lots.toSet { it.id }
 
         data.tender.items
             .forEach { item ->
                 // VR.COM-17.1.5
-                if (item.classification.equals(data.tender.classification, 4))
+                if (item.classification.equalsId(data.tender.classification, 4))
                     return ValidationResult.error(ValidatePCRErrors.Item.InvalidClassificationId())
 
                 // VR.COM-17.1.6
@@ -54,7 +54,7 @@ class ValidatePCRService {
             }
 
         // VR.COM-17.1.29
-        val itemsByRelatedLot = data.tender.items.toSetBy { it.relatedLot }
+        val itemsByRelatedLot = data.tender.items.toSet { it.relatedLot }
         data.tender.lots.forEach { lot ->
             if (lot.id !in itemsByRelatedLot)
                 return ValidationResult.error(ValidatePCRErrors.Lot.MissingItem())
@@ -73,7 +73,7 @@ class ValidatePCRService {
                     TargetRelatesTo.ITEM -> if (target.relatedItem !in itemsById)
                         return ValidationResult.error(ValidatePCRErrors.Target.InvalidRelatedItem())
 
-                    TargetRelatesTo.LOT -> if (LotId.create(target.relatedItem) !in lotIds)
+                    TargetRelatesTo.LOT -> if (target.relatedItem !in lotIds)
                         return ValidationResult.error(ValidatePCRErrors.Target.InvalidRelatedItem())
                 }
 
@@ -107,12 +107,8 @@ class ValidatePCRService {
                         CriterionRelatesTo.ITEM -> if (criterion.relatedItem !in itemsById)
                             return ValidationResult.error(ValidatePCRErrors.Criterion.InvalidRelatedItem())
 
-                        CriterionRelatesTo.LOT -> if (LotId.create(criterion.relatedItem) !in lotIds)
+                        CriterionRelatesTo.LOT -> if (criterion.relatedItem !in lotIds)
                             return ValidationResult.error(ValidatePCRErrors.Criterion.InvalidRelatedItem())
-
-                        CriterionRelatesTo.AWARD,
-                        CriterionRelatesTo.QUALIFICATION,
-                        CriterionRelatesTo.TENDERER -> Unit
                     }
                 }
 
@@ -216,5 +212,11 @@ class ValidatePCRService {
             ValidationResult.error(ValidatePCRErrors.Conversion.Coefficient.InvalidDataType())
         else
             ValidationResult.ok()
+    }
+
+    fun ValidatePCRData.Classification.equalsId(other: ValidatePCRData.Classification, n: Int): Boolean {
+        if (scheme != other.scheme) return false
+        if (id.length != other.id.length) return false
+        return id.startsWith(prefix = other.id.substring(0, n), ignoreCase = true)
     }
 }

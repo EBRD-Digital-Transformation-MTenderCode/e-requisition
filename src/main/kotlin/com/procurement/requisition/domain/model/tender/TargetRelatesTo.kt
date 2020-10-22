@@ -1,21 +1,13 @@
 package com.procurement.requisition.domain.model.tender
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
-import com.procurement.requisition.lib.EnumElementProvider
+import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
-enum class TargetRelatesTo(@JsonValue override val key: String) : EnumElementProvider.Key {
+enum class TargetRelatesTo(override val key: String) : EnumElementProvider.Element {
 
     ITEM("item"),
     LOT("lot");
 
     override fun toString(): String = key
 
-    companion object : EnumElementProvider<TargetRelatesTo>(info = info()) {
-
-        @JvmStatic
-        @JsonCreator
-        fun creator(name: String) = CriterionRelatesTo.orThrow(name)
-    }
+    companion object : EnumElementProvider<TargetRelatesTo>(info = info())
 }

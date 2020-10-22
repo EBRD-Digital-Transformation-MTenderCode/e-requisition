@@ -1,10 +1,8 @@
 package com.procurement.requisition.domain.model.document
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
-import com.procurement.requisition.lib.EnumElementProvider
+import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
-enum class DocumentType(@JsonValue override val key: String) : EnumElementProvider.Key {
+enum class DocumentType(override val key: String) : EnumElementProvider.Element {
 
     ASSET_AND_LIABILITY_ASSESSMENT("assetAndLiabilityAssessment"),
     AWARD_NOTICE("awardNotice"),
@@ -53,10 +51,5 @@ enum class DocumentType(@JsonValue override val key: String) : EnumElementProvid
 
     override fun toString(): String = key
 
-    companion object : EnumElementProvider<DocumentType>(info = info()) {
-
-        @JvmStatic
-        @JsonCreator
-        fun creator(name: String) = orThrow(name)
-    }
+    companion object : EnumElementProvider<DocumentType>(info = info())
 }

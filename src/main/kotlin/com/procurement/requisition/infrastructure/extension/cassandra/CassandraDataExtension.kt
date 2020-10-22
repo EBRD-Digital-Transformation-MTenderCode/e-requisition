@@ -5,9 +5,6 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.*
 
-fun Date.toLocalDateTime(zoneId: ZoneId = ZoneOffset.UTC): LocalDateTime = this.toInstant()
-    .atZone(zoneId)
-    .toLocalDateTime()
+fun Date.toLocalDateTime(zoneId: ZoneId = ZoneOffset.UTC): LocalDateTime = toInstant().atZone(zoneId).toLocalDateTime()
 
-fun LocalDateTime.toCassandraTimestamp(zoneId: ZoneId = ZoneOffset.UTC): Date =
-    Date.from(this.atZone(zoneId).toInstant())
+fun LocalDateTime.toCassandraTimestamp(zoneId: ZoneId = ZoneOffset.UTC): Date = Date.from(atZone(zoneId).toInstant())

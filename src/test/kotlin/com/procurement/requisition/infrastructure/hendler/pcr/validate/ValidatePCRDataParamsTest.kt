@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.hendler.pcr.validate
 
-import com.procurement.requisition.infrastructure.handler.pcr.validate.ValidatePCRDataParams
+import com.procurement.requisition.infrastructure.handler.pcr.validate.model.ValidatePCRDataParams
 import com.procurement.requisition.json.testingBindingAndMapping
 import org.junit.jupiter.api.Test
 

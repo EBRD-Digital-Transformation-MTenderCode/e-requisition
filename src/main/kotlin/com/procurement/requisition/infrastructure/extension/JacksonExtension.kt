@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeType
 import com.fasterxml.jackson.databind.node.NullNode
 import com.procurement.requisition.domain.failure.error.JsonErrors
-import com.procurement.requisition.lib.EnumElementProvider
-import com.procurement.requisition.lib.EnumElementProvider.Companion.keysAsStrings
+import com.procurement.requisition.lib.enumerator.EnumElementProvider
+import com.procurement.requisition.lib.enumerator.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
 import com.procurement.requisition.lib.functional.Result.Companion.success
@@ -57,7 +57,7 @@ fun JsonNode.tryGetBigDecimalAttribute(name: String): Result<BigDecimal, JsonErr
 
 fun <T> JsonNode.tryGetAttributeAsEnum(name: String, enumProvider: EnumElementProvider<T>):
     Result<T, JsonErrors> where T : Enum<T>,
-                                T : EnumElementProvider.Key =
+                                T : EnumElementProvider.Element =
     tryGetTextAttribute(name)
         .flatMap { text ->
             enumProvider.orNull(text)

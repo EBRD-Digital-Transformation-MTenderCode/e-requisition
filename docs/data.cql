@@ -23,13 +23,14 @@ CREATE TABLE IF NOT EXISTS requisition.rules
     PRIMARY KEY (country, pmd, operation_type, parameter)
 );
 
-CREATE TABLE IF NOT EXISTS qualification.requisitions
+CREATE TABLE IF NOT EXISTS requisition.requisitions
 (
-    cpid         TEXT,
-    ocid         TEXT,
-    token_entity UUID,
-    owner        TEXT,
-    created_date TIMESTAMP,
-    json_data    TEXT,
+    cpid           TEXT,
+    ocid           TEXT,
+    token_entity   TEXT,
+    owner          TEXT,
+    status         TEXT,
+    status_details TEXT,
+    json_data      TEXT,
     PRIMARY KEY (cpid, ocid)
 );

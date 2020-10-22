@@ -1,29 +1,27 @@
 package com.procurement.requisition.domain.model.tender.lot
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
-import java.io.Serializable
+import com.procurement.requisition.domain.model.UUID_PATTERN
+import com.procurement.requisition.domain.model.isUUID
 import java.util.*
 
-class LotId private constructor(private val value: String) : Serializable {
+class LotId private constructor(val underlying: String) {
 
     companion object {
-
-        @JvmStatic
-        @JsonCreator
-        fun create(text: String): LotId = LotId(text)
+        const val pattern = UUID_PATTERN
+        fun validate(text: String) = text.isUUID
+        fun orNull(text: String) = if (validate(text)) LotId(text) else null
+        fun generate() = LotId(UUID.randomUUID().toString())
     }
 
     override fun equals(other: Any?): Boolean {
         return if (this !== other)
             other is LotId
-                && this.value == other.value
+                && this.underlying == other.underlying
         else
             true
     }
 
-    override fun hashCode(): Int = value.hashCode()
+    override fun hashCode(): Int = underlying.hashCode()
 
-    @JsonValue
-    override fun toString(): String = value
+    override fun toString(): String = underlying
 }

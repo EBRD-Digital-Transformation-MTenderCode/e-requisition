@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.procurement.requisition.domain.extension.parseLocalDateTime
 import com.procurement.requisition.domain.model.requirement.ExpectedValue
 import com.procurement.requisition.domain.model.requirement.MaxValue
 import com.procurement.requisition.domain.model.requirement.MinValue
@@ -13,7 +14,6 @@ import com.procurement.requisition.domain.model.requirement.RangeValue
 import com.procurement.requisition.domain.model.requirement.Requirement
 import com.procurement.requisition.domain.model.requirement.RequirementDataType
 import com.procurement.requisition.domain.model.requirement.RequirementValue
-import com.procurement.requisition.infrastructure.bind.date.JsonDateTimeDeserializer
 import java.math.BigDecimal
 
 class RequirementsDeserializer : JsonDeserializer<List<Requirement>>() {
@@ -30,12 +30,9 @@ class RequirementsDeserializer : JsonDeserializer<List<Requirement>>() {
                 val period: Requirement.Period? = requirement.takeIf { it.has("period") }
                     ?.let {
                         val period = it.get("period")
-                        val startDate = JsonDateTimeDeserializer.deserialize(period.get("startDate").asText())
-                        val endDate = JsonDateTimeDeserializer.deserialize(period.get("endDate").asText())
-                        Requirement.Period(
-                            startDate = startDate,
-                            endDate = endDate
-                        )
+                        val startDate = period.get("startDate").asText().parseLocalDateTime()
+                        val endDate = period.get("endDate").asText().parseLocalDateTime()
+                        Requirement.Period(startDate = startDate, endDate = endDate)
                     }
 
                 Requirement(

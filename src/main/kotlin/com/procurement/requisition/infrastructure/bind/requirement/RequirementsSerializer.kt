@@ -11,7 +11,7 @@ import com.procurement.requisition.domain.model.requirement.MinValue
 import com.procurement.requisition.domain.model.requirement.NoneValue
 import com.procurement.requisition.domain.model.requirement.RangeValue
 import com.procurement.requisition.domain.model.requirement.Requirement
-import com.procurement.requisition.infrastructure.bind.date.JsonDateTimeSerializer
+import com.procurement.requisition.infrastructure.handler.converter.asString
 import java.math.BigDecimal
 
 class RequirementsSerializer : JsonSerializer<List<Requirement>>() {
@@ -34,8 +34,8 @@ class RequirementsSerializer : JsonSerializer<List<Requirement>>() {
 
                 requirement.period?.let {
                     requirementNode.putObject("period")
-                        .put("startDate", JsonDateTimeSerializer.serialize(it.startDate))
-                        .put("endDate", JsonDateTimeSerializer.serialize(it.endDate))
+                        .put("startDate", it.startDate.asString())
+                        .put("endDate", it.endDate.asString())
                 }
 
 
