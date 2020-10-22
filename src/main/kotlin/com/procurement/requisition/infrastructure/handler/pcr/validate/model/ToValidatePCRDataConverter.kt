@@ -22,14 +22,14 @@ import com.procurement.requisition.lib.functional.Result.Companion.failure
 import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.mapIndexedOrEmpty
 
-fun ValidatePCRDataParams.convert(): Result<ValidatePCRData, Failure> = tender.convert("#/tender")
+fun ValidatePCRDataRequest.convert(): Result<ValidatePCRData, Failure> = tender.convert("#/tender")
     .onFailure { return it }
     .let { ValidatePCRData(it).asSuccess() }
 
 /**
  * Tender
  */
-fun ValidatePCRDataParams.Tender.convert(path: String): Result<ValidatePCRData.Tender, Failure> {
+fun ValidatePCRDataRequest.Tender.convert(path: String): Result<ValidatePCRData.Tender, Failure> {
     val classification = classification.convert(path = "$path/classification")
         .onFailure { return it }
 
@@ -103,7 +103,7 @@ fun ValidatePCRDataParams.Tender.convert(path: String): Result<ValidatePCRData.T
 /**
  * Classification
  */
-fun ValidatePCRDataParams.Classification.convert(path: String): Result<ValidatePCRData.Classification, Failure> {
+fun ValidatePCRDataRequest.Classification.convert(path: String): Result<ValidatePCRData.Classification, Failure> {
     val scheme = scheme.asEnum(target = ClassificationScheme, path = "$path/scheme")
         .onFailure { return it }
     return ValidatePCRData.Classification(id = id, scheme = scheme).asSuccess()
@@ -112,13 +112,13 @@ fun ValidatePCRDataParams.Classification.convert(path: String): Result<ValidateP
 /**
  * Unit
  */
-fun ValidatePCRDataParams.Unit.convert(path: String): Result<ValidatePCRData.Unit, Failure> =
+fun ValidatePCRDataRequest.Unit.convert(path: String): Result<ValidatePCRData.Unit, Failure> =
     ValidatePCRData.Unit(id = this.id).asSuccess()
 
 /**
  * Lot
  */
-fun ValidatePCRDataParams.Tender.Lot.convert(path: String): Result<ValidatePCRData.Tender.Lot, Failure> {
+fun ValidatePCRDataRequest.Tender.Lot.convert(path: String): Result<ValidatePCRData.Tender.Lot, Failure> {
     if (!LotId.validate(id))
         return failure(
             JsonErrors.DataFormatMismatch(
@@ -141,13 +141,13 @@ fun ValidatePCRDataParams.Tender.Lot.convert(path: String): Result<ValidatePCRDa
     ).asSuccess()
 }
 
-fun ValidatePCRDataParams.Tender.Lot.Variant.convert(path: String): Result<ValidatePCRData.Tender.Lot.Variant, Failure> =
+fun ValidatePCRDataRequest.Tender.Lot.Variant.convert(path: String): Result<ValidatePCRData.Tender.Lot.Variant, Failure> =
     ValidatePCRData.Tender.Lot.Variant(hasVariants = hasVariants, variantsDetails = variantsDetails).asSuccess()
 
 /**
  * Item
  */
-fun ValidatePCRDataParams.Tender.Item.convert(path: String): Result<ValidatePCRData.Tender.Item, Failure> {
+fun ValidatePCRDataRequest.Tender.Item.convert(path: String): Result<ValidatePCRData.Tender.Item, Failure> {
     if (!ItemId.validate(id))
         return failure(
             JsonErrors.DataFormatMismatch(
@@ -183,7 +183,7 @@ fun ValidatePCRDataParams.Tender.Item.convert(path: String): Result<ValidatePCRD
 /**
  * Target
  */
-fun ValidatePCRDataParams.Tender.Target.convert(path: String): Result<ValidatePCRData.Tender.Target, Failure> {
+fun ValidatePCRDataRequest.Tender.Target.convert(path: String): Result<ValidatePCRData.Tender.Target, Failure> {
     val relatesTo = relatesTo.asEnum(target = TargetRelatesTo, path = "$path/relatesTo")
         .onFailure { return it }
 
@@ -202,7 +202,7 @@ fun ValidatePCRDataParams.Tender.Target.convert(path: String): Result<ValidatePC
     ).asSuccess()
 }
 
-fun ValidatePCRDataParams.Tender.Target.Observation.convert(path: String):
+fun ValidatePCRDataRequest.Tender.Target.Observation.convert(path: String):
     Result<ValidatePCRData.Tender.Target.Observation, Failure> {
 
     val period = period?.convert(path = "$path/period")?.onFailure { return it }
@@ -222,7 +222,7 @@ fun ValidatePCRDataParams.Tender.Target.Observation.convert(path: String):
     ).asSuccess()
 }
 
-fun ValidatePCRDataParams.Tender.Target.Observation.Period.convert(path: String):
+fun ValidatePCRDataRequest.Tender.Target.Observation.Period.convert(path: String):
     Result<ValidatePCRData.Tender.Target.Observation.Period, Failure> {
 
     val startDate = endDate.asLocalDateTime(path = "$path/startDate")
@@ -234,14 +234,14 @@ fun ValidatePCRDataParams.Tender.Target.Observation.Period.convert(path: String)
     return ValidatePCRData.Tender.Target.Observation.Period(startDate = startDate, endDate = endDate).asSuccess()
 }
 
-fun ValidatePCRDataParams.Tender.Target.Observation.Dimensions.convert(path: String):
+fun ValidatePCRDataRequest.Tender.Target.Observation.Dimensions.convert(path: String):
     Result<ValidatePCRData.Tender.Target.Observation.Dimensions, Failure> =
     ValidatePCRData.Tender.Target.Observation.Dimensions(requirementClassIdPR = requirementClassIdPR).asSuccess()
 
 /**
  * Criterion
  */
-fun ValidatePCRDataParams.Tender.Criterion.convert(path: String): Result<ValidatePCRData.Tender.Criterion, Failure> {
+fun ValidatePCRDataRequest.Tender.Criterion.convert(path: String): Result<ValidatePCRData.Tender.Criterion, Failure> {
     val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo, path = "$path/relatesTo")
         ?.onFailure { return it }
 
@@ -261,7 +261,7 @@ fun ValidatePCRDataParams.Tender.Criterion.convert(path: String): Result<Validat
     ).asSuccess()
 }
 
-fun ValidatePCRDataParams.Tender.Criterion.RequirementGroup.convert(path: String): Result<ValidatePCRData.Tender.Criterion.RequirementGroup, Failure> =
+fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.convert(path: String): Result<ValidatePCRData.Tender.Criterion.RequirementGroup, Failure> =
     ValidatePCRData.Tender.Criterion.RequirementGroup(
         id = id,
         description = description,
@@ -271,7 +271,7 @@ fun ValidatePCRDataParams.Tender.Criterion.RequirementGroup.convert(path: String
 /**
  * Conversion
  */
-fun ValidatePCRDataParams.Tender.Conversion.convert(path: String): Result<ValidatePCRData.Tender.Conversion, Failure> {
+fun ValidatePCRDataRequest.Tender.Conversion.convert(path: String): Result<ValidatePCRData.Tender.Conversion, Failure> {
     val relatesTo = relatesTo.asEnum(target = ConversionRelatesTo, path = "$path/relatesTo")
         .onFailure { return it }
 
@@ -291,13 +291,13 @@ fun ValidatePCRDataParams.Tender.Conversion.convert(path: String): Result<Valida
     ).asSuccess()
 }
 
-fun ValidatePCRDataParams.Tender.Conversion.Coefficient.convert(path: String): Result<ValidatePCRData.Tender.Conversion.Coefficient, Failure> =
+fun ValidatePCRDataRequest.Tender.Conversion.Coefficient.convert(path: String): Result<ValidatePCRData.Tender.Conversion.Coefficient, Failure> =
     ValidatePCRData.Tender.Conversion.Coefficient(id = id, value = value, coefficient = coefficient).asSuccess()
 
 /**
  * Document
  */
-fun ValidatePCRDataParams.Tender.Document.convert(path: String): Result<ValidatePCRData.Tender.Document, Failure> {
+fun ValidatePCRDataRequest.Tender.Document.convert(path: String): Result<ValidatePCRData.Tender.Document, Failure> {
     val documentType = documentType.asEnum(target = DocumentType, path = "$path/documentType")
         .onFailure { return it }
 

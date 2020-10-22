@@ -9,7 +9,7 @@ import com.procurement.requisition.infrastructure.handler.AbstractQueryHandler
 import com.procurement.requisition.infrastructure.handler.getParams
 import com.procurement.requisition.infrastructure.handler.model.ApiRequest
 import com.procurement.requisition.infrastructure.handler.model.ApiResponse
-import com.procurement.requisition.infrastructure.handler.pcr.validate.model.ValidatePCRDataParams
+import com.procurement.requisition.infrastructure.handler.pcr.validate.model.ValidatePCRDataRequest
 import com.procurement.requisition.infrastructure.handler.pcr.validate.model.convert
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
@@ -27,7 +27,7 @@ class ValidatePCRDataHandler(
 
         val params = request.node.getParams()
             .onFailure { failure -> return failure }
-            .tryMapping<ValidatePCRDataParams>(transform)
+            .tryMapping<ValidatePCRDataRequest>(transform)
             .mapFailure { failure ->
                 RequestErrors(
                     code = "RQ-1",

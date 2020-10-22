@@ -1,6 +1,5 @@
 package com.procurement.requisition.infrastructure.handler.pcr.validate.model
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
@@ -16,8 +15,7 @@ import com.procurement.requisition.infrastructure.bind.requirement.RequirementsD
 import com.procurement.requisition.infrastructure.bind.requirement.RequirementsSerializer
 import java.math.BigDecimal
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class ValidatePCRDataParams(
+data class ValidatePCRDataRequest(
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
 ) {
 
