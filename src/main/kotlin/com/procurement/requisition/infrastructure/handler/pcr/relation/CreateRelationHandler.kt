@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.pcr.validate
+package com.procurement.requisition.infrastructure.handler.pcr.relation
 
 import com.procurement.requisition.application.extension.tryMapping
 import com.procurement.requisition.application.service.Logger

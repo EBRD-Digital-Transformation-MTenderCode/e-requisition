@@ -16,7 +16,7 @@ import com.procurement.requisition.infrastructure.handler.model.CommandType.GET_
 import com.procurement.requisition.infrastructure.handler.model.CommandType.VALIDATE_PCR_DATA
 import com.procurement.requisition.infrastructure.handler.pcr.create.CreatePCRHandler
 import com.procurement.requisition.infrastructure.handler.pcr.query.GetTenderStateHandler
-import com.procurement.requisition.infrastructure.handler.pcr.validate.CreateRelationHandler
+import com.procurement.requisition.infrastructure.handler.pcr.relation.CreateRelationHandler
 import com.procurement.requisition.infrastructure.handler.pcr.validate.ValidatePCRDataHandler
 import com.procurement.requisition.infrastructure.service.HistoryRepository
 import org.springframework.context.annotation.Bean
