@@ -24,7 +24,7 @@ class ValidatePCRService {
         command.tender.lots
             .forEach { lot ->
                 // VR.COM-17.1.2
-                if (lot.classification.equalsId(command.tender.classification, 4))
+                if (!lot.classification.equalsId(command.tender.classification, 4))
                     return ValidationResult.error(ValidatePCRErrors.Lot.InvalidClassificationId())
 
                 // VR.COM-17.1.3
@@ -41,7 +41,7 @@ class ValidatePCRService {
         command.tender.items
             .forEach { item ->
                 // VR.COM-17.1.5
-                if (item.classification.equalsId(command.tender.classification, 4))
+                if (!item.classification.equalsId(command.tender.classification, 4))
                     return ValidationResult.error(ValidatePCRErrors.Item.InvalidClassificationId())
 
                 // VR.COM-17.1.6
