@@ -21,7 +21,7 @@ sealed class ApiResponse(
 ) {
     abstract val status: ResponseStatus
 
-    class Success(version: ApiVersion, id: CommandId, result: Any? = null) :
+    class Success(version: ApiVersion, id: CommandId, @JsonInclude(JsonInclude.Include.NON_EMPTY) result: Any? = null) :
         ApiResponse(version = version, result = result, id = id) {
 
         @field:JsonProperty("status")
