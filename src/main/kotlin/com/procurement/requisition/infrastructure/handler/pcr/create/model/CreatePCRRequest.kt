@@ -1,6 +1,5 @@
 package com.procurement.requisition.infrastructure.handler.pcr.create.model
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
@@ -16,8 +15,7 @@ import com.procurement.requisition.infrastructure.bind.requirement.RequirementsD
 import com.procurement.requisition.infrastructure.bind.requirement.RequirementsSerializer
 import java.math.BigDecimal
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class CreatePCRParams(
+data class CreatePCRRequest(
     @field:JsonProperty("cpid") @param:JsonProperty("cpid") val cpid: String,
     @field:JsonProperty("date") @param:JsonProperty("date") val date: String,
     @field:JsonProperty("stateFE") @param:JsonProperty("stateFE") val stateFE: String,

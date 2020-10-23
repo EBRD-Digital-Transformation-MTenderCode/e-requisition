@@ -1,7 +1,5 @@
 package com.procurement.requisition.domain.model
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
 import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
 enum class ProcurementMethodDetails(override val key: String) : EnumElementProvider.Element {

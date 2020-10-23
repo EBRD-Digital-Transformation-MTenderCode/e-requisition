@@ -20,7 +20,7 @@ import com.procurement.requisition.domain.model.tender.target.observation.Observ
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-data class CreatePCR(
+data class CreatePCRCommand(
     val cpid: Cpid,
     val date: LocalDateTime,
     val stateFE: StateFE,

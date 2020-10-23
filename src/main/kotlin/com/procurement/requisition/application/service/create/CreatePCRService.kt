@@ -1,13 +1,12 @@
 package com.procurement.requisition.application.service.create
 
 import com.procurement.requisition.application.repository.pcr.PCRRepository
-import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.create.model.CreatePCR
+import com.procurement.requisition.application.repository.pcr.PCRSerializer
+import com.procurement.requisition.application.service.create.model.CreatePCRCommand
 import com.procurement.requisition.application.service.create.model.CreatedPCR
 import com.procurement.requisition.application.service.create.model.StateFE
 import com.procurement.requisition.application.service.create.model.convertToCreatedPCR
 import com.procurement.requisition.domain.extension.nowDefaultUTC
-import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.PCR
@@ -56,6 +55,7 @@ import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.LotStatus
 import com.procurement.requisition.domain.model.tender.lot.LotStatusDetails
 import com.procurement.requisition.domain.model.tender.lot.Lots
+import com.procurement.requisition.domain.model.tender.lot.RelatedLots
 import com.procurement.requisition.domain.model.tender.lot.Variant
 import com.procurement.requisition.domain.model.tender.target.Target
 import com.procurement.requisition.domain.model.tender.target.TargetId
@@ -67,28 +67,31 @@ import com.procurement.requisition.domain.model.tender.target.observation.Observ
 import com.procurement.requisition.domain.model.tender.target.observation.Observations
 import com.procurement.requisition.domain.model.tender.unit.Unit
 import com.procurement.requisition.infrastructure.configuration.properties.UriProperties
-import com.procurement.requisition.infrastructure.repository.pcr.model.convertToPCREntity
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
 import org.springframework.stereotype.Service
 
 @Service
-class CreatePCRService(val uriProperties: UriProperties, val pcrRepository: PCRRepository, val transform: Transform) {
+class CreatePCRService(
+    val uriProperties: UriProperties,
+    val pcrRepository: PCRRepository,
+    val pcrSerializer: PCRSerializer
+) {
 
-    fun create(createPCR: CreatePCR): Result<CreatedPCR, Failure> {
+    fun create(command: CreatePCRCommand): Result<CreatedPCR, Failure> {
 
-        val lotsMapping: Map<String, LotId> = createPCR.tender.lots
+        val lotsMapping: Map<String, LotId> = command.tender.lots
             .asSequence()
             .map { lot -> lot.id to LotId.generate() }
             .toMap()
 
-        val itemsMapping: Map<String, ItemId> = createPCR.tender.items
+        val itemsMapping: Map<String, ItemId> = command.tender.items
             .asSequence()
             .map { item -> item.id to ItemId.generate() }
             .toMap()
 
-        val requirementsMapping: Map<String, RequirementId> = createPCR.tender.criteria
+        val requirementsMapping: Map<String, RequirementId> = command.tender.criteria
             .asSequence()
             .flatMap { criterion -> criterion.requirementGroups.asSequence() }
             .flatMap { requirementGroup -> requirementGroup.requirements }
@@ -97,45 +100,41 @@ class CreatePCRService(val uriProperties: UriProperties, val pcrRepository: PCRR
 
         val tender = Tender(
             id = TenderId.generate(),
-            status = tenderStatus(createPCR.stateFE),
-            statusDetails = tenderStatusDetails(createPCR.stateFE),
-            date = createPCR.date,
-            title = createPCR.tender.title,
-            description = createPCR.tender.description,
-            classification = createPCR.tender.classification,
-            lots = lots(createPCR, lotsMapping),
-            items = items(createPCR, lotsMapping, itemsMapping),
-            targets = targets(createPCR, lotsMapping, itemsMapping, requirementsMapping),
-            criteria = criteria(createPCR, lotsMapping, itemsMapping, requirementsMapping),
-            conversions = conversions(createPCR, requirementsMapping),
+            status = tenderStatus(command.stateFE),
+            statusDetails = tenderStatusDetails(command.stateFE),
+            date = command.date,
+            title = command.tender.title,
+            description = command.tender.description,
+            classification = command.tender.classification,
+            lots = lots(command, lotsMapping),
+            items = items(command, lotsMapping, itemsMapping),
+            targets = targets(command, lotsMapping, itemsMapping, requirementsMapping),
+            criteria = criteria(command, lotsMapping, itemsMapping, requirementsMapping),
+            conversions = conversions(command, requirementsMapping),
             procurementMethodModalities =
-            ProcurementMethodModalities(createPCR.tender.procurementMethodModalities.toList()),
-            awardCriteria = createPCR.tender.awardCriteria,
-            awardCriteriaDetails = createPCR.tender.awardCriteriaDetails,
-            documents = documents(createPCR, lotsMapping),
-            value = value(createPCR)
+            ProcurementMethodModalities(command.tender.procurementMethodModalities.toList()),
+            awardCriteria = command.tender.awardCriteria,
+            awardCriteriaDetails = command.tender.awardCriteriaDetails,
+            documents = documents(command, lotsMapping),
+            value = value(command)
         )
 
-        val relatedProcesses = relatedProcesses(createPCR, uriProperties)
+        val relatedProcesses = relatedProcesses(command, uriProperties)
 
-        val ocid: Ocid = Ocid.generate(cpid = createPCR.cpid, stage = Stage.PC, timestamp = nowDefaultUTC())
+        val ocid: Ocid = Ocid.generate(cpid = command.cpid, stage = Stage.PC, timestamp = nowDefaultUTC())
         val pcr = PCR(
-            cpid = createPCR.cpid,
+            cpid = command.cpid,
             ocid = ocid,
             token = Token.generate(),
-            owner = createPCR.owner,
+            owner = command.owner,
             tender = tender,
             relatedProcesses = relatedProcesses
         )
 
-        val json = transform.trySerialization(pcr.convertToPCREntity())
-            .mapFailure { failure ->
-                InternalServerError(description = "Error of serialization new PCR entity.", reason = failure.reason)
-            }
-            .onFailure { return it }
+        val json = pcrSerializer.build(pcr).onFailure { return it }
 
         pcrRepository.saveNew(
-            cpid = createPCR.cpid,
+            cpid = command.cpid,
             ocid = ocid,
             token = pcr.token,
             owner = pcr.owner,
@@ -178,7 +177,7 @@ fun criteriaRelatedItem(
     CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem).underlying
 }
 
-fun lots(createPCR: CreatePCR, lotsMapping: Map<String, LotId>) = createPCR.tender.lots
+fun lots(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>) = createPCR.tender.lots
     .map { lot ->
         Lot(
             id = lotsMapping.getValue(lot.id),
@@ -199,7 +198,7 @@ fun lots(createPCR: CreatePCR, lotsMapping: Map<String, LotId>) = createPCR.tend
     }
     .let { Lots(it) }
 
-fun items(createPCR: CreatePCR, lotsMapping: Map<String, LotId>, itemsMapping: Map<String, ItemId>) =
+fun items(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>, itemsMapping: Map<String, ItemId>) =
     createPCR.tender.items
         .map { item ->
             Item(
@@ -218,7 +217,7 @@ fun items(createPCR: CreatePCR, lotsMapping: Map<String, LotId>, itemsMapping: M
         .let { Items(it) }
 
 fun criteria(
-    createPCR: CreatePCR,
+    createPCR: CreatePCRCommand,
     lotsMapping: Map<String, LotId>,
     itemsMapping: Map<String, ItemId>,
     requirementsMapping: Map<String, RequirementId>
@@ -269,29 +268,30 @@ fun criteria(
     }
     .let { Criteria(it) }
 
-fun conversions(createPCR: CreatePCR, requirementsMapping: Map<String, RequirementId>) = createPCR.tender.conversions
-    .map { conversion ->
-        Conversion(
-            id = ConversionId.generate(),
-            relatesTo = conversion.relatesTo,
-            relatedItem = requirementsMapping.getValue(conversion.relatedItem),
-            rationale = conversion.rationale,
-            description = conversion.description,
-            coefficients = conversion.coefficients
-                .map { coefficient ->
-                    Coefficient(
-                        id = CoefficientId.generate(),
-                        value = coefficient.value,
-                        coefficient = coefficient.coefficient
-                    )
-                }
-                .let { Coefficients(it) },
-        )
-    }
-    .let { Conversions(it) }
+fun conversions(createPCR: CreatePCRCommand, requirementsMapping: Map<String, RequirementId>) =
+    createPCR.tender.conversions
+        .map { conversion ->
+            Conversion(
+                id = ConversionId.generate(),
+                relatesTo = conversion.relatesTo,
+                relatedItem = requirementsMapping.getValue(conversion.relatedItem),
+                rationale = conversion.rationale,
+                description = conversion.description,
+                coefficients = conversion.coefficients
+                    .map { coefficient ->
+                        Coefficient(
+                            id = CoefficientId.generate(),
+                            value = coefficient.value,
+                            coefficient = coefficient.coefficient
+                        )
+                    }
+                    .let { Coefficients(it) },
+            )
+        }
+        .let { Conversions(it) }
 
 fun targets(
-    createPCR: CreatePCR,
+    createPCR: CreatePCRCommand,
     lotsMapping: Map<String, LotId>,
     itemsMapping: Map<String, ItemId>,
     requirementsMapping: Map<String, RequirementId>
@@ -337,7 +337,7 @@ fun targets(
     }
     .let { Targets(it) }
 
-fun documents(createPCR: CreatePCR, lotsMapping: Map<String, LotId>) = createPCR.tender.documents
+fun documents(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>) = createPCR.tender.documents
     .map { document ->
         Document(
             id = document.id,
@@ -345,12 +345,13 @@ fun documents(createPCR: CreatePCR, lotsMapping: Map<String, LotId>) = createPCR
             title = document.title,
             description = document.description,
             relatedLots = document.relatedLots
-                .map { lotId -> lotsMapping.getValue(lotId) },
+                .map { lotId -> lotsMapping.getValue(lotId) }
+                .let { RelatedLots(it) },
         )
     }
     .let { Documents(it) }
 
-fun value(createPCR: CreatePCR) = createPCR.tender.value
+fun value(createPCR: CreatePCRCommand) = createPCR.tender.value
     .let { value ->
         Value(
             amount = null,
@@ -358,7 +359,7 @@ fun value(createPCR: CreatePCR) = createPCR.tender.value
         )
     }
 
-fun relatedProcesses(createPCR: CreatePCR, uriProperties: UriProperties) = RelatedProcesses(
+fun relatedProcesses(createPCR: CreatePCRCommand, uriProperties: UriProperties) = RelatedProcesses(
     RelatedProcess(
         id = RelatedProcessId.generate(),
         scheme = RelatedProcessScheme.OCID,

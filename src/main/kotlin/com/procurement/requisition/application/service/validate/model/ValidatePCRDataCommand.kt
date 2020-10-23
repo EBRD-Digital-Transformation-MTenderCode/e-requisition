@@ -16,7 +16,7 @@ import com.procurement.requisition.infrastructure.bind.classification.Classifica
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-data class ValidatePCRData(
+data class ValidatePCRDataCommand(
     val tender: Tender
 ) {
 

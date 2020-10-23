@@ -1,7 +1,7 @@
 package com.procurement.requisition.infrastructure.configuration
 
-import com.procurement.requisition.infrastructure.io.orThrow
 import com.procurement.requisition.infrastructure.handler.model.ApiVersion
+import com.procurement.requisition.infrastructure.io.orThrow
 import java.util.*
 
 object GlobalProperties {

@@ -2,6 +2,7 @@ package com.procurement.requisition.infrastructure.repository.pcr
 
 import com.datastax.driver.core.Session
 import com.procurement.requisition.application.repository.pcr.PCRRepository
+import com.procurement.requisition.application.repository.pcr.model.TenderState
 import com.procurement.requisition.domain.failure.incident.DatabaseIncident
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
@@ -10,6 +11,7 @@ import com.procurement.requisition.domain.model.tender.TenderStatus
 import com.procurement.requisition.domain.model.tender.TenderStatusDetails
 import com.procurement.requisition.infrastructure.extension.cassandra.tryExecute
 import com.procurement.requisition.lib.functional.Result
+import com.procurement.requisition.lib.functional.asSuccess
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -39,9 +41,17 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
                VALUES(?, ?, ?, ?, ?, ?, ?)
                IF NOT EXISTS
             """
+
+        private const val GET_TENDER_STATE_CQL = """
+            SELECT ${COLUMN_STATUS}, ${COLUMN_STATUS_DETAIL}
+              FROM ${KEYSPACE}.${TABLE_NAME}
+             WHERE ${COLUMN_CPID}=?
+               AND ${COLUMN_OCID}=?
+        """
     }
 
     private val preparedSaveNewPCRCQL = session.prepare(SAVE_NEW_PCR_CQL)
+    private val preparedGetTenderStateCQL = session.prepare(GET_TENDER_STATE_CQL)
 
     override fun saveNew(
         cpid: Cpid,
@@ -63,4 +73,30 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
         }
         .tryExecute(session)
         .map { resultSet -> resultSet.wasApplied() }
+
+    override fun getTenderState(cpid: Cpid, ocid: Ocid): Result<TenderState?, DatabaseIncident> =
+        preparedGetTenderStateCQL.bind()
+            .apply {
+                setString(COLUMN_CPID, cpid.underlying)
+                setString(COLUMN_OCID, ocid.underlying)
+            }
+            .tryExecute(session)
+            .onFailure { return it }
+            .one()
+            ?.let { row ->
+                val status = row.getString(COLUMN_STATUS)
+                    .let {
+                        TenderStatus.orNull(it)
+                            ?: return Result.failure(DatabaseIncident.Data(description = "Error of parsing action. Unknown value '$it'."))
+                    }
+
+                val statusDetails = row.getString(COLUMN_STATUS_DETAIL)
+                    .let {
+                        TenderStatusDetails.orNull(it)
+                            ?: return Result.failure(DatabaseIncident.Data(description = "Error of parsing action. Unknown value '$it'."))
+                    }
+
+                TenderState(status = status, statusDetails = statusDetails)
+            }
+            .asSuccess()
 }

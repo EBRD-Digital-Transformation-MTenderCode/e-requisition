@@ -7,11 +7,11 @@ import com.procurement.requisition.application.service.create.CreatePCRService
 import com.procurement.requisition.domain.failure.error.RequestErrors
 import com.procurement.requisition.infrastructure.handler.AbstractHistoricalHandler
 import com.procurement.requisition.infrastructure.handler.getParams
-import com.procurement.requisition.infrastructure.service.HistoryRepository
 import com.procurement.requisition.infrastructure.handler.model.ApiRequest
 import com.procurement.requisition.infrastructure.handler.model.ApiResponse
-import com.procurement.requisition.infrastructure.handler.pcr.create.model.CreatePCRParams
+import com.procurement.requisition.infrastructure.handler.pcr.create.model.CreatePCRRequest
 import com.procurement.requisition.infrastructure.handler.pcr.create.model.convert
+import com.procurement.requisition.infrastructure.service.HistoryRepository
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
@@ -26,7 +26,7 @@ class CreatePCRHandler(
 
         val params = request.node.getParams()
             .onFailure { failure -> return failure }
-            .tryMapping<CreatePCRParams>(transform)
+            .tryMapping<CreatePCRRequest>(transform)
             .mapFailure { failure ->
                 RequestErrors(
                     code = "RQ-1",
@@ -44,7 +44,7 @@ class CreatePCRHandler(
 
         return createPCRService.create(params)
             .map { result ->
-                ApiResponse.Success(version = request.version, id = request.id, result = result)
+                ApiResponse.Success(version = request.version, id = request.id, result = result.convert())
             }
     }
 }

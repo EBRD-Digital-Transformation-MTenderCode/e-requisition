@@ -1,11 +1,11 @@
 package com.procurement.requisition.infrastructure.handler
 
 import com.procurement.requisition.domain.extension.nowDefaultUTC
-import com.procurement.requisition.infrastructure.service.HistoryEntity
-import com.procurement.requisition.infrastructure.service.HistoryRepository
 import com.procurement.requisition.infrastructure.handler.model.ApiRequest
 import com.procurement.requisition.infrastructure.handler.model.ApiResponse
 import com.procurement.requisition.infrastructure.handler.model.errorResponse
+import com.procurement.requisition.infrastructure.service.HistoryEntity
+import com.procurement.requisition.infrastructure.service.HistoryRepository
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
