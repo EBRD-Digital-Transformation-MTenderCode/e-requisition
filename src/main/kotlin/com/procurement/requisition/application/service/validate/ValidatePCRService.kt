@@ -24,6 +24,11 @@ class ValidatePCRService {
         command.tender.lots
             .forEach { lot ->
                 // VR.COM-17.1.2
+                validateLotClassification(
+                    tenderClassification = command.tender.classification,
+                    lotClassification = lot.classification
+                ).doOnError { return ValidationResult.error(it) }
+
                 if (!lot.classification.equalsId(command.tender.classification, 4))
                     return ValidationResult.error(ValidatePCRErrors.Lot.InvalidClassificationId())
 
@@ -41,8 +46,10 @@ class ValidatePCRService {
         command.tender.items
             .forEach { item ->
                 // VR.COM-17.1.5
-                if (!item.classification.equalsId(command.tender.classification, 4))
-                    return ValidationResult.error(ValidatePCRErrors.Item.InvalidClassificationId())
+                validateItemClassification(
+                    tenderClassification = command.tender.classification,
+                    itemClassification = item.classification
+                ).doOnError { return ValidationResult.error(it) }
 
                 // VR.COM-17.1.6
                 if (item.quantity <= BigDecimal.ZERO)
@@ -213,10 +220,34 @@ class ValidatePCRService {
         else
             ValidationResult.ok()
     }
+}
 
-    fun ValidatePCRDataCommand.Classification.equalsId(other: ValidatePCRDataCommand.Classification, n: Int): Boolean {
-        if (scheme != other.scheme) return false
-        if (id.length != other.id.length) return false
-        return id.startsWith(prefix = other.id.substring(0, n), ignoreCase = true)
-    }
+/**
+ * VR.COM-17.1.2
+ */
+fun validateLotClassification(
+    tenderClassification: ValidatePCRDataCommand.Classification,
+    lotClassification: ValidatePCRDataCommand.Classification
+): ValidationResult<ValidatePCRErrors.Lot.InvalidClassificationId> =
+    if (!lotClassification.equalsId(tenderClassification, 4))
+        ValidationResult.error(ValidatePCRErrors.Lot.InvalidClassificationId())
+    else
+        ValidationResult.ok()
+
+/**
+ * VR.COM-17.1.5
+ */
+fun validateItemClassification(
+    tenderClassification: ValidatePCRDataCommand.Classification,
+    itemClassification: ValidatePCRDataCommand.Classification
+): ValidationResult<ValidatePCRErrors.Item.InvalidClassificationId> =
+    if (!itemClassification.equalsId(tenderClassification, 4))
+        ValidationResult.error(ValidatePCRErrors.Item.InvalidClassificationId())
+    else
+        ValidationResult.ok()
+
+fun ValidatePCRDataCommand.Classification.equalsId(other: ValidatePCRDataCommand.Classification, n: Int): Boolean {
+    if (scheme != other.scheme) return false
+    if (id.length != other.id.length) return false
+    return id.startsWith(prefix = other.id.substring(0, n), ignoreCase = true)
 }

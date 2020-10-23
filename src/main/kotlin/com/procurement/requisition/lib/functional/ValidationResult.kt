@@ -17,6 +17,13 @@ sealed class ValidationResult<out E> {
         if (this.isError) block(this.error)
     }
 
+//    inline fun onFailure(f: (Fail<@UnsafeVariance E>) -> Nothing) {
+//        when (this) {
+//            is Ok -> Unit
+//            is Fail -> f(this)
+//        }
+//    }
+
     val asOption: Option<E>
         get() = when (this) {
             is Fail -> Option.pure(error)
@@ -40,7 +47,7 @@ sealed class ValidationResult<out E> {
         override val isError: Boolean = !isOk
     }
 
-    class Fail<out E>(value: E) : ValidationResult<E>() {
+    class Fail<E>(value: E) : ValidationResult<E>() {
         override val error: E = value
         override val isOk: Boolean = false
         override val isError: Boolean = !isOk

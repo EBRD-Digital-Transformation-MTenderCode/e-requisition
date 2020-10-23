@@ -48,31 +48,41 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
              WHERE ${COLUMN_CPID}=?
                AND ${COLUMN_OCID}=?
         """
+
+        private const val GET_PCR_CQL = """
+            SELECT ${COLUMN_JSON_DATA}
+              FROM ${KEYSPACE}.${TABLE_NAME}
+             WHERE ${COLUMN_CPID}=?
+               AND ${COLUMN_OCID}=?
+        """
+
+        private const val UPDATE_PCR_CQL = """
+               UPDATE $KEYSPACE.$TABLE_NAME
+                  SET $COLUMN_STATUS=?,
+                      $COLUMN_STATUS_DETAIL=?,
+                      $COLUMN_JSON_DATA=?
+                WHERE $COLUMN_CPID=?
+                  AND $COLUMN_OCID=?
+               IF EXISTS
+            """
     }
 
-    private val preparedSaveNewPCRCQL = session.prepare(SAVE_NEW_PCR_CQL)
+    private val preparedGetPCRCQL = session.prepare(GET_PCR_CQL)
     private val preparedGetTenderStateCQL = session.prepare(GET_TENDER_STATE_CQL)
+    private val preparedSaveNewPCRCQL = session.prepare(SAVE_NEW_PCR_CQL)
+    private val preparedUpdatePCRCQL = session.prepare(UPDATE_PCR_CQL)
 
-    override fun saveNew(
-        cpid: Cpid,
-        ocid: Ocid,
-        token: Token,
-        owner: String,
-        status: TenderStatus,
-        statusDetails: TenderStatusDetails,
-        data: String
-    ): Result<Boolean, DatabaseIncident> = preparedSaveNewPCRCQL.bind()
-        .apply {
-            setString(COLUMN_CPID, cpid.underlying)
-            setString(COLUMN_OCID, ocid.underlying)
-            setString(COLUMN_TOKEN, token.underlying)
-            setString(COLUMN_OWNER, owner)
-            setString(COLUMN_STATUS, status.key)
-            setString(COLUMN_STATUS_DETAIL, statusDetails.key)
-            setString(COLUMN_JSON_DATA, data)
-        }
-        .tryExecute(session)
-        .map { resultSet -> resultSet.wasApplied() }
+    override fun getPCR(cpid: Cpid, ocid: Ocid): Result<String?, DatabaseIncident> =
+        preparedGetPCRCQL.bind()
+            .apply {
+                setString(COLUMN_CPID, cpid.underlying)
+                setString(COLUMN_OCID, ocid.underlying)
+            }
+            .tryExecute(session)
+            .onFailure { return it }
+            .one()
+            ?.getString(COLUMN_JSON_DATA)
+            .asSuccess()
 
     override fun getTenderState(cpid: Cpid, ocid: Ocid): Result<TenderState?, DatabaseIncident> =
         preparedGetTenderStateCQL.bind()
@@ -99,4 +109,42 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
                 TenderState(status = status, statusDetails = statusDetails)
             }
             .asSuccess()
+
+    override fun saveNew(
+        cpid: Cpid,
+        ocid: Ocid,
+        token: Token,
+        owner: String,
+        status: TenderStatus,
+        statusDetails: TenderStatusDetails,
+        data: String
+    ): Result<Boolean, DatabaseIncident> = preparedSaveNewPCRCQL.bind()
+        .apply {
+            setString(COLUMN_CPID, cpid.underlying)
+            setString(COLUMN_OCID, ocid.underlying)
+            setString(COLUMN_TOKEN, token.underlying)
+            setString(COLUMN_OWNER, owner)
+            setString(COLUMN_STATUS, status.key)
+            setString(COLUMN_STATUS_DETAIL, statusDetails.key)
+            setString(COLUMN_JSON_DATA, data)
+        }
+        .tryExecute(session)
+        .map { resultSet -> resultSet.wasApplied() }
+
+    override fun update(
+        cpid: Cpid,
+        ocid: Ocid,
+        status: TenderStatus,
+        statusDetails: TenderStatusDetails,
+        data: String
+    ): Result<Boolean, DatabaseIncident> = preparedUpdatePCRCQL.bind()
+        .apply {
+            setString(COLUMN_CPID, cpid.underlying)
+            setString(COLUMN_OCID, ocid.underlying)
+            setString(COLUMN_STATUS, status.key)
+            setString(COLUMN_STATUS_DETAIL, statusDetails.key)
+            setString(COLUMN_JSON_DATA, data)
+        }
+        .tryExecute(session)
+        .map { resultSet -> resultSet.wasApplied() }
 }

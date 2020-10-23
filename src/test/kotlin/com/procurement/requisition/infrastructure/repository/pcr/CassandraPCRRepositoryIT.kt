@@ -17,6 +17,9 @@ import com.procurement.requisition.domain.model.tender.TenderStatusDetails
 import com.procurement.requisition.infrastructure.repository.CassandraTestContainer
 import com.procurement.requisition.infrastructure.repository.DatabaseTestConfiguration
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -45,8 +48,11 @@ class CassandraPCRRepositoryIT {
         private val TOKEN = Token.generate()
         private const val OWNER = "owner"
         private val STATUS = TenderStatus.ACTIVE
+        private val STATUS_UPDATED = TenderStatus.PLANNED
         private val STATUS_DETAILS = TenderStatusDetails.TENDERING
+        private val STATUS_DETAILS_UPDATED = TenderStatusDetails.CLARIFICATION
         private const val JSON_DATA: String = """{"tender": {"title" : "Tender-Title"}}"""
+        private const val JSON_UPDATED_DATA: String = """{"tender": {"title" : "Tender-Title-Updated"}}"""
     }
 
     @Autowired
@@ -80,6 +86,47 @@ class CassandraPCRRepositoryIT {
     }
 
     @Test
+    fun getPCR() {
+        repository.saveNew(
+            cpid = CPID,
+            ocid = OCID,
+            token = TOKEN,
+            owner = OWNER,
+            status = STATUS,
+            statusDetails = STATUS_DETAILS,
+            data = JSON_DATA
+        )
+
+        val result = repository.getPCR(cpid = CPID, ocid = OCID)
+        assertTrue(result.isSuccess)
+        result.forEach { data ->
+            assertNotNull(data)
+            assertEquals(JSON_DATA, data)
+        }
+    }
+
+    @Test
+    fun getTenderState() {
+        repository.saveNew(
+            cpid = CPID,
+            ocid = OCID,
+            token = TOKEN,
+            owner = OWNER,
+            status = STATUS,
+            statusDetails = STATUS_DETAILS,
+            data = JSON_DATA
+        )
+
+        val result = repository.getTenderState(cpid = CPID, ocid = OCID)
+        assertTrue(result.isSuccess)
+        result.forEach { state ->
+            assertNotNull(state)
+            assertEquals(STATUS, state!!.status)
+            assertEquals(STATUS_DETAILS, state.statusDetails)
+        }
+    }
+
+    @Test
     fun saveNew() {
 
         val result = repository.saveNew(
@@ -95,6 +142,70 @@ class CassandraPCRRepositoryIT {
         assertTrue(result.isSuccess)
         result.forEach {
             assertTrue(it)
+        }
+    }
+
+    @Test
+    fun updateNonExistsPCR() {
+
+        val result = repository.update(
+            cpid = CPID,
+            ocid = OCID,
+            status = STATUS,
+            statusDetails = STATUS_DETAILS,
+            data = JSON_DATA
+        )
+
+        assertTrue(result.isSuccess)
+        result.forEach {
+            assertFalse(it)
+        }
+    }
+
+    @Test
+    fun update() {
+
+        val resultInsert = repository.saveNew(
+            cpid = CPID,
+            ocid = OCID,
+            token = TOKEN,
+            owner = OWNER,
+            status = STATUS,
+            statusDetails = STATUS_DETAILS,
+            data = JSON_DATA
+        )
+
+        assertTrue(resultInsert.isSuccess)
+        resultInsert.forEach {
+            assertTrue(it)
+        }
+
+        val resultUpdate = repository.update(
+            cpid = CPID,
+            ocid = OCID,
+            status = STATUS_UPDATED,
+            statusDetails = STATUS_DETAILS_UPDATED,
+            data = JSON_UPDATED_DATA
+        )
+
+        assertTrue(resultUpdate.isSuccess)
+        resultUpdate.forEach {
+            assertTrue(it)
+        }
+
+        val pcr = repository.getPCR(cpid = CPID, ocid = OCID)
+        assertTrue(pcr.isSuccess)
+        pcr.forEach { data ->
+            assertNotNull(data)
+            assertEquals(JSON_UPDATED_DATA, data)
+        }
+
+        val tenderStateResult = repository.getTenderState(cpid = CPID, ocid = OCID)
+        assertTrue(tenderStateResult.isSuccess)
+        tenderStateResult.forEach { state ->
+            assertNotNull(state)
+            assertEquals(STATUS_UPDATED, state!!.status)
+            assertEquals(STATUS_DETAILS_UPDATED, state.statusDetails)
         }
     }
 

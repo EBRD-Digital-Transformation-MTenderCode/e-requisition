@@ -11,6 +11,10 @@ import com.procurement.requisition.lib.functional.Result
 
 interface PCRRepository {
 
+    fun getPCR(cpid: Cpid, ocid: Ocid): Result<String?, DatabaseIncident>
+
+    fun getTenderState(cpid: Cpid, ocid: Ocid): Result<TenderState?, DatabaseIncident>
+
     fun saveNew(
         cpid: Cpid,
         ocid: Ocid,
@@ -21,5 +25,11 @@ interface PCRRepository {
         data: String
     ): Result<Boolean, DatabaseIncident>
 
-    fun getTenderState(cpid: Cpid, ocid: Ocid): Result<TenderState?, DatabaseIncident>
+    fun update(
+        cpid: Cpid,
+        ocid: Ocid,
+        status: TenderStatus,
+        statusDetails: TenderStatusDetails,
+        data: String
+    ): Result<Boolean, DatabaseIncident>
 }

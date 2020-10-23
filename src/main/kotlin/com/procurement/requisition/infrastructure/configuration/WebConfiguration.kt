@@ -4,16 +4,19 @@ import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.create.CreatePCRService
 import com.procurement.requisition.application.service.get.tender.state.GetTenderStateService
+import com.procurement.requisition.application.service.relation.CreateRelationService
 import com.procurement.requisition.application.service.validate.ValidatePCRService
 import com.procurement.requisition.infrastructure.handler.Handler
 import com.procurement.requisition.infrastructure.handler.HandlerDescription
 import com.procurement.requisition.infrastructure.handler.Handlers
 import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandType.CREATE_PCR
+import com.procurement.requisition.infrastructure.handler.model.CommandType.CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE
 import com.procurement.requisition.infrastructure.handler.model.CommandType.GET_TENDER_STATE
 import com.procurement.requisition.infrastructure.handler.model.CommandType.VALIDATE_PCR_DATA
 import com.procurement.requisition.infrastructure.handler.pcr.create.CreatePCRHandler
 import com.procurement.requisition.infrastructure.handler.pcr.query.GetTenderStateHandler
+import com.procurement.requisition.infrastructure.handler.pcr.validate.CreateRelationHandler
 import com.procurement.requisition.infrastructure.handler.pcr.validate.ValidatePCRDataHandler
 import com.procurement.requisition.infrastructure.service.HistoryRepository
 import org.springframework.context.annotation.Bean
@@ -30,17 +33,19 @@ import org.springframework.context.annotation.Configuration
 class WebConfiguration(
     val logger: Logger,
     val transform: Transform,
-    val validatePCRService: ValidatePCRService,
+    val historyRepository: HistoryRepository,
     val createPCRService: CreatePCRService,
+    val createRelationService: CreateRelationService,
     val getTenderStateService: GetTenderStateService,
-    val historyRepository: HistoryRepository
+    val validatePCRService: ValidatePCRService,
 ) {
 
     @Bean
     fun handlers() = Handlers(
         HandlerDescription(ApiVersion(2, 0, 0), VALIDATE_PCR_DATA, validatePcrDataHandler()),
         HandlerDescription(ApiVersion(2, 0, 0), CREATE_PCR, createPCRHandler()),
-        HandlerDescription(ApiVersion(2, 0, 0), GET_TENDER_STATE, getTenderStateHandler())
+        HandlerDescription(ApiVersion(2, 0, 0), GET_TENDER_STATE, getTenderStateHandler()),
+        HandlerDescription(ApiVersion(2, 0, 0), CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE, createRelationHandler())
     )
 
     @Bean
@@ -59,4 +64,13 @@ class WebConfiguration(
     @Bean
     fun getTenderStateHandler(): Handler =
         GetTenderStateHandler(logger = logger, transform = transform, getTenderStateService = getTenderStateService)
+
+    @Bean
+    fun createRelationHandler(): Handler =
+        CreateRelationHandler(
+            logger = logger,
+            transform = transform,
+            historyRepository = historyRepository,
+            createRelationService = createRelationService
+        )
 }
