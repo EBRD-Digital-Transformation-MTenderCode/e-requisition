@@ -9,7 +9,9 @@ import com.procurement.requisition.infrastructure.handler.Handler
 import com.procurement.requisition.infrastructure.handler.HandlerDescription
 import com.procurement.requisition.infrastructure.handler.Handlers
 import com.procurement.requisition.infrastructure.handler.model.ApiVersion
-import com.procurement.requisition.infrastructure.handler.model.CommandType
+import com.procurement.requisition.infrastructure.handler.model.CommandType.CREATE_PCR
+import com.procurement.requisition.infrastructure.handler.model.CommandType.GET_TENDER_STATE
+import com.procurement.requisition.infrastructure.handler.model.CommandType.VALIDATE_PCR_DATA
 import com.procurement.requisition.infrastructure.handler.pcr.create.CreatePCRHandler
 import com.procurement.requisition.infrastructure.handler.pcr.query.GetTenderStateHandler
 import com.procurement.requisition.infrastructure.handler.pcr.validate.ValidatePCRDataHandler
@@ -36,11 +38,9 @@ class WebConfiguration(
 
     @Bean
     fun handlers() = Handlers(
-        HandlerDescription(
-            version = ApiVersion(2, 0, 0),
-            action = CommandType.VALIDATE_PCR_DATA,
-            handler = validatePcrDataHandler()
-        )
+        HandlerDescription(ApiVersion(2, 0, 0), VALIDATE_PCR_DATA, validatePcrDataHandler()),
+        HandlerDescription(ApiVersion(2, 0, 0), CREATE_PCR, createPCRHandler()),
+        HandlerDescription(ApiVersion(2, 0, 0), GET_TENDER_STATE, getTenderStateHandler())
     )
 
     @Bean
