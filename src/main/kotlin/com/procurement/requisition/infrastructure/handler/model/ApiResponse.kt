@@ -12,24 +12,29 @@ import java.time.LocalDateTime
 import java.util.*
 
 @JsonPropertyOrder("version", "id", "status", "result")
-sealed class ApiResponse(
-    @field:JsonProperty("version") @param:JsonProperty("version") val version: ApiVersion,
-    @field:JsonProperty("id") @param:JsonProperty("id") val id: CommandId,
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("result") @param:JsonProperty("result") val result: Any?
-) {
+sealed class ApiResponse {
+    abstract val version: ApiVersion
+    abstract val id: CommandId
     abstract val status: ResponseStatus
+    abstract val result: Any?
 
-    class Success(version: ApiVersion, id: CommandId, @JsonInclude(JsonInclude.Include.NON_EMPTY) result: Any? = null) :
-        ApiResponse(version = version, result = result, id = id) {
+    class Success(
+        @field:JsonProperty("version") @param:JsonProperty("version") override val version: ApiVersion,
+        @field:JsonProperty("id") @param:JsonProperty("id") override val id: CommandId,
+
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        @field:JsonProperty("result") @param:JsonProperty("result") override val result: Any? = null
+    ) : ApiResponse() {
 
         @field:JsonProperty("status")
         override val status: ResponseStatus = ResponseStatus.SUCCESS
     }
 
-    class Error(version: ApiVersion, id: CommandId, result: List<Error>) :
-        ApiResponse(version = version, result = result, id = id) {
+    class Error(
+        @field:JsonProperty("version") @param:JsonProperty("version") override val version: ApiVersion,
+        @field:JsonProperty("id") @param:JsonProperty("id") override val id: CommandId,
+        @field:JsonProperty("result") @param:JsonProperty("result") override val result: List<Error>
+    ) : ApiResponse() {
 
         @field:JsonProperty("status")
         override val status: ResponseStatus = ResponseStatus.ERROR
@@ -58,8 +63,11 @@ sealed class ApiResponse(
         }
     }
 
-    class Incident(version: ApiVersion, id: CommandId, result: Incident) :
-        ApiResponse(version = version, result = result, id = id) {
+    class Incident(
+        @field:JsonProperty("version") @param:JsonProperty("version") override val version: ApiVersion,
+        @field:JsonProperty("id") @param:JsonProperty("id") override val id: CommandId,
+        @field:JsonProperty("result") @param:JsonProperty("result") override val result: Incident
+    ) : ApiResponse() {
 
         @field:JsonProperty("status")
         override val status: ResponseStatus = ResponseStatus.INCIDENT
@@ -69,6 +77,8 @@ sealed class ApiResponse(
             @field:JsonProperty("date") @param:JsonProperty("date") val date: LocalDateTime,
             @field:JsonProperty("level") @param:JsonProperty("level") val level: Failure.Incident.Level,
             @field:JsonProperty("service") @param:JsonProperty("service") val service: Service,
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @field:JsonProperty("details") @param:JsonProperty("details") val details: List<Detail>
         ) {
 
@@ -81,6 +91,8 @@ sealed class ApiResponse(
             class Detail(
                 @field:JsonProperty("code") @param:JsonProperty("code") val code: String,
                 @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
                 @field:JsonProperty("metadata") @param:JsonProperty("metadata") val metadata: Any?
             )
         }
