@@ -6,6 +6,7 @@ import com.procurement.requisition.lib.enumerator.EnumElementProvider
 enum class CommandType(override val key: String) : EnumElementProvider.Element, Action {
 
     CREATE_PCR("createPcr"),
+    CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE("createRelationToContractProcessStage"),
     GET_TENDER_STATE("getTenderState"),
     VALIDATE_PCR_DATA("validatePcrData");
 
