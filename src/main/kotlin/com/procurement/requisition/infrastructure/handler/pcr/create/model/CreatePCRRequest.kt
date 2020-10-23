@@ -33,25 +33,25 @@ data class CreatePCRRequest(
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item> = emptyList(),
+        @field:JsonProperty("items") @param:JsonProperty("items") val items: List<Item>?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("targets") @param:JsonProperty("targets") val targets: List<Target> = emptyList(),
+        @field:JsonProperty("targets") @param:JsonProperty("targets") val targets: List<Target>?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criterion> = emptyList(),
+        @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criterion>?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<Conversion> = emptyList(),
+        @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<Conversion>?,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<String> = emptyList(),
+        @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<String>?,
 
         @field:JsonProperty("awardCriteria") @param:JsonProperty("awardCriteria") val awardCriteria: String,
         @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: String,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document> = emptyList(),
+        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>?,
 
         @field:JsonProperty("value") @param:JsonProperty("value") val value: Value
     ) {
@@ -188,7 +188,7 @@ data class CreatePCRRequest(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
-            @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String> = emptyList()
+            @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
         )
 
         data class Value(

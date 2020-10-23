@@ -260,12 +260,17 @@ fun CreatePCRRequest.Tender.Criterion.convert(path: String): Result<CreatePCRCom
     ).asSuccess()
 }
 
-fun CreatePCRRequest.Tender.Criterion.RequirementGroup.convert(path: String): Result<CreatePCRCommand.Tender.Criterion.RequirementGroup, Failure> =
-    CreatePCRCommand.Tender.Criterion.RequirementGroup(
+fun CreatePCRRequest.Tender.Criterion.RequirementGroup.convert(path: String): Result<CreatePCRCommand.Tender.Criterion.RequirementGroup, Failure> {
+    val requirements = requirements
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray(path = "$path/requirements")) }
+        .toList()
+
+    return CreatePCRCommand.Tender.Criterion.RequirementGroup(
         id = id,
         description = description,
-        requirements = requirements.toList(),
+        requirements = requirements,
     ).asSuccess()
+}
 
 /**
  * Conversion
@@ -309,6 +314,11 @@ fun CreatePCRRequest.Tender.Document.convert(path: String): Result<CreatePCRComm
 
     val documentType = documentType.asEnum(target = DocumentType, path = "$path/documentType")
         .onFailure { return it }
+
+    val relatedLots = relatedLots
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray(path = "$path/relatedLots")) }
+        ?.toList()
+        .orEmpty()
 
     return CreatePCRCommand.Tender.Document(
         id = id,
