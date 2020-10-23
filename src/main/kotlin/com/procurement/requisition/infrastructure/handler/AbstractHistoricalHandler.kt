@@ -17,16 +17,24 @@ abstract class AbstractHistoricalHandler : AbstractHandler() {
 
         val history = historyRepository.getHistory(request.id)
             .onFailure { failure ->
-                return errorResponse(failure = failure.reason, version = request.version, id = request.id)
-                    .serialization(errorMessage = "Error of serialization of failure of save history.")
+                return errorResponse(
+                    logger = logger,
+                    failure = failure.reason,
+                    version = request.version,
+                    id = request.id
+                ).serialization(errorMessage = "Error of serialization of failure of save history.")
             }
         if (history != null) return history.data
 
         val result = when (val result = execute(request)) {
             is Result.Success<*> -> result.value
-            is Result.Failure -> errorResponse(failure = result.reason, version = request.version, id = request.id)
-        }
-            .serialization(errorMessage = "Error of serialization ApiResponse.")
+            is Result.Failure -> errorResponse(
+                logger = logger,
+                failure = result.reason,
+                version = request.version,
+                id = request.id
+            )
+        }.serialization(errorMessage = "Error of serialization ApiResponse.")
 
         val newHistory = HistoryEntity(
             commandId = request.id,
@@ -36,8 +44,12 @@ abstract class AbstractHistoricalHandler : AbstractHandler() {
         )
         historyRepository.saveHistory(newHistory)
             .onFailure { failure ->
-                return errorResponse(failure = failure.reason, version = request.version, id = request.id)
-                    .serialization(errorMessage = "Error of serialization of failure of save history.")
+                return errorResponse(
+                    logger = logger,
+                    failure = failure.reason,
+                    version = request.version,
+                    id = request.id
+                ).serialization(errorMessage = "Error of serialization of failure of save history.")
             }
 
         return result

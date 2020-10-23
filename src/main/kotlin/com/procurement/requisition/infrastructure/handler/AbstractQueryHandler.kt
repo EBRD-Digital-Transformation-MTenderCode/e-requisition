@@ -10,7 +10,8 @@ abstract class AbstractQueryHandler : AbstractHandler() {
 
     override fun handle(request: ApiRequest): String = when (val result = execute(request)) {
         is Result.Success<*> -> result.value
-        is Result.Failure -> errorResponse(failure = result.reason, version = request.version, id = request.id)
+        is Result.Failure ->
+            errorResponse(logger = logger, failure = result.reason, version = request.version, id = request.id)
     }
         .serialization(errorMessage = "Error of serialization ApiResponse.")
 

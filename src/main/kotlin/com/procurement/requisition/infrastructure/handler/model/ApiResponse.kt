@@ -3,6 +3,7 @@ package com.procurement.requisition.infrastructure.handler.model
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.domain.failure.error.RequestErrors
 import com.procurement.requisition.infrastructure.configuration.GlobalProperties
 import com.procurement.requisition.lib.fail.Failure
@@ -86,12 +87,14 @@ sealed class ApiResponse(
     }
 }
 
-fun errorResponse(failure: Failure, id: CommandId, version: ApiVersion): ApiResponse =
-    when (failure) {
+fun errorResponse(logger: Logger, failure: Failure, id: CommandId, version: ApiVersion): ApiResponse {
+    failure.logging(logger)
+    return when (failure) {
         is RequestErrors -> generateRequestErrorResponse(id = id, version = version, error = failure)
         is Failure.Error -> generateErrorResponse(id = id, version = version, error = failure)
         is Failure.Incident -> generateIncidentResponse(id = id, version = version, incident = failure)
     }
+}
 
 fun generateErrorResponse(id: CommandId, version: ApiVersion, error: Failure.Error) =
     ApiResponse.Error(
