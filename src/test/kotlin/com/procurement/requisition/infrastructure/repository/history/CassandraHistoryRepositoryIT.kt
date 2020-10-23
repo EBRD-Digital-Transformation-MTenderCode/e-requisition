@@ -8,13 +8,13 @@ import com.datastax.driver.core.Session
 import com.nhaarman.mockito_kotlin.spy
 import com.procurement.requisition.domain.extension.parseLocalDateTime
 import com.procurement.requisition.infrastructure.handler.Action
-import com.procurement.requisition.infrastructure.handler.model.CommandType
 import com.procurement.requisition.infrastructure.handler.converter.asString
-import com.procurement.requisition.infrastructure.service.HistoryEntity
-import com.procurement.requisition.infrastructure.service.HistoryRepository
 import com.procurement.requisition.infrastructure.handler.model.CommandId
+import com.procurement.requisition.infrastructure.handler.model.CommandType
 import com.procurement.requisition.infrastructure.repository.CassandraTestContainer
 import com.procurement.requisition.infrastructure.repository.DatabaseTestConfiguration
+import com.procurement.requisition.infrastructure.service.HistoryEntity
+import com.procurement.requisition.infrastructure.service.HistoryRepository
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull

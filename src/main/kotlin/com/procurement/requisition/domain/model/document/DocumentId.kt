@@ -1,7 +1,6 @@
 package com.procurement.requisition.domain.model.document
 
 import com.procurement.requisition.domain.model.UUID_PATTERN
-import com.procurement.requisition.domain.model.isUUID
 import java.io.Serializable
 
 class DocumentId private constructor(val underlying: String) : Serializable {
