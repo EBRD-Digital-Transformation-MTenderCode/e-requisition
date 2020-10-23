@@ -7,6 +7,7 @@ import com.procurement.requisition.infrastructure.handler.Handlers
 import com.procurement.requisition.infrastructure.handler.model.generateRequestErrorResponse
 import com.procurement.requisition.infrastructure.handler.parseRequestBody
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -21,7 +22,7 @@ class Command2Controller(
     private val handlers: Handlers,
 ) {
 
-    @PostMapping
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_UTF8_VALUE])
     fun command(@RequestBody body: String): ResponseEntity<Any> {
         logger.info("RECEIVED COMMAND: '${body}'.")
 
