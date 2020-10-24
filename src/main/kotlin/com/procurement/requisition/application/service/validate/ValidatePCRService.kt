@@ -171,9 +171,9 @@ class ValidatePCRService {
 
                             // VR.COM-17.1.21
                             if (requirement.value is RangeValue.AsInteger && requirement.value.minValue >= requirement.value.maxValue)
-                                return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.UnknownAttributeRange())
+                                return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.InvalidRange())
                             if (requirement.value is RangeValue.AsNumber && requirement.value.minValue >= requirement.value.maxValue)
-                                return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.UnknownAttributeRange())
+                                return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.InvalidRange())
                         }
                 }
             }
