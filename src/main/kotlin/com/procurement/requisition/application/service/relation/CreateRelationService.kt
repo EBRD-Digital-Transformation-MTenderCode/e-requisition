@@ -83,8 +83,9 @@ class CreateRelationService(
 
 fun relationship(operationType: OperationType): Result<Relationship, Failure> = when (operationType) {
     OperationType.CREATE_PCR -> Relationship.X_PRE_AWARD_CATALOG_REQUEST.asSuccess()
-    OperationType.TENDER_PERIOD_END_IN_PCR -> TODO()
+    OperationType.SUBMIT_BID_IN_PCR -> TODO()
     OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR -> TODO()
+    OperationType.TENDER_PERIOD_END_IN_PCR -> TODO()
 }
 
 fun uri(prefix: String, cpid: Cpid, relatedOcid: Ocid) = "$prefix/tenders/${cpid.underlying}/${relatedOcid.underlying}"
