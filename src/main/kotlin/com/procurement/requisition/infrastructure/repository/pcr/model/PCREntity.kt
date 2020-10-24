@@ -18,7 +18,7 @@ data class PCREntity(
     @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
     @field:JsonProperty("cpid") @param:JsonProperty("cpid") val cpid: String,
     @field:JsonProperty("token") @param:JsonProperty("token") val token: String,
-    @field:JsonProperty("owner") @param:JsonProperty("token") val owner: String,
+    @field:JsonProperty("owner") @param:JsonProperty("owner") val owner: String,
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: TenderEntity,
     @field:JsonProperty("relatedProcesses") @param:JsonProperty("relatedProcesses") val relatedProcesses: List<RelatedProcessEntity>
 )
