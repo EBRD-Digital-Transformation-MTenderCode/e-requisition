@@ -86,7 +86,7 @@ class ValidatePCRService {
 
                 // VR.COM-17.1.10
                 if (target.observations.isNotUniqueIds())
-                    return Validated.error(ValidatePCRErrors.Target.Observation.DuplicateId())
+                    return Validated.error(ValidatePCRErrors.Target.Observation.DuplicateId(path = "#/tender/targets[id=${target.id}]/observations"))
 
 
                 target.observations
@@ -94,14 +94,20 @@ class ValidatePCRService {
                         // VR.COM-17.1.11
                         observation.period
                             ?.apply {
-                                if(startDate.isEqual(endDate) || startDate.isAfter(endDate))
-                                    return Validated.error(ValidatePCRErrors.Target.Observation.InvalidPeriod())
+                                if (startDate.isEqual(endDate) || startDate.isAfter(endDate))
+                                    return Validated.error(
+                                        ValidatePCRErrors.Target.Observation.InvalidPeriod(
+                                            path = "#/tender/targets[id=${target.id}]/observations[id=${observation.id}]",
+                                            startDate = startDate,
+                                            endDate = endDate
+                                        )
+                                    )
                             }
                     }
             }
 
         if (command.tender.criteria.isNotUniqueIds())
-            return Validated.error(ValidatePCRErrors.Criterion.DuplicateId())
+            return Validated.error(ValidatePCRErrors.Criterion.DuplicateId(path = "#/tender/criteria"))
 
         command.tender.criteria
             .forEach { criterion ->
@@ -113,43 +119,68 @@ class ValidatePCRService {
                     // VR.COM-17.1.14
                     when (criterion.relatesTo) {
                         CriterionRelatesTo.ITEM -> if (criterion.relatedItem !in itemsById)
-                            return Validated.error(ValidatePCRErrors.Criterion.InvalidRelatedItem())
+                            return Validated.error(
+                                ValidatePCRErrors.Criterion.InvalidRelatedItem(
+                                    path = "#/tender/criteria[id=${criterion.id}]/relatesTo",
+                                    relatedItem = criterion.relatedItem
+                                )
+                            )
 
                         CriterionRelatesTo.LOT -> if (criterion.relatedItem !in lotIds)
-                            return Validated.error(ValidatePCRErrors.Criterion.InvalidRelatedItem())
+                            return Validated.error(
+                                ValidatePCRErrors.Criterion.InvalidRelatedItem(
+                                    path = "#/tender/criteria[id=${criterion.id}]/relatesTo",
+                                    relatedItem = criterion.relatedItem
+                                )
+                            )
                     }
                 }
 
                 // VR.COM-17.1.16
                 if (criterion.requirementGroups.isNotUniqueIds())
-                    return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId())
+                    return Validated.error(
+                        ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId(path = "#/tender/requirementGroups")
+                    )
 
                 criterion.requirementGroups.forEach { requirementGroup ->
                     // VR.COM-17.1.17
                     if (requirementGroup.requirements.isNotUniqueIds())
-                        return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId())
+                        return Validated.error(
+                            ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId(
+                                path = "#/tender/requirementGroups[id=${requirementGroup.id}]/requirements"
+                            )
+                        )
 
-                    requirementGroup.requirements.forEach { requirement ->
-                        // VR.COM-17.1.18
-                        if (requirement.period == null || requirement.period.endDate.isAfter(requirement.period.startDate))
-                            Unit
-                        else
-                            return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.InvalidPeriod())
+                    requirementGroup.requirements
+                        .forEach { requirement ->
+                            // VR.COM-17.1.18
+                            requirement.period
+                                ?.apply {
+                                    if (startDate.isEqual(endDate) || startDate.isAfter(endDate))
+                                        return Validated.error(
+                                            ValidatePCRErrors.Criterion.RequirementGroup.Requirement.InvalidPeriod(
+                                                path = "#/tender/requirementGroups[id=${requirementGroup.id}]/requirements[id=${requirement.id}]",
+                                                startDate = startDate,
+                                                endDate = endDate
+                                            )
+                                        )
 
-                        // VR.COM-17.1.19 - VR.COM-17.1.20 type-level validation
+                                }
 
-                        // VR.COM-17.1.21
-                        if (requirement.value is RangeValue.AsInteger && requirement.value.minValue > requirement.value.maxValue)
-                            return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.UnknownAttributeRange())
-                        if (requirement.value is RangeValue.AsNumber && requirement.value.minValue > requirement.value.maxValue)
-                            return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.UnknownAttributeRange())
-                    }
+                            // VR.COM-17.1.19 - VR.COM-17.1.20 type-level validation
+
+                            // VR.COM-17.1.21
+                            if (requirement.value is RangeValue.AsInteger && requirement.value.minValue > requirement.value.maxValue)
+                                return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.UnknownAttributeRange())
+                            if (requirement.value is RangeValue.AsNumber && requirement.value.minValue > requirement.value.maxValue)
+                                return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.UnknownAttributeRange())
+                        }
                 }
             }
 
         // VR.COM-17.1.22
         if (command.tender.conversions.isNotUniqueIds())
-            return Validated.error(ValidatePCRErrors.Conversion.DuplicateId())
+            return Validated.error(ValidatePCRErrors.Conversion.DuplicateId(path = "#/tender/conversions"))
 
         val requirementIds = command.tender.criteria.asSequence()
             .flatMap { criterion -> criterion.requirementGroups.asSequence() }
@@ -161,17 +192,29 @@ class ValidatePCRService {
             .forEach { conversion ->
                 // VR.COM-17.1.23
                 if (conversion.relatedItem !in requirementIds)
-                    return Validated.error(ValidatePCRErrors.Conversion.InvalidRelatedItem())
+                    return Validated.error(
+                        ValidatePCRErrors.Conversion.InvalidRelatedItem(
+                            path = "#/tender/conversions[id={${conversion.id}}]",
+                            relatedItem = conversion.relatedItem
+                        )
+                    )
 
                 // VR.COM-17.1.24
                 if (conversion.coefficients.isNotUniqueIds())
-                    return Validated.error(ValidatePCRErrors.Conversion.Coefficient.DuplicateId())
+                    return Validated.error(
+                        ValidatePCRErrors.Conversion.Coefficient.DuplicateId(
+                            path = "#/tender/conversions[id={${conversion.id}}]/coefficients"
+                        )
+                    )
 
                 val requirement = requirementIds.getValue(conversion.relatedItem)
                 conversion.coefficients
                     .forEach { coefficient ->
                         // VR.COM-17.1.25
-                        coefficient.value.validateDataType(requirement.dataType)
+                        coefficient.value.validateDataType(
+                            path = "#/tender/conversions[id={${conversion.id}}]/coefficients[id=${coefficient.id}]",
+                            requirement.dataType
+                        )
                     }
             }
 
@@ -183,13 +226,18 @@ class ValidatePCRService {
                         if (observation.relatedRequirementId == null || observation.relatedRequirementId in requirementIds)
                             Unit
                         else
-                            return Validated.error(ValidatePCRErrors.Target.Observation.InvalidRelatedRequirementId())
+                            return Validated.error(
+                                ValidatePCRErrors.Target.Observation.InvalidRelatedRequirementId(
+                                    path = "#/tender/targets[id={${target.id}}]/observations[id=${observation.id}]",
+                                    relatedRequirementId = observation.relatedRequirementId
+                                )
+                            )
                     }
             }
 
         // VR.COM-17.1.26
         if (command.tender.documents.isNotUniqueIds())
-            return Validated.error(ValidatePCRErrors.Document.DuplicateId())
+            return Validated.error(ValidatePCRErrors.Document.DuplicateId(path = "#/tender/documents"))
 
         command.tender.documents
             .forEach { document ->
@@ -197,7 +245,12 @@ class ValidatePCRService {
                 if (document.relatedLots.isNotEmpty())
                     document.relatedLots.forEach { relatedLot ->
                         if (relatedLot !in lotIds)
-                            return Validated.error(ValidatePCRErrors.Document.InvalidRelatedLot())
+                            return Validated.error(
+                                ValidatePCRErrors.Document.InvalidRelatedLot(
+                                    path = "#/tender/documents[id=${document.id}]",
+                                    relatedLot = relatedLot
+                                )
+                            )
                     }
             }
 
@@ -208,7 +261,7 @@ class ValidatePCRService {
         return Validated.ok()
     }
 
-    fun CoefficientValue.validateDataType(requirementDataType: RequirementDataType):
+    fun CoefficientValue.validateDataType(path: String, requirementDataType: RequirementDataType):
         Validated<ValidatePCRErrors.Conversion.Coefficient.InvalidDataType> {
         val isInvalidType = when (this) {
             is CoefficientValue.AsBoolean -> requirementDataType != RequirementDataType.BOOLEAN
@@ -217,7 +270,7 @@ class ValidatePCRService {
             is CoefficientValue.AsInteger -> requirementDataType != RequirementDataType.INTEGER
         }
         return if (isInvalidType)
-            Validated.error(ValidatePCRErrors.Conversion.Coefficient.InvalidDataType())
+            Validated.error(ValidatePCRErrors.Conversion.Coefficient.InvalidDataType(path = path))
         else
             Validated.ok()
     }
