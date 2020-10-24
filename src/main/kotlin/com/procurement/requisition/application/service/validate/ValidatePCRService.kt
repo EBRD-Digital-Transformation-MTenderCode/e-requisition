@@ -8,7 +8,7 @@ import com.procurement.requisition.domain.model.requirement.RequirementDataType
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
-import com.procurement.requisition.lib.functional.ValidationResult
+import com.procurement.requisition.lib.functional.Validated
 import com.procurement.requisition.lib.toSet
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -16,10 +16,10 @@ import java.math.BigDecimal
 @Service
 class ValidatePCRService {
 
-    fun validate(command: ValidatePCRDataCommand): ValidationResult<ValidatePCRErrors> {
+    fun validate(command: ValidatePCRDataCommand): Validated<ValidatePCRErrors> {
         // VR.COM-17.1.1
         if (command.tender.lots.isNotUniqueIds())
-            return ValidationResult.error(ValidatePCRErrors.Lot.DuplicateId())
+            return Validated.error(ValidatePCRErrors.Lot.DuplicateId())
 
         command.tender.lots
             .forEach { lot ->
@@ -27,19 +27,19 @@ class ValidatePCRService {
                 validateLotClassification(
                     tenderClassification = command.tender.classification,
                     lotClassification = lot.classification
-                ).doOnError { return ValidationResult.error(it) }
+                ).onFailure { return it }
 
                 if (!lot.classification.equalsId(command.tender.classification, 4))
-                    return ValidationResult.error(ValidatePCRErrors.Lot.InvalidClassificationId())
+                    return Validated.error(ValidatePCRErrors.Lot.InvalidClassificationId())
 
                 // VR.COM-17.1.3
                 if (!lot.variants.hasVariants && lot.variants.variantsDetails != null)
-                    return ValidationResult.error(ValidatePCRErrors.Lot.VariantsDetails())
+                    return Validated.error(ValidatePCRErrors.Lot.VariantsDetails())
             }
 
         // VR.COM-17.1.4
         if (command.tender.items.isNotUniqueIds())
-            return ValidationResult.error(ValidatePCRErrors.Item.DuplicateId())
+            return Validated.error(ValidatePCRErrors.Item.DuplicateId())
 
         val lotIds = command.tender.lots.toSet { it.id }
 
@@ -49,44 +49,44 @@ class ValidatePCRService {
                 validateItemClassification(
                     tenderClassification = command.tender.classification,
                     itemClassification = item.classification
-                ).doOnError { return ValidationResult.error(it) }
+                ).onFailure { return it }
 
                 // VR.COM-17.1.6
                 if (item.quantity <= BigDecimal.ZERO)
-                    return ValidationResult.error(ValidatePCRErrors.Item.InvalidQuantity())
+                    return Validated.error(ValidatePCRErrors.Item.InvalidQuantity())
 
                 // VR.COM-17.1.7
                 if (item.relatedLot !in lotIds)
-                    return ValidationResult.error(ValidatePCRErrors.Item.InvalidRelatedLot())
+                    return Validated.error(ValidatePCRErrors.Item.InvalidRelatedLot())
             }
 
         // VR.COM-17.1.29
         val itemsByRelatedLot = command.tender.items.toSet { it.relatedLot }
         command.tender.lots.forEach { lot ->
             if (lot.id !in itemsByRelatedLot)
-                return ValidationResult.error(ValidatePCRErrors.Lot.MissingItem())
+                return Validated.error(ValidatePCRErrors.Lot.MissingItem())
         }
 
         val itemsById = command.tender.items.associateBy { it.id }
 
         // VR.COM-17.1.8
         if (command.tender.targets.isNotUniqueIds())
-            return ValidationResult.error(ValidatePCRErrors.Target.DuplicateId())
+            return Validated.error(ValidatePCRErrors.Target.DuplicateId())
         command.tender.targets
             .forEach { target ->
 
                 // VR.COM-17.1.9
                 when (target.relatesTo) {
                     TargetRelatesTo.ITEM -> if (target.relatedItem !in itemsById)
-                        return ValidationResult.error(ValidatePCRErrors.Target.InvalidRelatedItem())
+                        return Validated.error(ValidatePCRErrors.Target.InvalidRelatedItem())
 
                     TargetRelatesTo.LOT -> if (target.relatedItem !in lotIds)
-                        return ValidationResult.error(ValidatePCRErrors.Target.InvalidRelatedItem())
+                        return Validated.error(ValidatePCRErrors.Target.InvalidRelatedItem())
                 }
 
                 // VR.COM-17.1.10
                 if (target.observations.isNotUniqueIds())
-                    return ValidationResult.error(ValidatePCRErrors.Target.Observation.DuplicateId())
+                    return Validated.error(ValidatePCRErrors.Target.Observation.DuplicateId())
 
 
                 target.observations
@@ -95,60 +95,60 @@ class ValidatePCRService {
                         if (observation.period == null || observation.period.endDate.isAfter(observation.period.startDate))
                             Unit
                         else
-                            return ValidationResult.error(ValidatePCRErrors.Target.Observation.InvalidPeriod())
+                            return Validated.error(ValidatePCRErrors.Target.Observation.InvalidPeriod())
                     }
             }
 
         if (command.tender.criteria.isNotUniqueIds())
-            return ValidationResult.error(ValidatePCRErrors.Criterion.DuplicateId())
+            return Validated.error(ValidatePCRErrors.Criterion.DuplicateId())
 
         command.tender.criteria
             .forEach { criterion ->
                 // VR.COM-17.1.15
                 if (criterion.relatesTo == null && criterion.relatedItem != null)
-                    return ValidationResult.error(ValidatePCRErrors.Criterion.UnknownAttributeRelatedItem())
+                    return Validated.error(ValidatePCRErrors.Criterion.UnknownAttributeRelatedItem())
 
                 if (criterion.relatesTo != null && criterion.relatedItem != null) {
                     // VR.COM-17.1.14
                     when (criterion.relatesTo) {
                         CriterionRelatesTo.ITEM -> if (criterion.relatedItem !in itemsById)
-                            return ValidationResult.error(ValidatePCRErrors.Criterion.InvalidRelatedItem())
+                            return Validated.error(ValidatePCRErrors.Criterion.InvalidRelatedItem())
 
                         CriterionRelatesTo.LOT -> if (criterion.relatedItem !in lotIds)
-                            return ValidationResult.error(ValidatePCRErrors.Criterion.InvalidRelatedItem())
+                            return Validated.error(ValidatePCRErrors.Criterion.InvalidRelatedItem())
                     }
                 }
 
                 // VR.COM-17.1.16
                 if (criterion.requirementGroups.isNotUniqueIds())
-                    return ValidationResult.error(ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId())
+                    return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId())
 
                 criterion.requirementGroups.forEach { requirementGroup ->
                     // VR.COM-17.1.17
                     if (requirementGroup.requirements.isNotUniqueIds())
-                        return ValidationResult.error(ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId())
+                        return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId())
 
                     requirementGroup.requirements.forEach { requirement ->
                         // VR.COM-17.1.18
                         if (requirement.period == null || requirement.period.endDate.isAfter(requirement.period.startDate))
                             Unit
                         else
-                            return ValidationResult.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.InvalidPeriod())
+                            return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.InvalidPeriod())
 
                         // VR.COM-17.1.19 - VR.COM-17.1.20 type-level validation
 
                         // VR.COM-17.1.21
                         if (requirement.value is RangeValue.AsInteger && requirement.value.minValue > requirement.value.maxValue)
-                            return ValidationResult.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.UnknownAttributeRange())
+                            return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.UnknownAttributeRange())
                         if (requirement.value is RangeValue.AsNumber && requirement.value.minValue > requirement.value.maxValue)
-                            return ValidationResult.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.UnknownAttributeRange())
+                            return Validated.error(ValidatePCRErrors.Criterion.RequirementGroup.Requirement.UnknownAttributeRange())
                     }
                 }
             }
 
         // VR.COM-17.1.22
         if (command.tender.conversions.isNotUniqueIds())
-            return ValidationResult.error(ValidatePCRErrors.Conversion.DuplicateId())
+            return Validated.error(ValidatePCRErrors.Conversion.DuplicateId())
 
         val requirementIds = command.tender.criteria.asSequence()
             .flatMap { criterion -> criterion.requirementGroups.asSequence() }
@@ -160,11 +160,11 @@ class ValidatePCRService {
             .forEach { conversion ->
                 // VR.COM-17.1.23
                 if (conversion.relatedItem !in requirementIds)
-                    return ValidationResult.error(ValidatePCRErrors.Conversion.InvalidRelatedItem())
+                    return Validated.error(ValidatePCRErrors.Conversion.InvalidRelatedItem())
 
                 // VR.COM-17.1.24
                 if (conversion.coefficients.isNotUniqueIds())
-                    return ValidationResult.error(ValidatePCRErrors.Conversion.Coefficient.DuplicateId())
+                    return Validated.error(ValidatePCRErrors.Conversion.Coefficient.DuplicateId())
 
                 val requirement = requirementIds.getValue(conversion.relatedItem)
                 conversion.coefficients
@@ -182,13 +182,13 @@ class ValidatePCRService {
                         if (observation.relatedRequirementId == null || observation.relatedRequirementId in requirementIds)
                             Unit
                         else
-                            return ValidationResult.error(ValidatePCRErrors.Target.Observation.InvalidRelatedRequirementId())
+                            return Validated.error(ValidatePCRErrors.Target.Observation.InvalidRelatedRequirementId())
                     }
             }
 
         // VR.COM-17.1.26
         if (command.tender.documents.isNotUniqueIds())
-            return ValidationResult.error(ValidatePCRErrors.Document.DuplicateId())
+            return Validated.error(ValidatePCRErrors.Document.DuplicateId())
 
         command.tender.documents
             .forEach { document ->
@@ -196,19 +196,19 @@ class ValidatePCRService {
                 if (document.relatedLots.isNotEmpty())
                     document.relatedLots.forEach { relatedLot ->
                         if (relatedLot !in lotIds)
-                            return ValidationResult.error(ValidatePCRErrors.Document.InvalidRelatedLot())
+                            return Validated.error(ValidatePCRErrors.Document.InvalidRelatedLot())
                     }
             }
 
         // VR.COM-17.1.28
         if (command.tender.procurementMethodModalities.size > 1)
-            return ValidationResult.error(ValidatePCRErrors.ProcurementMethodModality.MultiValue())
+            return Validated.error(ValidatePCRErrors.ProcurementMethodModality.MultiValue())
 
-        return ValidationResult.ok()
+        return Validated.ok()
     }
 
     fun CoefficientValue.validateDataType(requirementDataType: RequirementDataType):
-        ValidationResult<ValidatePCRErrors.Conversion.Coefficient.InvalidDataType> {
+        Validated<ValidatePCRErrors.Conversion.Coefficient.InvalidDataType> {
         val isInvalidType = when (this) {
             is CoefficientValue.AsBoolean -> requirementDataType != RequirementDataType.BOOLEAN
             is CoefficientValue.AsString -> requirementDataType != RequirementDataType.STRING
@@ -216,9 +216,9 @@ class ValidatePCRService {
             is CoefficientValue.AsInteger -> requirementDataType != RequirementDataType.INTEGER
         }
         return if (isInvalidType)
-            ValidationResult.error(ValidatePCRErrors.Conversion.Coefficient.InvalidDataType())
+            Validated.error(ValidatePCRErrors.Conversion.Coefficient.InvalidDataType())
         else
-            ValidationResult.ok()
+            Validated.ok()
     }
 }
 
@@ -228,11 +228,11 @@ class ValidatePCRService {
 fun validateLotClassification(
     tenderClassification: ValidatePCRDataCommand.Classification,
     lotClassification: ValidatePCRDataCommand.Classification
-): ValidationResult<ValidatePCRErrors.Lot.InvalidClassificationId> =
+): Validated<ValidatePCRErrors.Lot.InvalidClassificationId> =
     if (!lotClassification.equalsId(tenderClassification, 4))
-        ValidationResult.error(ValidatePCRErrors.Lot.InvalidClassificationId())
+        Validated.error(ValidatePCRErrors.Lot.InvalidClassificationId())
     else
-        ValidationResult.ok()
+        Validated.ok()
 
 /**
  * VR.COM-17.1.5
@@ -240,11 +240,11 @@ fun validateLotClassification(
 fun validateItemClassification(
     tenderClassification: ValidatePCRDataCommand.Classification,
     itemClassification: ValidatePCRDataCommand.Classification
-): ValidationResult<ValidatePCRErrors.Item.InvalidClassificationId> =
+): Validated<ValidatePCRErrors.Item.InvalidClassificationId> =
     if (!itemClassification.equalsId(tenderClassification, 4))
-        ValidationResult.error(ValidatePCRErrors.Item.InvalidClassificationId())
+        Validated.error(ValidatePCRErrors.Item.InvalidClassificationId())
     else
-        ValidationResult.ok()
+        Validated.ok()
 
 fun ValidatePCRDataCommand.Classification.equalsId(other: ValidatePCRDataCommand.Classification, n: Int): Boolean {
     if (scheme != other.scheme) return false

@@ -13,7 +13,7 @@ import com.procurement.requisition.infrastructure.handler.pcr.validate.model.Val
 import com.procurement.requisition.infrastructure.handler.pcr.validate.model.convert
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
-import com.procurement.requisition.lib.functional.ValidationResult
+import com.procurement.requisition.lib.functional.Validated
 import com.procurement.requisition.lib.functional.asFailure
 import com.procurement.requisition.lib.functional.asSuccess
 
@@ -44,11 +44,11 @@ class ValidatePCRDataHandler(
             .onFailure { failure -> return failure }
 
         return when (val result = validatePCRService.validate(params)) {
-            is ValidationResult.Ok ->
+            is Validated.Success ->
                 ApiResponse.Success(version = request.version, id = request.id, result = null)
                     .asSuccess()
 
-            is ValidationResult.Fail -> result.error.asFailure()
+            is Validated.Error -> result.reason.asFailure()
         }
     }
 }
