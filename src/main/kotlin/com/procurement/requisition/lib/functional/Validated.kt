@@ -1,6 +1,6 @@
 package com.procurement.requisition.lib.functional
 
-fun <E> E.asValidationFailure(): Validated<E> = Validated.error(this)
+fun <E> E.asValidatedError(): Validated<E> = Validated.error(this)
 
 sealed class Validated<out E> {
 
