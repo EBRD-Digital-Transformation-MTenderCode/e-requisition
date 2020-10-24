@@ -18,6 +18,7 @@ class GetTenderStateService(val pcrRepository: PCRRepository, val transform: Tra
         val tenderState = pcrRepository.getTenderState(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it }
 
-        return tenderState?.asSuccess() ?: GetTenderStateErrors.TenderNotFound.asFailure()
+        return tenderState?.asSuccess()
+            ?: GetTenderStateErrors.TenderNotFound(cpid = command.cpid, ocid = command.ocid).asFailure()
     }
 }
