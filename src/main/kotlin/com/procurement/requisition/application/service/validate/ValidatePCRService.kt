@@ -92,10 +92,11 @@ class ValidatePCRService {
                 target.observations
                     .forEach { observation ->
                         // VR.COM-17.1.11
-                        if (observation.period == null || observation.period.endDate.isAfter(observation.period.startDate))
-                            Unit
-                        else
-                            return Validated.error(ValidatePCRErrors.Target.Observation.InvalidPeriod())
+                        observation.period
+                            ?.apply {
+                                if(startDate.isEqual(endDate) || startDate.isAfter(endDate))
+                                    return Validated.error(ValidatePCRErrors.Target.Observation.InvalidPeriod())
+                            }
                     }
             }
 
