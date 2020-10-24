@@ -7,6 +7,9 @@ import com.procurement.requisition.domain.model.requirement.RangeValue
 import com.procurement.requisition.domain.model.requirement.RequirementDataType
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality.REQUIRES_ELECTRONIC_CATALOGUE
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
+import com.procurement.requisition.domain.model.tender.conversion.coefficient.Coefficient
+import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientId
+import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientRate
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.lib.functional.Validated
@@ -217,7 +220,7 @@ class ValidatePCRService {
                         coefficient.value.validateDataType(
                             path = "#/tender/conversions[id={${conversion.id}}]/coefficients[id=${coefficient.id}]",
                             requirement.dataType
-                        )
+                        ).onFailure { return it }
                     }
             }
 
