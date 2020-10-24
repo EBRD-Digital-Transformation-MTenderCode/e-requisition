@@ -225,7 +225,7 @@ fun ValidatePCRDataRequest.Tender.Target.Observation.convert(path: String):
 fun ValidatePCRDataRequest.Tender.Target.Observation.Period.convert(path: String):
     Result<ValidatePCRDataCommand.Tender.Target.Observation.Period, Failure> {
 
-    val startDate = endDate.asLocalDateTime(path = "$path/startDate")
+    val startDate = startDate.asLocalDateTime(path = "$path/startDate")
         .onFailure { return it }
 
     val endDate = endDate.asLocalDateTime(path = "$path/endDate")
