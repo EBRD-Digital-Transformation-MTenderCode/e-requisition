@@ -5,6 +5,7 @@ import com.procurement.requisition.application.service.validate.model.ValidatePC
 import com.procurement.requisition.domain.model.isNotUniqueIds
 import com.procurement.requisition.domain.model.requirement.RangeValue
 import com.procurement.requisition.domain.model.requirement.RequirementDataType
+import com.procurement.requisition.domain.model.tender.ProcurementMethodModality.REQUIRES_ELECTRONIC_CATALOGUE
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
@@ -62,9 +63,11 @@ class ValidatePCRService {
 
         // VR.COM-17.1.29
         val itemsByRelatedLot = command.tender.items.toSet { it.relatedLot }
-        command.tender.lots.forEach { lot ->
-            if (lot.id !in itemsByRelatedLot)
-                return Validated.error(ValidatePCRErrors.Lot.MissingItem())
+        if (REQUIRES_ELECTRONIC_CATALOGUE in command.tender.procurementMethodModalities) {
+            command.tender.lots.forEach { lot ->
+                if (lot.id !in itemsByRelatedLot)
+                    return Validated.error(ValidatePCRErrors.Lot.MissingItem())
+            }
         }
 
         val itemsById = command.tender.items.associateBy { it.id }
