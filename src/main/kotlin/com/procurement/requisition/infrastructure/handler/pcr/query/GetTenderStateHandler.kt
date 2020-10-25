@@ -22,7 +22,7 @@ class GetTenderStateHandler(
 
     override fun execute(request: ApiRequest): Result<ApiResponse, Failure> {
 
-        val command = request.node.getParams()
+        val command = request.body.asJsonNode.getParams()
             .onFailure { failure -> return failure }
             .tryMapping<GetTenderStateRequest>(transform)
             .mapFailure { failure ->
@@ -30,7 +30,7 @@ class GetTenderStateHandler(
                     code = "RQ-1",
                     version = request.version,
                     id = request.id,
-                    body = request.body,
+                    body = request.body.asString,
                     underlying = failure.description,
                     path = "params",
                     reason = failure.reason
@@ -38,6 +38,17 @@ class GetTenderStateHandler(
             }
             .onFailure { failure -> return failure }
             .convert()
+            .mapFailure { failure ->
+                RequestErrors(
+                    code = failure.code,
+                    version = request.version,
+                    id = request.id,
+                    body = request.body.asString,
+                    underlying = failure.description,
+                    path = failure.path,
+                    reason = failure.reason
+                )
+            }
             .onFailure { failure -> return failure }
 
         return getTenderStateService.get(command)
