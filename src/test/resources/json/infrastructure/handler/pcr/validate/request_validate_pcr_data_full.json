@@ -51,7 +51,55 @@
               "startDate": "2020-10-19T10:22:42Z",
               "endDate": "2020-10-19T10:22:42Z"
             },
-            "measure": "number",
+            "measure": "string",
+            "unit": {
+              "id": "string"
+            },
+            "dimensions": {
+              "requirementClassIdPR": "string"
+            },
+            "notes": "string",
+            "relatedRequirementId": "string"
+          },
+          {
+            "id": "string",
+            "period": {
+              "startDate": "2020-10-19T10:22:42Z",
+              "endDate": "2020-10-19T10:22:42Z"
+            },
+            "measure": 12.111,
+            "unit": {
+              "id": "string"
+            },
+            "dimensions": {
+              "requirementClassIdPR": "string"
+            },
+            "notes": "string",
+            "relatedRequirementId": "string"
+          },
+          {
+            "id": "string",
+            "period": {
+              "startDate": "2020-10-19T10:22:42Z",
+              "endDate": "2020-10-19T10:22:42Z"
+            },
+            "measure": 15,
+            "unit": {
+              "id": "string"
+            },
+            "dimensions": {
+              "requirementClassIdPR": "string"
+            },
+            "notes": "string",
+            "relatedRequirementId": "string"
+          },
+          {
+            "id": "string",
+            "period": {
+              "startDate": "2020-10-19T10:22:42Z",
+              "endDate": "2020-10-19T10:22:42Z"
+            },
+            "measure": true,
             "unit": {
               "id": "string"
             },

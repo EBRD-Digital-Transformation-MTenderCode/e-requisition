@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.requisition.domain.model.requirement.Requirement
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientRate
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
+import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
 import com.procurement.requisition.infrastructure.bind.coefficient.CoefficientRateDeserializer
 import com.procurement.requisition.infrastructure.bind.coefficient.CoefficientRateSerializer
 import com.procurement.requisition.infrastructure.bind.quantity.QuantityDeserializer
@@ -107,7 +108,7 @@ data class ValidatePCRDataRequest(
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @param:JsonProperty("period") @field:JsonProperty("period") val period: Period?,
 
-                @param:JsonProperty("measure") @field:JsonProperty("measure") val measure: String,
+                @param:JsonProperty("measure") @field:JsonProperty("measure") val measure: ObservationMeasure,
                 @param:JsonProperty("unit") @field:JsonProperty("unit") val unit: Unit,
                 @param:JsonProperty("dimensions") @field:JsonProperty("dimensions") val dimensions: Dimensions,
                 @param:JsonProperty("notes") @field:JsonProperty("notes") val notes: String,
