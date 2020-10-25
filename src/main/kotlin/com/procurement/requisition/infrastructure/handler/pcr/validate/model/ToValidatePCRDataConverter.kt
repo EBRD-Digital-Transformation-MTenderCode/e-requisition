@@ -11,25 +11,23 @@ import com.procurement.requisition.domain.model.tender.conversion.ConversionRela
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.domain.model.tender.item.ItemId
 import com.procurement.requisition.domain.model.tender.lot.LotId
-import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
 import com.procurement.requisition.infrastructure.bind.classification.ClassificationScheme
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
-import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.failureIfEmpty
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
 import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.mapIndexedOrEmpty
 
-fun ValidatePCRDataRequest.convert(): Result<ValidatePCRDataCommand, Failure> = tender.convert("#/tender")
+fun ValidatePCRDataRequest.convert(): Result<ValidatePCRDataCommand, JsonErrors> = tender.convert("#/tender")
     .onFailure { return it }
     .let { ValidatePCRDataCommand(it).asSuccess() }
 
 /**
  * Tender
  */
-fun ValidatePCRDataRequest.Tender.convert(path: String): Result<ValidatePCRDataCommand.Tender, Failure> {
+fun ValidatePCRDataRequest.Tender.convert(path: String): Result<ValidatePCRDataCommand.Tender, JsonErrors> {
     val classification = classification.convert(path = "$path/classification")
         .onFailure { return it }
 
@@ -103,7 +101,7 @@ fun ValidatePCRDataRequest.Tender.convert(path: String): Result<ValidatePCRDataC
 /**
  * Classification
  */
-fun ValidatePCRDataRequest.Classification.convert(path: String): Result<ValidatePCRDataCommand.Classification, Failure> {
+fun ValidatePCRDataRequest.Classification.convert(path: String): Result<ValidatePCRDataCommand.Classification, JsonErrors> {
     val scheme = scheme.asEnum(target = ClassificationScheme, path = "$path/scheme")
         .onFailure { return it }
     return ValidatePCRDataCommand.Classification(id = id, scheme = scheme).asSuccess()
@@ -112,13 +110,13 @@ fun ValidatePCRDataRequest.Classification.convert(path: String): Result<Validate
 /**
  * Unit
  */
-fun ValidatePCRDataRequest.Unit.convert(path: String): Result<ValidatePCRDataCommand.Unit, Failure> =
+fun ValidatePCRDataRequest.Unit.convert(path: String): Result<ValidatePCRDataCommand.Unit, JsonErrors> =
     ValidatePCRDataCommand.Unit(id = this.id).asSuccess()
 
 /**
  * Lot
  */
-fun ValidatePCRDataRequest.Tender.Lot.convert(path: String): Result<ValidatePCRDataCommand.Tender.Lot, Failure> {
+fun ValidatePCRDataRequest.Tender.Lot.convert(path: String): Result<ValidatePCRDataCommand.Tender.Lot, JsonErrors> {
     if (!LotId.validate(id))
         return failure(
             JsonErrors.DataFormatMismatch(
@@ -141,13 +139,13 @@ fun ValidatePCRDataRequest.Tender.Lot.convert(path: String): Result<ValidatePCRD
     ).asSuccess()
 }
 
-fun ValidatePCRDataRequest.Tender.Lot.Variant.convert(path: String): Result<ValidatePCRDataCommand.Tender.Lot.Variant, Failure> =
+fun ValidatePCRDataRequest.Tender.Lot.Variant.convert(path: String): Result<ValidatePCRDataCommand.Tender.Lot.Variant, JsonErrors> =
     ValidatePCRDataCommand.Tender.Lot.Variant(hasVariants = hasVariants, variantsDetails = variantsDetails).asSuccess()
 
 /**
  * Item
  */
-fun ValidatePCRDataRequest.Tender.Item.convert(path: String): Result<ValidatePCRDataCommand.Tender.Item, Failure> {
+fun ValidatePCRDataRequest.Tender.Item.convert(path: String): Result<ValidatePCRDataCommand.Tender.Item, JsonErrors> {
     if (!ItemId.validate(id))
         return failure(
             JsonErrors.DataFormatMismatch(
@@ -183,7 +181,7 @@ fun ValidatePCRDataRequest.Tender.Item.convert(path: String): Result<ValidatePCR
 /**
  * Target
  */
-fun ValidatePCRDataRequest.Tender.Target.convert(path: String): Result<ValidatePCRDataCommand.Tender.Target, Failure> {
+fun ValidatePCRDataRequest.Tender.Target.convert(path: String): Result<ValidatePCRDataCommand.Tender.Target, JsonErrors> {
     val relatesTo = relatesTo.asEnum(target = TargetRelatesTo, path = "$path/relatesTo")
         .onFailure { return it }
 
@@ -203,7 +201,7 @@ fun ValidatePCRDataRequest.Tender.Target.convert(path: String): Result<ValidateP
 }
 
 fun ValidatePCRDataRequest.Tender.Target.Observation.convert(path: String):
-    Result<ValidatePCRDataCommand.Tender.Target.Observation, Failure> {
+    Result<ValidatePCRDataCommand.Tender.Target.Observation, JsonErrors> {
 
     val period = period?.convert(path = "$path/period")?.onFailure { return it }
     val unit = unit.convert(path = "$path/unit").onFailure { return it }
@@ -221,7 +219,7 @@ fun ValidatePCRDataRequest.Tender.Target.Observation.convert(path: String):
 }
 
 fun ValidatePCRDataRequest.Tender.Target.Observation.Period.convert(path: String):
-    Result<ValidatePCRDataCommand.Tender.Target.Observation.Period, Failure> {
+    Result<ValidatePCRDataCommand.Tender.Target.Observation.Period, JsonErrors> {
 
     val startDate = startDate.asLocalDateTime(path = "$path/startDate")
         .onFailure { return it }
@@ -233,13 +231,13 @@ fun ValidatePCRDataRequest.Tender.Target.Observation.Period.convert(path: String
 }
 
 fun ValidatePCRDataRequest.Tender.Target.Observation.Dimensions.convert(path: String):
-    Result<ValidatePCRDataCommand.Tender.Target.Observation.Dimensions, Failure> =
+    Result<ValidatePCRDataCommand.Tender.Target.Observation.Dimensions, JsonErrors> =
     ValidatePCRDataCommand.Tender.Target.Observation.Dimensions(requirementClassIdPR = requirementClassIdPR).asSuccess()
 
 /**
  * Criterion
  */
-fun ValidatePCRDataRequest.Tender.Criterion.convert(path: String): Result<ValidatePCRDataCommand.Tender.Criterion, Failure> {
+fun ValidatePCRDataRequest.Tender.Criterion.convert(path: String): Result<ValidatePCRDataCommand.Tender.Criterion, JsonErrors> {
     val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo, path = "$path/relatesTo")
         ?.onFailure { return it }
 
@@ -259,7 +257,7 @@ fun ValidatePCRDataRequest.Tender.Criterion.convert(path: String): Result<Valida
     ).asSuccess()
 }
 
-fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.convert(path: String): Result<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup, Failure> =
+fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.convert(path: String): Result<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup, JsonErrors> =
     ValidatePCRDataCommand.Tender.Criterion.RequirementGroup(
         id = id,
         description = description,
@@ -269,7 +267,7 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.convert(path: Strin
 /**
  * Conversion
  */
-fun ValidatePCRDataRequest.Tender.Conversion.convert(path: String): Result<ValidatePCRDataCommand.Tender.Conversion, Failure> {
+fun ValidatePCRDataRequest.Tender.Conversion.convert(path: String): Result<ValidatePCRDataCommand.Tender.Conversion, JsonErrors> {
     val relatesTo = relatesTo.asEnum(target = ConversionRelatesTo, path = "$path/relatesTo")
         .onFailure { return it }
 
@@ -289,13 +287,13 @@ fun ValidatePCRDataRequest.Tender.Conversion.convert(path: String): Result<Valid
     ).asSuccess()
 }
 
-fun ValidatePCRDataRequest.Tender.Conversion.Coefficient.convert(path: String): Result<ValidatePCRDataCommand.Tender.Conversion.Coefficient, Failure> =
+fun ValidatePCRDataRequest.Tender.Conversion.Coefficient.convert(path: String): Result<ValidatePCRDataCommand.Tender.Conversion.Coefficient, JsonErrors> =
     ValidatePCRDataCommand.Tender.Conversion.Coefficient(id = id, value = value, coefficient = coefficient).asSuccess()
 
 /**
  * Document
  */
-fun ValidatePCRDataRequest.Tender.Document.convert(path: String): Result<ValidatePCRDataCommand.Tender.Document, Failure> {
+fun ValidatePCRDataRequest.Tender.Document.convert(path: String): Result<ValidatePCRDataCommand.Tender.Document, JsonErrors> {
     val documentType = documentType.asEnum(target = DocumentType, path = "$path/documentType")
         .onFailure { return it }
 
