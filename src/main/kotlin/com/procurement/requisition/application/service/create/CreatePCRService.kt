@@ -369,4 +369,4 @@ fun relatedProcesses(createPCR: CreatePCRCommand, uriProperties: UriProperties) 
     )
 )
 
-fun uri(prefix: String, cpid: Cpid) = "$prefix/tenders/${cpid.underlying}/${cpid.underlying}"
+fun uri(prefix: String, cpid: Cpid) = "$prefix/${cpid.underlying}/${cpid.underlying}"
