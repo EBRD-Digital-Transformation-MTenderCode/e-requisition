@@ -4,12 +4,11 @@ import com.procurement.requisition.application.service.get.tender.state.model.Ge
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
-import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
 import com.procurement.requisition.lib.functional.asSuccess
 
-fun GetTenderStateRequest.convert(): Result<GetTenderStateCommand, Failure> {
+fun GetTenderStateRequest.convert(): Result<GetTenderStateCommand, JsonErrors> {
     val cpid = Cpid.tryCreateOrNull(cpid)
         ?: return failure(
             JsonErrors.DataFormatMismatch(path = "#/cpid", actualValue = cpid, expectedFormat = Cpid.pattern)

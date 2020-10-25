@@ -13,18 +13,16 @@ import com.procurement.requisition.domain.model.tender.ProcurementMethodModality
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
-import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
 import com.procurement.requisition.infrastructure.bind.classification.ClassificationScheme
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
-import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.failureIfEmpty
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
 import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.mapIndexedOrEmpty
 
-fun CreatePCRRequest.convert(): Result<CreatePCRCommand, Failure> {
+fun CreatePCRRequest.convert(): Result<CreatePCRCommand, JsonErrors> {
     val cpid = Cpid.tryCreateOrNull(cpid)
         ?: return failure(
             JsonErrors.DataFormatMismatch(
@@ -55,7 +53,7 @@ fun CreatePCRRequest.convert(): Result<CreatePCRCommand, Failure> {
 /**
  * Tender
  */
-fun CreatePCRRequest.Tender.convert(path: String): Result<CreatePCRCommand.Tender, Failure> {
+fun CreatePCRRequest.Tender.convert(path: String): Result<CreatePCRCommand.Tender, JsonErrors> {
     val classification = classification.convert(path = "$path/classification")
         .onFailure { return it }
 
@@ -130,7 +128,7 @@ fun CreatePCRRequest.Tender.convert(path: String): Result<CreatePCRCommand.Tende
 /**
  * Classification
  */
-fun CreatePCRRequest.Classification.convert(path: String): Result<Classification, Failure> {
+fun CreatePCRRequest.Classification.convert(path: String): Result<Classification, JsonErrors> {
     val scheme = scheme.asEnum(target = ClassificationScheme, path = "$path/scheme")
         .onFailure { return it }
     return Classification(id = id, scheme = scheme, description = description).asSuccess()
@@ -139,13 +137,13 @@ fun CreatePCRRequest.Classification.convert(path: String): Result<Classification
 /**
  * Unit
  */
-fun CreatePCRRequest.Unit.convert(path: String): Result<CreatePCRCommand.Unit, Failure> =
+fun CreatePCRRequest.Unit.convert(path: String): Result<CreatePCRCommand.Unit, JsonErrors> =
     CreatePCRCommand.Unit(id = id, name = name).asSuccess()
 
 /**
  * Lot
  */
-fun CreatePCRRequest.Tender.Lot.convert(path: String): Result<CreatePCRCommand.Tender.Lot, Failure> {
+fun CreatePCRRequest.Tender.Lot.convert(path: String): Result<CreatePCRCommand.Tender.Lot, JsonErrors> {
     val classification = classification.convert(path = "$path/classification").onFailure { return it }
     val variants = variants.convert(path = "$path/variants").onFailure { return it }
 
@@ -159,13 +157,13 @@ fun CreatePCRRequest.Tender.Lot.convert(path: String): Result<CreatePCRCommand.T
     ).asSuccess()
 }
 
-fun CreatePCRRequest.Tender.Lot.Variant.convert(path: String): Result<CreatePCRCommand.Tender.Lot.Variant, Failure> =
+fun CreatePCRRequest.Tender.Lot.Variant.convert(path: String): Result<CreatePCRCommand.Tender.Lot.Variant, JsonErrors> =
     CreatePCRCommand.Tender.Lot.Variant(hasVariants = hasVariants, variantsDetails = variantsDetails).asSuccess()
 
 /**
  * Item
  */
-fun CreatePCRRequest.Tender.Item.convert(path: String): Result<CreatePCRCommand.Tender.Item, Failure> {
+fun CreatePCRRequest.Tender.Item.convert(path: String): Result<CreatePCRCommand.Tender.Item, JsonErrors> {
     val classification = classification.convert("$path/classification").onFailure { return it }
     val unit = unit.convert("$path/unit").onFailure { return it }
 
@@ -183,7 +181,7 @@ fun CreatePCRRequest.Tender.Item.convert(path: String): Result<CreatePCRCommand.
 /**
  * Target
  */
-fun CreatePCRRequest.Tender.Target.convert(path: String): Result<CreatePCRCommand.Tender.Target, Failure> {
+fun CreatePCRRequest.Tender.Target.convert(path: String): Result<CreatePCRCommand.Tender.Target, JsonErrors> {
     val relatesTo = relatesTo.asEnum(target = TargetRelatesTo, path = "$path/relatesTo")
         .onFailure { return it }
 
@@ -203,7 +201,7 @@ fun CreatePCRRequest.Tender.Target.convert(path: String): Result<CreatePCRComman
 }
 
 fun CreatePCRRequest.Tender.Target.Observation.convert(path: String):
-    Result<CreatePCRCommand.Tender.Target.Observation, Failure> {
+    Result<CreatePCRCommand.Tender.Target.Observation, JsonErrors> {
 
     val period = period?.convert(path = "$path/period")?.onFailure { return it }
     val unit = unit.convert(path = "$path/unit").onFailure { return it }
@@ -221,7 +219,7 @@ fun CreatePCRRequest.Tender.Target.Observation.convert(path: String):
 }
 
 fun CreatePCRRequest.Tender.Target.Observation.Period.convert(path: String):
-    Result<CreatePCRCommand.Tender.Target.Observation.Period, Failure> {
+    Result<CreatePCRCommand.Tender.Target.Observation.Period, JsonErrors> {
 
     val startDate = endDate.asLocalDateTime(path = "$path/startDate")
         .onFailure { return it }
@@ -233,13 +231,13 @@ fun CreatePCRRequest.Tender.Target.Observation.Period.convert(path: String):
 }
 
 fun CreatePCRRequest.Tender.Target.Observation.Dimensions.convert(path: String):
-    Result<CreatePCRCommand.Tender.Target.Observation.Dimensions, Failure> =
+    Result<CreatePCRCommand.Tender.Target.Observation.Dimensions, JsonErrors> =
     CreatePCRCommand.Tender.Target.Observation.Dimensions(requirementClassIdPR = requirementClassIdPR).asSuccess()
 
 /**
  * Criterion
  */
-fun CreatePCRRequest.Tender.Criterion.convert(path: String): Result<CreatePCRCommand.Tender.Criterion, Failure> {
+fun CreatePCRRequest.Tender.Criterion.convert(path: String): Result<CreatePCRCommand.Tender.Criterion, JsonErrors> {
     val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo, path = "$path/relatesTo")
         ?.onFailure { return it }
     val requirementGroups = requirementGroups
@@ -258,7 +256,7 @@ fun CreatePCRRequest.Tender.Criterion.convert(path: String): Result<CreatePCRCom
     ).asSuccess()
 }
 
-fun CreatePCRRequest.Tender.Criterion.RequirementGroup.convert(path: String): Result<CreatePCRCommand.Tender.Criterion.RequirementGroup, Failure> {
+fun CreatePCRRequest.Tender.Criterion.RequirementGroup.convert(path: String): Result<CreatePCRCommand.Tender.Criterion.RequirementGroup, JsonErrors> {
     val requirements = requirements
         .failureIfEmpty { return failure(JsonErrors.EmptyArray(path = "$path/requirements")) }
         .toList()
@@ -273,7 +271,7 @@ fun CreatePCRRequest.Tender.Criterion.RequirementGroup.convert(path: String): Re
 /**
  * Conversion
  */
-fun CreatePCRRequest.Tender.Conversion.convert(path: String): Result<CreatePCRCommand.Tender.Conversion, Failure> {
+fun CreatePCRRequest.Tender.Conversion.convert(path: String): Result<CreatePCRCommand.Tender.Conversion, JsonErrors> {
     val relatesTo = relatesTo.asEnum(target = ConversionRelatesTo, path = "$path/relatesTo")
         .onFailure { return it }
 
@@ -293,13 +291,13 @@ fun CreatePCRRequest.Tender.Conversion.convert(path: String): Result<CreatePCRCo
     ).asSuccess()
 }
 
-fun CreatePCRRequest.Tender.Conversion.Coefficient.convert(path: String): Result<CreatePCRCommand.Tender.Conversion.Coefficient, Failure> =
+fun CreatePCRRequest.Tender.Conversion.Coefficient.convert(path: String): Result<CreatePCRCommand.Tender.Conversion.Coefficient, JsonErrors> =
     CreatePCRCommand.Tender.Conversion.Coefficient(id = id, value = value, coefficient = coefficient).asSuccess()
 
 /**
  * Document
  */
-fun CreatePCRRequest.Tender.Document.convert(path: String): Result<CreatePCRCommand.Tender.Document, Failure> {
+fun CreatePCRRequest.Tender.Document.convert(path: String): Result<CreatePCRCommand.Tender.Document, JsonErrors> {
     val id = DocumentId.orNull(id)
         ?: return failure(
             JsonErrors.DataFormatMismatch(

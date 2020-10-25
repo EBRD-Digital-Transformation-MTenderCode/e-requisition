@@ -18,8 +18,8 @@ interface Handler {
     fun handle(request: ApiRequest): String
 }
 
-fun parseRequestBody(body: String, transform: Transform): Result<ApiRequest, RequestErrors> {
-    val node = transform.tryParse(body)
+fun parseRequestBody(content: String, transform: Transform): Result<ApiRequest, RequestErrors> {
+    val node = transform.tryParse(content)
         .mapFailure { failure ->
             RequestErrors(
                 code = failure.code,
@@ -35,7 +35,7 @@ fun parseRequestBody(body: String, transform: Transform): Result<ApiRequest, Req
             RequestErrors(
                 code = failure.code,
                 underlying = failure.description,
-                body = body,
+                body = content,
                 path = failure.path,
                 reason = failure.reason
             )
@@ -48,7 +48,7 @@ fun parseRequestBody(body: String, transform: Transform): Result<ApiRequest, Req
                 code = failure.code,
                 underlying = failure.description,
                 version = version,
-                body = body,
+                body = content,
                 path = failure.path,
                 reason = failure.reason
             )
@@ -62,14 +62,19 @@ fun parseRequestBody(body: String, transform: Transform): Result<ApiRequest, Req
                 underlying = failure.description,
                 version = version,
                 id = id,
-                body = body,
+                body = content,
                 path = failure.path,
                 reason = failure.reason
             )
         }
         .onFailure { failure -> return failure }
 
-    return ApiRequest(body = body, version = version, id = id, action = action, node = node).asSuccess()
+    return ApiRequest(
+        version = version,
+        id = id,
+        action = action,
+        body = ApiRequest.Body(asString = content, asJsonNode = node)
+    ).asSuccess()
 }
 
 fun JsonNode.getId(): Result<CommandId, JsonErrors> = tryGetTextAttribute("id")

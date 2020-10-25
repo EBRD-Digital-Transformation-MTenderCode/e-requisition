@@ -1,5 +1,6 @@
 package com.procurement.requisition.infrastructure.repository.pcr.model
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.Amount
@@ -9,7 +10,9 @@ import com.procurement.requisition.lib.functional.asSuccess
 import java.math.BigDecimal
 
 data class ValueEntity(
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @field:JsonProperty("amount") @param:JsonProperty("amount") val amount: BigDecimal?,
+
     @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
 )
 

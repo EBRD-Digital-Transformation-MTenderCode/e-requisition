@@ -24,7 +24,7 @@ class CreateRelationHandler(
 
     override fun execute(request: ApiRequest): Result<ApiResponse, Failure> {
 
-        val params = request.node.getParams()
+        val params = request.body.asJsonNode.getParams()
             .onFailure { failure -> return failure }
             .tryMapping<CreateRelationRequest>(transform)
             .mapFailure { failure ->
@@ -32,7 +32,7 @@ class CreateRelationHandler(
                     code = "RQ-1",
                     version = request.version,
                     id = request.id,
-                    body = request.body,
+                    body = request.body.asString,
                     underlying = failure.description,
                     path = "params",
                     reason = failure.reason
@@ -40,6 +40,17 @@ class CreateRelationHandler(
             }
             .onFailure { failure -> return failure }
             .convert()
+            .mapFailure { failure ->
+                RequestErrors(
+                    code = failure.code,
+                    version = request.version,
+                    id = request.id,
+                    body = request.body.asString,
+                    underlying = failure.description,
+                    path = failure.path,
+                    reason = failure.reason
+                )
+            }
             .onFailure { failure -> return failure }
 
         return createRelationService.create(params)
