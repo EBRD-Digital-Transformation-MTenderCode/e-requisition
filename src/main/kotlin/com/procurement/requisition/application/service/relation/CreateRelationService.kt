@@ -88,4 +88,4 @@ fun relationship(operationType: OperationType): Result<Relationship, Failure> = 
     OperationType.TENDER_PERIOD_END_IN_PCR -> TODO()
 }
 
-fun uri(prefix: String, cpid: Cpid, relatedOcid: Ocid) = "$prefix/tenders/${cpid.underlying}/${relatedOcid.underlying}"
+fun uri(prefix: String, cpid: Cpid, relatedOcid: Ocid) = "$prefix/${cpid.underlying}/${relatedOcid.underlying}"
