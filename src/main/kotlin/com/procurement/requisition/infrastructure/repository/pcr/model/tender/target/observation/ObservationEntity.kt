@@ -6,8 +6,6 @@ import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.tender.target.observation.Observation
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationId
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
-import com.procurement.requisition.infrastructure.handler.converter.asEnum
-import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.repository.pcr.model.PeriodEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.UnitEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.deserialization
@@ -21,7 +19,7 @@ data class ObservationEntity(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @param:JsonProperty("period") @field:JsonProperty("period") val period: PeriodEntity?,
 
-    @param:JsonProperty("measure") @field:JsonProperty("measure") val measure: String,
+    @param:JsonProperty("measure") @field:JsonProperty("measure") val measure: ObservationMeasure,
     @param:JsonProperty("unit") @field:JsonProperty("unit") val unit: UnitEntity,
     @param:JsonProperty("dimensions") @field:JsonProperty("dimensions") val dimensions: DimensionsEntity,
     @param:JsonProperty("notes") @field:JsonProperty("notes") val notes: String,
@@ -33,7 +31,7 @@ data class ObservationEntity(
 fun Observation.serialization() = ObservationEntity(
     id = id.underlying,
     period = period?.serialization(),
-    measure = measure.asString(),
+    measure = measure,
     unit = unit.serialization(),
     dimensions = dimensions.serialization(),
     notes = notes,
@@ -51,8 +49,6 @@ fun ObservationEntity.deserialization(path: String): Result<Observation, JsonErr
             )
         )
     val period = period?.deserialization(path = "$path/period")?.onFailure { return it }
-    val measure = measure.asEnum(target = ObservationMeasure, path = "$path/measure")
-        .onFailure { return it }
     val unit = unit.deserialization(path = "$path/unit").onFailure { return it }
     val dimensions = dimensions.deserialization(path = "$path/dimensions").onFailure { return it }
 

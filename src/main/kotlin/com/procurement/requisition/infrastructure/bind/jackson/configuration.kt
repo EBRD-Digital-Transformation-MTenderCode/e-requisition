@@ -8,8 +8,11 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.procurement.requisition.domain.model.requirement.RequirementRsValue
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
+import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
 import com.procurement.requisition.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
 import com.procurement.requisition.infrastructure.bind.coefficient.value.CoefficientValueSerializer
+import com.procurement.requisition.infrastructure.bind.observation.measure.ObservationMeasureDeserializer
+import com.procurement.requisition.infrastructure.bind.observation.measure.ObservationMeasureSerializer
 import com.procurement.requisition.infrastructure.bind.requirement.RequirementValueDeserializer
 import com.procurement.requisition.infrastructure.bind.requirement.RequirementValueSerializer
 
@@ -20,6 +23,9 @@ fun ObjectMapper.configuration() {
 
         addSerializer(CoefficientValue::class.java, CoefficientValueSerializer())
         addDeserializer(CoefficientValue::class.java, CoefficientValueDeserializer())
+
+        addSerializer(ObservationMeasure::class.java, ObservationMeasureSerializer())
+        addDeserializer(ObservationMeasure::class.java, ObservationMeasureDeserializer())
     }
 
     this.registerModule(module)

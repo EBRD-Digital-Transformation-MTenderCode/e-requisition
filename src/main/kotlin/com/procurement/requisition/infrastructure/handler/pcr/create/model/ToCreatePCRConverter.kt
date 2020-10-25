@@ -206,8 +206,6 @@ fun CreatePCRRequest.Tender.Target.Observation.convert(path: String):
     Result<CreatePCRCommand.Tender.Target.Observation, Failure> {
 
     val period = period?.convert(path = "$path/period")?.onFailure { return it }
-    val measure = measure.asEnum(target = ObservationMeasure, path = "$path/measure")
-        .onFailure { return it }
     val unit = unit.convert(path = "$path/unit").onFailure { return it }
     val dimensions = dimensions.convert(path = "$path/dimensions").onFailure { return it }
 
