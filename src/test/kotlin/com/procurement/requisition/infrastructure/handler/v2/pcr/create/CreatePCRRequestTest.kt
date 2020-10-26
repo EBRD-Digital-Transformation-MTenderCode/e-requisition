@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.hendler.v2.pcr.create
+package com.procurement.requisition.infrastructure.handler.v2.pcr.create
 
 import com.procurement.requisition.infrastructure.handler.v2.pcr.create.model.CreatePCRRequest
 import com.procurement.requisition.json.testingBindingAndMapping

@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.hendler.v1.create.request
+package com.procurement.requisition.infrastructure.handler.v1.create.request
 
 import com.procurement.requisition.infrastructure.handler.v1.create.request.model.CreateRequestsForEvPanelsResponse
 import com.procurement.requisition.json.testingBindingAndMapping

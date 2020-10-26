@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.hendler.v2.pcr.validate
+package com.procurement.requisition.infrastructure.handler.v2.pcr.validate
 
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model.ValidatePCRDataRequest
 import com.procurement.requisition.json.testingBindingAndMapping
