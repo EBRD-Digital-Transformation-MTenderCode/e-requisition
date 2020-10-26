@@ -9,13 +9,13 @@ import com.procurement.requisition.application.service.relation.CreateRelationSe
 import com.procurement.requisition.application.service.validate.ValidatePCRService
 import com.procurement.requisition.infrastructure.handler.Handler
 import com.procurement.requisition.infrastructure.handler.HandlerDescription
+import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
+import com.procurement.requisition.infrastructure.handler.v1.lot.GetActiveLotsHandler
+import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.create.CreatePCRHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.GetTenderStateHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.relation.CreateRelationHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.ValidatePCRDataHandler
-import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
-import com.procurement.requisition.infrastructure.handler.v1.lot.GetActiveLotsHandler
-import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
 import com.procurement.requisition.infrastructure.web.v1.CommandsV1
 import com.procurement.requisition.infrastructure.web.v2.CommandsV2
 import org.springframework.context.annotation.Bean
@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ComponentScan(
     basePackages = [
-        "com.procurement.requisition.infrastructure.web.controller",
+        "com.procurement.requisition.infrastructure.web",
         "com.procurement.requisition.infrastructure.handler"
     ]
 )
