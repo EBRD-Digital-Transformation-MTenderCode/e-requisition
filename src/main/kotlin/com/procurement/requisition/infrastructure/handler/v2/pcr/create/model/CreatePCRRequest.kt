@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.pcr.create.model
+package com.procurement.requisition.infrastructure.handler.v2.pcr.create.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty

@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.pcr.create.model
+package com.procurement.requisition.infrastructure.handler.v2.pcr.create.model
 
 import com.procurement.requisition.application.service.create.model.CreatedPCR
 import com.procurement.requisition.infrastructure.handler.converter.asString

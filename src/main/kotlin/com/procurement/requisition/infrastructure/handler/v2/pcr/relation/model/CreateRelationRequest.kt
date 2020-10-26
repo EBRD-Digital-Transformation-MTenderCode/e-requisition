@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.pcr.relation.model
+package com.procurement.requisition.infrastructure.handler.v2.pcr.relation.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.application.service.relation.model.CreateRelationCommand

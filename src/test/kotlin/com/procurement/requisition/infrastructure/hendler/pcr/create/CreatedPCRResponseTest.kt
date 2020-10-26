@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.hendler.pcr.create
 
-import com.procurement.requisition.infrastructure.handler.pcr.create.model.CreatedPCRResponse
+import com.procurement.requisition.infrastructure.handler.v2.pcr.create.model.CreatedPCRResponse
 import com.procurement.requisition.json.testingBindingAndMapping
 import org.junit.jupiter.api.Test
 

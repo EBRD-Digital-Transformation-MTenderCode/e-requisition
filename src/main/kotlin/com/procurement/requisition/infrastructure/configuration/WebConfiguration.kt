@@ -9,10 +9,10 @@ import com.procurement.requisition.application.service.relation.CreateRelationSe
 import com.procurement.requisition.application.service.validate.ValidatePCRService
 import com.procurement.requisition.infrastructure.handler.Handler
 import com.procurement.requisition.infrastructure.handler.HandlerDescription
-import com.procurement.requisition.infrastructure.handler.pcr.create.CreatePCRHandler
-import com.procurement.requisition.infrastructure.handler.pcr.query.GetTenderStateHandler
-import com.procurement.requisition.infrastructure.handler.pcr.relation.CreateRelationHandler
-import com.procurement.requisition.infrastructure.handler.pcr.validate.ValidatePCRDataHandler
+import com.procurement.requisition.infrastructure.handler.v2.pcr.create.CreatePCRHandler
+import com.procurement.requisition.infrastructure.handler.v2.pcr.query.GetTenderStateHandler
+import com.procurement.requisition.infrastructure.handler.v2.pcr.relation.CreateRelationHandler
+import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.ValidatePCRDataHandler
 import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
 import com.procurement.requisition.infrastructure.handler.v1.lot.GetActiveLotsHandler
 import com.procurement.requisition.infrastructure.handler.v2.HandlersV2

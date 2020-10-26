@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.pcr.validate.model
+package com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model
 
 import com.procurement.requisition.application.service.validate.model.ValidatePCRDataCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
