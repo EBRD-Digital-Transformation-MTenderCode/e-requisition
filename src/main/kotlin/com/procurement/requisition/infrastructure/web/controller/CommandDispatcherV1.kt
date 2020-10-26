@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/command")
-class CommandController(
+class CommandDispatcherV1(
     private val transform: Transform,
     private val logger: Logger,
     private val handlers: HandlersV1,
