@@ -3,48 +3,46 @@ package com.procurement.requisition.application.service.set
 import com.procurement.requisition.application.repository.pcr.PCRDeserializer
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.repository.pcr.PCRSerializer
-import com.procurement.requisition.application.service.set.error.SetTenderUnsuccessfulErrors
-import com.procurement.requisition.application.service.set.model.SetTenderUnsuccessfulCommand
-import com.procurement.requisition.application.service.set.model.SetTenderUnsuccessfulResult
+import com.procurement.requisition.application.service.set.error.SetLotsStatusUnsuccessfulErrors
+import com.procurement.requisition.application.service.set.model.SetLotsStatusUnsuccessfulCommand
+import com.procurement.requisition.application.service.set.model.SetLotsStatusUnsuccessfulResult
 import com.procurement.requisition.domain.model.PCR
 import com.procurement.requisition.domain.model.tender.TenderStatus
 import com.procurement.requisition.domain.model.tender.TenderStatusDetails
 import com.procurement.requisition.domain.model.tender.lot.Lot
 import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.LotStatus
-import com.procurement.requisition.domain.model.tender.lot.LotStatusDetails
 import com.procurement.requisition.domain.model.tender.lot.Lots
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asFailure
 import com.procurement.requisition.lib.functional.asSuccess
+import com.procurement.requisition.lib.toSet
 import org.springframework.stereotype.Service
 
 @Service
-class SetTenderUnsuccessfulService(
+class SetLotsStatusUnsuccessfulService(
     private val pcrRepository: PCRRepository,
     private val pcrDeserializer: PCRDeserializer,
     private val pcrSerializer: PCRSerializer,
 ) {
 
-    fun set(command: SetTenderUnsuccessfulCommand): Result<SetTenderUnsuccessfulResult, Failure> {
+    fun set(command: SetLotsStatusUnsuccessfulCommand): Result<SetLotsStatusUnsuccessfulResult, Failure> {
         val pcr = pcrRepository.getPCR(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it }
             ?.let { json -> pcrDeserializer.build(json) }
             ?.onFailure { return it }
-            ?: return SetTenderUnsuccessfulErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asFailure()
+            ?: return SetLotsStatusUnsuccessfulErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asFailure()
 
+        val idsUnsuccessfulLots: Set<LotId> = command.lots.toSet { it.id }
         val tender = pcr.tender
-        val idsActiveLots = tender.lots.asSequence()
-            .filter { lot -> lot.status == LotStatus.ACTIVE }
-            .map { lot -> lot.id }
-            .toSet()
+        val updatedLots = tender.lots.setStatusUnsuccessful(idsUnsuccessfulLots)
+        val activeLotsIsPresent = updatedLots.any { it.status == LotStatus.ACTIVE }
 
-        val updatedLots = tender.lots.setStatusUnsuccessful(idsActiveLots)
         val updatedPCR = pcr.copy(
             tender = tender.copy(
-                status = TenderStatus.UNSUCCESSFUL,
-                statusDetails = TenderStatusDetails.EMPTY,
+                status = if (activeLotsIsPresent) tender.status else TenderStatus.UNSUCCESSFUL,
+                statusDetails = if (activeLotsIsPresent) tender.statusDetails else TenderStatusDetails.EMPTY,
                 lots = updatedLots
             )
         )
@@ -58,29 +56,29 @@ class SetTenderUnsuccessfulService(
             data = json
         ).onFailure { return it }
 
-        return updatedPCR.convert(idsActiveLots).asSuccess()
+        return updatedPCR.convert(idsUnsuccessfulLots).asSuccess()
     }
 
-    fun List<Lot>.setStatusUnsuccessful(activeLotIds: Set<LotId>) = map { lot ->
-        if (lot.id in activeLotIds)
-            lot.copy(
-                status = LotStatus.UNSUCCESSFUL,
-                statusDetails = LotStatusDetails.EMPTY
-            )
-        else
-            lot
-    }
+    fun List<Lot>.setStatusUnsuccessful(ids: Set<LotId>) = this
+        .map { lot ->
+            if (lot.id in ids) {
+                lot.copy(
+                    status = LotStatus.UNSUCCESSFUL
+                )
+            } else
+                lot
+        }
         .let { Lots(it) }
 
-    fun PCR.convert(updatedLotIds: Set<LotId>) = SetTenderUnsuccessfulResult(
-        tender = SetTenderUnsuccessfulResult.Tender(
+    fun PCR.convert(updatedLotIds: Set<LotId>) = SetLotsStatusUnsuccessfulResult(
+        tender = SetLotsStatusUnsuccessfulResult.Tender(
             status = tender.status,
             statusDetails = tender.statusDetails,
             lots = tender.lots
                 .asSequence()
                 .filter { lot -> lot.id in updatedLotIds }
                 .map { lot ->
-                    SetTenderUnsuccessfulResult.Tender.Lot(
+                    SetLotsStatusUnsuccessfulResult.Tender.Lot(
                         id = lot.id,
                         status = lot.status
                     )

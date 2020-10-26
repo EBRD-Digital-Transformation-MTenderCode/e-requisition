@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.v1.lot
+package com.procurement.requisition.infrastructure.handler.v1.get.lot
 
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
@@ -9,7 +9,7 @@ import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.AbstractHandler
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
-import com.procurement.requisition.infrastructure.handler.v1.lot.model.convert
+import com.procurement.requisition.infrastructure.handler.v1.get.lot.model.convert
 import com.procurement.requisition.infrastructure.web.v1.CommandsV1
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result

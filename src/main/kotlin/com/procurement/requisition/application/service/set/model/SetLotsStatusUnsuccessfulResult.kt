@@ -5,7 +5,7 @@ import com.procurement.requisition.domain.model.tender.TenderStatusDetails
 import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.LotStatus
 
-data class SetTenderUnsuccessfulResult(
+data class SetLotsStatusUnsuccessfulResult(
     val tender: Tender
 ) {
     data class Tender(
