@@ -48,4 +48,7 @@ class CommandContext(private val node: JsonNode) {
     val startDate: Result<LocalDateTime, JsonErrors>
         get() = node.tryGetTextAttribute("startDate")
             .flatMap { value -> value.asLocalDateTime(path = "#/context/startDate") }
+
+    val phase: Result<String, JsonErrors>
+        get() = node.tryGetTextAttribute("phase")
 }
