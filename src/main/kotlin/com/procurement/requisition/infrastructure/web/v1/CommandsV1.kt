@@ -35,7 +35,9 @@ object CommandsV1 {
 
         CREATE_REQUESTS_FOR_EV_PANELS(key = "createRequestsForEvPanels", kind = Action.Kind.COMMAND),
         GET_ACTIVE_LOTS(key = "getActiveLots", kind = Action.Kind.QUERY),
-        SET_TENDER_UNSUCCESSFUL(key = "setTenderUnsuccessful", kind = Action.Kind.COMMAND);
+        SET_LOTS_UNSUCCESSFUL(key = "setLotsStatusUnsuccessful", kind = Action.Kind.COMMAND),
+        SET_TENDER_UNSUCCESSFUL(key = "setTenderUnsuccessful", kind = Action.Kind.COMMAND),
+        ;
 
         override fun toString(): String = key
 
@@ -74,4 +76,6 @@ object CommandsV1 {
 
     fun getContext(node: JsonNode): Result<CommandContext, JsonErrors> = node.tryGetAttribute("context")
         .map { CommandContext(it) }
+
+    fun getData(node: JsonNode): Result<JsonNode, JsonErrors> = node.tryGetAttribute("data")
 }
