@@ -32,7 +32,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/command2")
-class Command2Controller(
+class CommandDispatcherV2(
     private val transform: Transform,
     private val logger: Logger,
     private val handlers: HandlersV2,
