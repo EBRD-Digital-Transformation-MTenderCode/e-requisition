@@ -5,8 +5,10 @@ import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.infrastructure.extension.tryGetTextAttribute
+import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
+import java.time.LocalDateTime
 
 class CommandContext(private val node: JsonNode) {
 
@@ -42,4 +44,8 @@ class CommandContext(private val node: JsonNode) {
 
     val owner: Result<String, JsonErrors>
         get() = node.tryGetTextAttribute("owner")
+
+    val startDate: Result<LocalDateTime, JsonErrors>
+        get() = node.tryGetTextAttribute("startDate")
+            .flatMap { value -> value.asLocalDateTime(path = "#/context/startDate") }
 }
