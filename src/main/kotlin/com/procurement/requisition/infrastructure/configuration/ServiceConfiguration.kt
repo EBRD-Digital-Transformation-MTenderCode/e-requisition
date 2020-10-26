@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ComponentScan(
     basePackages = [
-        "com.procurement.requisition.service",
         "com.procurement.requisition.application.service",
     ]
 )
