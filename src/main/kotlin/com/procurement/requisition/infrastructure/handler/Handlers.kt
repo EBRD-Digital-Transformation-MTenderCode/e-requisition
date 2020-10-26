@@ -1,23 +1,22 @@
 package com.procurement.requisition.infrastructure.handler
 
-import com.procurement.requisition.infrastructure.handler.model.ApiVersion
+data class HandlerDescription(val action: Action, val handler: Handler)
 
-data class HandlerDescription(val version: ApiVersion, val action: Action, val handler: Handler)
+abstract class Handlers(descriptions: List<HandlerDescription>) {
 
-class Handlers(private val items: Map<ApiVersion, Map<Action, Handler>>) {
+    private val handlers: Map<Action, Handler>
 
-    constructor(vararg descriptions: HandlerDescription) : this(
-        items = mutableMapOf<ApiVersion, MutableMap<Action, Handler>>()
+    init {
+        handlers = mutableMapOf<Action, Handler>()
             .apply {
                 descriptions.forEach { description ->
-                    val actions = computeIfAbsent(description.version) { mutableMapOf() }
-                    if (description.action in actions)
-                        throw IllegalStateException("Duplicate handler: version '${description.version}', action '${description.action.key}'")
+                    if (this.containsKey(description.action))
+                        throw IllegalStateException("Duplicate handler for action '${description.action.key}'")
                     else
-                        actions[description.action] = description.handler
+                        this[description.action] = description.handler
                 }
             }
-    )
+    }
 
-    operator fun get(version: ApiVersion, action: Action): Handler? = items[version]?.let { it[action] }
+    operator fun get(action: Action): Handler? = handlers[action]
 }
