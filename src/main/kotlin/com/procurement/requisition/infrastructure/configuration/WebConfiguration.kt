@@ -13,9 +13,9 @@ import com.procurement.requisition.infrastructure.handler.pcr.create.CreatePCRHa
 import com.procurement.requisition.infrastructure.handler.pcr.query.GetTenderStateHandler
 import com.procurement.requisition.infrastructure.handler.pcr.relation.CreateRelationHandler
 import com.procurement.requisition.infrastructure.handler.pcr.validate.ValidatePCRDataHandler
-import com.procurement.requisition.infrastructure.handler.v1.DispatcherV1
+import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
 import com.procurement.requisition.infrastructure.handler.v1.lot.GetActiveLotsHandler
-import com.procurement.requisition.infrastructure.handler.v2.DispatcherV2
+import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
 import com.procurement.requisition.infrastructure.web.api.CommandsV1
 import com.procurement.requisition.infrastructure.web.api.CommandsV2
 import org.springframework.context.annotation.Bean
@@ -40,14 +40,14 @@ class WebConfiguration(
 ) {
 
     @Bean
-    fun handlersV1() = DispatcherV1(
+    fun handlersV1() = HandlersV1(
         listOf(
             HandlerDescription(CommandsV1.CommandType.GET_ACTIVE_LOTS, getActiveLotsHandler()),
         )
     )
 
     @Bean
-    fun handlersV2() = DispatcherV2(
+    fun handlersV2() = HandlersV2(
         listOf(
             HandlerDescription(CommandsV2.CommandType.VALIDATE_PCR_DATA, validatePcrDataHandler()),
             HandlerDescription(CommandsV2.CommandType.CREATE_PCR, createPCRHandler()),

@@ -12,7 +12,7 @@ import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.CommandId
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV2
-import com.procurement.requisition.infrastructure.handler.v2.DispatcherV2
+import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
 import com.procurement.requisition.infrastructure.service.HistoryEntity
 import com.procurement.requisition.infrastructure.service.HistoryRepository
 import com.procurement.requisition.infrastructure.web.api.v2
@@ -35,7 +35,7 @@ import java.util.*
 class Command2Controller(
     private val transform: Transform,
     private val logger: Logger,
-    private val handlers: DispatcherV2,
+    private val handlers: HandlersV2,
     private val historyRepository: HistoryRepository
 ) {
 

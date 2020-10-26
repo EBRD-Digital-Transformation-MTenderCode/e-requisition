@@ -10,7 +10,7 @@ import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.CommandId
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
-import com.procurement.requisition.infrastructure.handler.v1.DispatcherV1
+import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
 import com.procurement.requisition.infrastructure.service.HistoryEntity
 import com.procurement.requisition.infrastructure.service.HistoryRepository
 import com.procurement.requisition.infrastructure.web.api.v1
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController
 class CommandController(
     private val transform: Transform,
     private val logger: Logger,
-    private val handlers: DispatcherV1,
+    private val handlers: HandlersV1,
     private val historyRepository: HistoryRepository
 ) {
 

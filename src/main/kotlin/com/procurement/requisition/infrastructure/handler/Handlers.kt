@@ -2,7 +2,7 @@ package com.procurement.requisition.infrastructure.handler
 
 data class HandlerDescription(val action: Action, val handler: Handler)
 
-abstract class Dispatcher(descriptions: List<HandlerDescription>) {
+abstract class Handlers(descriptions: List<HandlerDescription>) {
 
     private val handlers: Map<Action, Handler>
 
