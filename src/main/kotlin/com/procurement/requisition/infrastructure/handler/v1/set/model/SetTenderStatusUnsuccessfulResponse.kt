@@ -3,7 +3,7 @@ package com.procurement.requisition.infrastructure.handler.v1.set.model
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class SetTenderUnsuccessfulResponse(
+data class SetTenderStatusUnsuccessfulResponse(
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

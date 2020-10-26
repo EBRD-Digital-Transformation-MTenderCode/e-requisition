@@ -5,7 +5,7 @@ import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.infrastructure.configuration.GlobalProperties
 import com.procurement.requisition.lib.fail.Failure
 
-sealed class SetTenderUnsuccessfulErrors(
+sealed class SetTenderStatusUnsuccessfulErrors(
     override val code: String,
     override val description: String
 ) : Failure.Error() {
@@ -13,7 +13,7 @@ sealed class SetTenderUnsuccessfulErrors(
     override val reason: Exception? = null
 
     class PCRNotFound(cpid: Cpid, ocid: Ocid) :
-        SetTenderUnsuccessfulErrors(
+        SetTenderStatusUnsuccessfulErrors(
             code = "400.${GlobalProperties.service.id}.00.01",
             description = "PCR by cpid '${cpid.underlying}' and ocid '${ocid.underlying}' is not found."
         )

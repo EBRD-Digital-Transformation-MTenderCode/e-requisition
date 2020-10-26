@@ -3,9 +3,9 @@ package com.procurement.requisition.application.service.set
 import com.procurement.requisition.application.repository.pcr.PCRDeserializer
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.repository.pcr.PCRSerializer
-import com.procurement.requisition.application.service.set.error.SetTenderUnsuccessfulErrors
-import com.procurement.requisition.application.service.set.model.SetTenderUnsuccessfulCommand
-import com.procurement.requisition.application.service.set.model.SetTenderUnsuccessfulResult
+import com.procurement.requisition.application.service.set.error.SetTenderStatusUnsuccessfulErrors
+import com.procurement.requisition.application.service.set.model.SetTenderStatusUnsuccessfulCommand
+import com.procurement.requisition.application.service.set.model.SetTenderStatusUnsuccessfulResult
 import com.procurement.requisition.domain.model.PCR
 import com.procurement.requisition.domain.model.tender.TenderStatus
 import com.procurement.requisition.domain.model.tender.TenderStatusDetails
@@ -21,18 +21,18 @@ import com.procurement.requisition.lib.functional.asSuccess
 import org.springframework.stereotype.Service
 
 @Service
-class SetTenderUnsuccessfulService(
+class SetTenderStatusUnsuccessfulService(
     private val pcrRepository: PCRRepository,
     private val pcrDeserializer: PCRDeserializer,
     private val pcrSerializer: PCRSerializer,
 ) {
 
-    fun set(command: SetTenderUnsuccessfulCommand): Result<SetTenderUnsuccessfulResult, Failure> {
+    fun set(command: SetTenderStatusUnsuccessfulCommand): Result<SetTenderStatusUnsuccessfulResult, Failure> {
         val pcr = pcrRepository.getPCR(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it }
             ?.let { json -> pcrDeserializer.build(json) }
             ?.onFailure { return it }
-            ?: return SetTenderUnsuccessfulErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asFailure()
+            ?: return SetTenderStatusUnsuccessfulErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asFailure()
 
         val tender = pcr.tender
         val idsActiveLots = tender.lots.asSequence()
@@ -72,15 +72,15 @@ class SetTenderUnsuccessfulService(
     }
         .let { Lots(it) }
 
-    fun PCR.convert(updatedLotIds: Set<LotId>) = SetTenderUnsuccessfulResult(
-        tender = SetTenderUnsuccessfulResult.Tender(
+    fun PCR.convert(updatedLotIds: Set<LotId>) = SetTenderStatusUnsuccessfulResult(
+        tender = SetTenderStatusUnsuccessfulResult.Tender(
             status = tender.status,
             statusDetails = tender.statusDetails,
             lots = tender.lots
                 .asSequence()
                 .filter { lot -> lot.id in updatedLotIds }
                 .map { lot ->
-                    SetTenderUnsuccessfulResult.Tender.Lot(
+                    SetTenderStatusUnsuccessfulResult.Tender.Lot(
                         id = lot.id,
                         status = lot.status
                     )
