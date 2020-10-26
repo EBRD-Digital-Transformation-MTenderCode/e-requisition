@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.v1.lot.model
+package com.procurement.requisition.infrastructure.handler.v1.get.lot.model
 
 import com.procurement.requisition.application.service.get.lot.model.ActiveLotIds
 

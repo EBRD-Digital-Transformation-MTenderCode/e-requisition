@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.v1.lot.model
+package com.procurement.requisition.infrastructure.handler.v1.get.lot.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.model.tender.lot.LotId

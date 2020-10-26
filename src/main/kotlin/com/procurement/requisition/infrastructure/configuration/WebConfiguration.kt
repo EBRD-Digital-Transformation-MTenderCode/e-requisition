@@ -14,7 +14,7 @@ import com.procurement.requisition.infrastructure.handler.Handler
 import com.procurement.requisition.infrastructure.handler.HandlerDescription
 import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
 import com.procurement.requisition.infrastructure.handler.v1.create.request.CreateRequestsForEvPanelsHandler
-import com.procurement.requisition.infrastructure.handler.v1.lot.GetActiveLotsHandler
+import com.procurement.requisition.infrastructure.handler.v1.get.lot.GetActiveLotsHandler
 import com.procurement.requisition.infrastructure.handler.v1.set.SetLotsStatusUnsuccessfulHandler
 import com.procurement.requisition.infrastructure.handler.v1.set.SetTenderStatusUnsuccessfulHandler
 import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
