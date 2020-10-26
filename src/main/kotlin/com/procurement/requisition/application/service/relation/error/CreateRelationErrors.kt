@@ -12,6 +12,4 @@ sealed class CreateRelationErrors(
     override val reason: Exception? = null
 
     class PCRNotFound(cpid: Cpid, ocid: Ocid) : CreateRelationErrors(code = "VR.COM-1.33.1", description = "PCR by cpid '${cpid.underlying}' and ocid '${ocid.underlying}' is not found.")
-
-    class RelationPresent(ocid: Ocid) : CreateRelationErrors(code = "VR.COM-1.33.1", description = "Related process with identifier '${ocid.underlying}' is already.")
 }

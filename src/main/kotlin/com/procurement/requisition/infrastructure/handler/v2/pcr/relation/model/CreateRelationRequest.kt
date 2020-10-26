@@ -40,21 +40,22 @@ fun CreateRelationRequest.convert(): Result<CreateRelationCommand, JsonErrors> {
                 reason = null
             )
         )
-    val ocid = Ocid.tryCreateOrNull(ocid)
+    val ocid = Ocid.SingleStage.tryCreateOrNull(ocid)
+        ?: Ocid.MultiStage.tryCreateOrNull(ocid)
         ?: return Result.failure(
             JsonErrors.DataFormatMismatch(
                 path = "#/ocid",
                 actualValue = ocid,
-                expectedFormat = Ocid.pattern,
+                expectedFormat = "${Ocid.SingleStage.pattern}' or '${Ocid.MultiStage.pattern}",
                 reason = null
             )
         )
-    val relatedOcid = Ocid.tryCreateOrNull(relatedOcid)
+    val relatedOcid = Ocid.SingleStage.tryCreateOrNull(relatedOcid)
         ?: return Result.failure(
             JsonErrors.DataFormatMismatch(
                 path = "#/relatedOcid",
                 actualValue = relatedOcid,
-                expectedFormat = Ocid.pattern,
+                expectedFormat = Ocid.SingleStage.pattern,
                 reason = null
             )
         )

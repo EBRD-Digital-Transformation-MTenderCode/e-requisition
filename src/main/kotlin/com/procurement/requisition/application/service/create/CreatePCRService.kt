@@ -121,7 +121,7 @@ class CreatePCRService(
 
         val relatedProcesses = relatedProcesses(command, uriProperties)
 
-        val ocid: Ocid = Ocid.generate(cpid = command.cpid, stage = Stage.PC, timestamp = nowDefaultUTC())
+        val ocid: Ocid = Ocid.SingleStage.generate(cpid = command.cpid, stage = Stage.PC, timestamp = nowDefaultUTC())
         val pcr = PCR(
             cpid = command.cpid,
             ocid = ocid,
