@@ -34,7 +34,8 @@ object CommandsV1 {
         EnumElementProvider.Element, Action {
 
         CREATE_REQUESTS_FOR_EV_PANELS(key = "createRequestsForEvPanels", kind = Action.Kind.COMMAND),
-        GET_ACTIVE_LOTS(key = "getActiveLots", kind = Action.Kind.QUERY);
+        GET_ACTIVE_LOTS(key = "getActiveLots", kind = Action.Kind.QUERY),
+        SET_TENDER_UNSUCCESSFUL(key = "setTenderUnsuccessful", kind = Action.Kind.COMMAND);
 
         override fun toString(): String = key
 

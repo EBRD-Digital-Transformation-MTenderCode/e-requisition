@@ -1,4 +1,4 @@
-package com.procurement.requisition.application.service.create.model
+package com.procurement.requisition.application.service.create.pcr.model
 
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.Token
@@ -39,7 +39,7 @@ import com.procurement.requisition.infrastructure.bind.classification.Classifica
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-data class CreatedPCR(
+data class CreatePCRResult(
     val ocid: Ocid,
     val token: Token,
     val tender: Tender,

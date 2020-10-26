@@ -2,17 +2,19 @@ package com.procurement.requisition.infrastructure.configuration
 
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.create.CreatePCRService
+import com.procurement.requisition.application.service.create.pcr.CreatePCRService
 import com.procurement.requisition.application.service.create.request.CreateRequestsForEvPanelsService
 import com.procurement.requisition.application.service.get.lot.GetActiveLotsService
 import com.procurement.requisition.application.service.get.tender.state.GetTenderStateService
 import com.procurement.requisition.application.service.relation.CreateRelationService
+import com.procurement.requisition.application.service.set.SetTenderUnsuccessfulService
 import com.procurement.requisition.application.service.validate.ValidatePCRService
 import com.procurement.requisition.infrastructure.handler.Handler
 import com.procurement.requisition.infrastructure.handler.HandlerDescription
 import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
 import com.procurement.requisition.infrastructure.handler.v1.create.request.CreateRequestsForEvPanelsHandler
 import com.procurement.requisition.infrastructure.handler.v1.lot.GetActiveLotsHandler
+import com.procurement.requisition.infrastructure.handler.v1.set.SetTenderUnsuccessfulHandler
 import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.create.CreatePCRHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.GetTenderStateHandler
@@ -36,10 +38,11 @@ class WebConfiguration(
     val transform: Transform,
     val createPCRService: CreatePCRService,
     val createRelationService: CreateRelationService,
-    val getTenderStateService: GetTenderStateService,
-    val validatePCRService: ValidatePCRService,
+    val createRequestsForEvPanelsService: CreateRequestsForEvPanelsService,
     val getActiveLotsService: GetActiveLotsService,
-    val createRequestsForEvPanelsService: CreateRequestsForEvPanelsService
+    val getTenderStateService: GetTenderStateService,
+    val setTenderUnsuccessfulService: SetTenderUnsuccessfulService,
+    val validatePCRService: ValidatePCRService,
 ) {
 
     @Bean
@@ -47,6 +50,7 @@ class WebConfiguration(
         listOf(
             HandlerDescription(CommandsV1.CommandType.CREATE_REQUESTS_FOR_EV_PANELS, createRequestsForEvPanelsHandler()),
             HandlerDescription(CommandsV1.CommandType.GET_ACTIVE_LOTS, getActiveLotsHandler()),
+            HandlerDescription(CommandsV1.CommandType.SET_TENDER_UNSUCCESSFUL, setTenderUnsuccessfulHandler()),
         )
     )
 
@@ -61,6 +65,10 @@ class WebConfiguration(
     @Bean
     fun getActiveLotsHandler(): Handler =
         GetActiveLotsHandler(logger = logger, transform = transform, getActiveLotsService = getActiveLotsService)
+    
+    @Bean
+    fun setTenderUnsuccessfulHandler(): Handler =
+        SetTenderUnsuccessfulHandler(logger = logger, transform = transform, setTenderUnsuccessfulService = setTenderUnsuccessfulService)
 
     @Bean
     fun handlersV2() = HandlersV2(

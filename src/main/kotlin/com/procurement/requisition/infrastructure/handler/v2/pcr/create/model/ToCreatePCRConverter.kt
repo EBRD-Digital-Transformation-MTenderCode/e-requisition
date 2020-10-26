@@ -1,7 +1,7 @@
 package com.procurement.requisition.infrastructure.handler.v2.pcr.create.model
 
-import com.procurement.requisition.application.service.create.model.CreatePCRCommand
-import com.procurement.requisition.application.service.create.model.StateFE
+import com.procurement.requisition.application.service.create.pcr.model.CreatePCRCommand
+import com.procurement.requisition.application.service.create.pcr.model.StateFE
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.award.AwardCriteria

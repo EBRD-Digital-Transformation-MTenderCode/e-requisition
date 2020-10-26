@@ -4,7 +4,7 @@ import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessI
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessScheme
 import com.procurement.requisition.domain.model.relatedprocesses.Relationship
 
-data class CreatedRelation(
+data class CreateRelationResult(
     val relatedProcesses: List<RelatedProcess>
 ) {
 

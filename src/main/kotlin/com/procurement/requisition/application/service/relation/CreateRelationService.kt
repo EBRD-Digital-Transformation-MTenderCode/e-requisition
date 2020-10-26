@@ -2,7 +2,7 @@ package com.procurement.requisition.application.service.relation
 
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.service.relation.model.CreateRelationCommand
-import com.procurement.requisition.application.service.relation.model.CreatedRelation
+import com.procurement.requisition.application.service.relation.model.CreateRelationResult
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.OperationType
@@ -23,7 +23,7 @@ class CreateRelationService(
     val pcrRepository: PCRRepository,
 ) {
 
-    fun create(command: CreateRelationCommand): Result<CreatedRelation, Failure> {
+    fun create(command: CreateRelationCommand): Result<CreateRelationResult, Failure> {
         val relationship = relationship(command.operationType)
             .onFailure { return it }
 
@@ -35,9 +35,9 @@ class CreateRelationService(
             uri = uri(prefix = uriProperties.tender, cpid = command.cpid, relatedOcid = command.relatedOcid)
         )
 
-        return CreatedRelation(
+        return CreateRelationResult(
             relatedProcesses = listOf(
-                CreatedRelation.RelatedProcess(
+                CreateRelationResult.RelatedProcess(
                     id = relatedProcess.id,
                     scheme = relatedProcess.scheme,
                     identifier = relatedProcess.identifier,

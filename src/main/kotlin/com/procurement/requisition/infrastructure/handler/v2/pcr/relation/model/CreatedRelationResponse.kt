@@ -1,7 +1,7 @@
 package com.procurement.requisition.infrastructure.handler.v2.pcr.relation.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.procurement.requisition.application.service.relation.model.CreatedRelation
+import com.procurement.requisition.application.service.relation.model.CreateRelationResult
 import com.procurement.requisition.infrastructure.handler.converter.asString
 
 data class CreatedRelationResponse(
@@ -17,11 +17,11 @@ data class CreatedRelationResponse(
     )
 }
 
-fun CreatedRelation.convert() = CreatedRelationResponse(
+fun CreateRelationResult.convert() = CreatedRelationResponse(
     relatedProcesses = relatedProcesses.map { it.convert() }
 )
 
-fun CreatedRelation.RelatedProcess.convert() = CreatedRelationResponse.RelatedProcess(
+fun CreateRelationResult.RelatedProcess.convert() = CreatedRelationResponse.RelatedProcess(
     id = id.underlying,
     scheme = scheme.asString(),
     identifier = identifier,

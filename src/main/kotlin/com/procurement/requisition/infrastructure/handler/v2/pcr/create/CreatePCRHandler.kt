@@ -4,7 +4,7 @@ import com.procurement.requisition.application.extension.tryMapping
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.create.CreatePCRService
+import com.procurement.requisition.application.service.create.pcr.CreatePCRService
 import com.procurement.requisition.domain.failure.error.RequestErrors
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.AbstractHandler
