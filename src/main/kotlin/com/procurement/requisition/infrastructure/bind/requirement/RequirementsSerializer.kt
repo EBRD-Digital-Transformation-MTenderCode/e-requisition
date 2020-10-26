@@ -47,7 +47,7 @@ class RequirementsSerializer : JsonSerializer<List<Requirement>>() {
                         requirementNode.put("expectedValue", requirement.value.value)
                     }
                     is ExpectedValue.AsNumber -> {
-                        requirementNode.put("expectedValue", requirement.value.toString())
+                        requirementNode.put("expectedValue", requirement.value.value)
                     }
                     is ExpectedValue.AsInteger -> {
                         requirementNode.put("expectedValue", requirement.value.value)

@@ -107,6 +107,17 @@
                   "startDate": "2020-10-19T10:22:42Z",
                   "endDate": "2020-10-19T10:22:42Z"
                 },
+                "dataType": "number",
+                "expectedValue": 10.21
+              },
+              {
+                "id": "string",
+                "title": "string",
+                "description": "string",
+                "period": {
+                  "startDate": "2020-10-19T10:22:42Z",
+                  "endDate": "2020-10-19T10:22:42Z"
+                },
                 "dataType": "integer",
                 "minValue": 1,
                 "maxValue": 5
