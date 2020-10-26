@@ -3,6 +3,7 @@ package com.procurement.requisition.infrastructure.configuration
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.create.CreatePCRService
+import com.procurement.requisition.application.service.create.request.CreateRequestsForEvPanelsService
 import com.procurement.requisition.application.service.get.lot.GetActiveLotsService
 import com.procurement.requisition.application.service.get.tender.state.GetTenderStateService
 import com.procurement.requisition.application.service.relation.CreateRelationService
@@ -10,6 +11,7 @@ import com.procurement.requisition.application.service.validate.ValidatePCRServi
 import com.procurement.requisition.infrastructure.handler.Handler
 import com.procurement.requisition.infrastructure.handler.HandlerDescription
 import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
+import com.procurement.requisition.infrastructure.handler.v1.create.request.CreateRequestsForEvPanelsHandler
 import com.procurement.requisition.infrastructure.handler.v1.lot.GetActiveLotsHandler
 import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.create.CreatePCRHandler
@@ -36,15 +38,29 @@ class WebConfiguration(
     val createRelationService: CreateRelationService,
     val getTenderStateService: GetTenderStateService,
     val validatePCRService: ValidatePCRService,
-    val getActiveLotsService: GetActiveLotsService
+    val getActiveLotsService: GetActiveLotsService,
+    val createRequestsForEvPanelsService: CreateRequestsForEvPanelsService
 ) {
 
     @Bean
     fun handlersV1() = HandlersV1(
         listOf(
+            HandlerDescription(CommandsV1.CommandType.CREATE_REQUESTS_FOR_EV_PANELS, createRequestsForEvPanelsHandler()),
             HandlerDescription(CommandsV1.CommandType.GET_ACTIVE_LOTS, getActiveLotsHandler()),
         )
     )
+
+    @Bean
+    fun createRequestsForEvPanelsHandler(): Handler =
+        CreateRequestsForEvPanelsHandler(
+            logger = logger,
+            transform = transform,
+            createRequestsForEvPanelsService = createRequestsForEvPanelsService
+        )
+
+    @Bean
+    fun getActiveLotsHandler(): Handler =
+        GetActiveLotsHandler(logger = logger, transform = transform, getActiveLotsService = getActiveLotsService)
 
     @Bean
     fun handlersV2() = HandlersV2(
@@ -58,10 +74,6 @@ class WebConfiguration(
             )
         )
     )
-
-    @Bean
-    fun getActiveLotsHandler(): Handler =
-        GetActiveLotsHandler(logger = logger, transform = transform, getActiveLotsService = getActiveLotsService)
 
     @Bean
     fun validatePcrDataHandler(): Handler =

@@ -33,6 +33,7 @@ object CommandsV1 {
     enum class CommandType(override val key: String, override val kind: Action.Kind) :
         EnumElementProvider.Element, Action {
 
+        CREATE_REQUESTS_FOR_EV_PANELS(key = "createRequestsForEvPanels", kind = Action.Kind.COMMAND),
         GET_ACTIVE_LOTS(key = "getActiveLots", kind = Action.Kind.QUERY);
 
         override fun toString(): String = key

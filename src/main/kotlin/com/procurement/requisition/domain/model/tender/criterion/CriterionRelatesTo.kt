@@ -4,6 +4,7 @@ import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
 enum class CriterionRelatesTo(override val key: String) : EnumElementProvider.Element {
 
+    AWARD("award"),
     ITEM("item"),
     LOT("lot");
 
