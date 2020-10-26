@@ -14,7 +14,7 @@ fun GetTenderStateRequest.convert(): Result<GetTenderStateCommand, JsonErrors> {
             JsonErrors.DataFormatMismatch(path = "#/cpid", actualValue = cpid, expectedFormat = Cpid.pattern)
         )
 
-    val ocid = Ocid.tryCreateOrNull(ocid)
+    val ocid = Ocid.SingleStage.tryCreateOrNull(ocid)
         ?: return failure(
             JsonErrors.DataFormatMismatch(path = "#/ocid", actualValue = ocid, expectedFormat = Cpid.pattern)
         )

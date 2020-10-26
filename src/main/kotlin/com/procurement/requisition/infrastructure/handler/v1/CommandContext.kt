@@ -28,13 +28,13 @@ class CommandContext(private val node: JsonNode) {
     val ocid: Result<Ocid, JsonErrors>
         get() = node.tryGetTextAttribute("ocid")
             .flatMap { value ->
-                Ocid.tryCreateOrNull(value)
+                Ocid.SingleStage.tryCreateOrNull(value)
                     ?.asSuccess()
                     ?: Result.failure(
                         JsonErrors.DataFormatMismatch(
                             path = "#/context/ocid",
                             actualValue = value,
-                            expectedFormat = Ocid.pattern,
+                            expectedFormat = Ocid.SingleStage.pattern,
                             reason = null
                         )
                     )

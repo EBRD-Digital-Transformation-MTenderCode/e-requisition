@@ -44,7 +44,7 @@ class CassandraPCRRepositoryIT {
         private const val JSON_DATA_COLUMN = "json_data"
 
         private val CPID = Cpid.generate(prefix = "ocds", country = "MD", timestamp = nowDefaultUTC())
-        private val OCID = Ocid.generate(cpid = CPID, stage = Stage.PC, timestamp = nowDefaultUTC())
+        private val OCID = Ocid.SingleStage.generate(cpid = CPID, stage = Stage.PC, timestamp = nowDefaultUTC())
         private val TOKEN = Token.generate()
         private const val OWNER = "owner"
         private val STATUS = TenderStatus.ACTIVE

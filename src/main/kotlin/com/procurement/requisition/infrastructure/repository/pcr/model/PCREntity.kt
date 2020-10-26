@@ -42,12 +42,12 @@ fun PCREntity.deserialization(): Result<PCR, JsonErrors> {
                 reason = null
             )
         )
-    val ocid = Ocid.tryCreateOrNull(ocid)
+    val ocid = Ocid.SingleStage.tryCreateOrNull(ocid)
         ?: return Result.failure(
             JsonErrors.DataFormatMismatch(
                 path = "#/ocid",
                 actualValue = ocid,
-                expectedFormat = Ocid.pattern,
+                expectedFormat = Ocid.SingleStage.pattern,
                 reason = null
             )
         )
