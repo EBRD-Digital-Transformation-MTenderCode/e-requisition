@@ -39,4 +39,7 @@ class CommandContext(private val node: JsonNode) {
                         )
                     )
             }
+
+    val owner: Result<String, JsonErrors>
+        get() = node.tryGetTextAttribute("owner")
 }

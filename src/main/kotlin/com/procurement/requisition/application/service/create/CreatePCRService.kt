@@ -173,8 +173,9 @@ fun criteriaRelatedItem(
     lotsMapping: Map<String, LotId>,
     itemsMapping: Map<String, ItemId>
 ): String = when (relatesTo) {
-    CriterionRelatesTo.LOT -> lotsMapping.getValue(relatedItem).underlying
+    CriterionRelatesTo.AWARD -> TODO()
     CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem).underlying
+    CriterionRelatesTo.LOT -> lotsMapping.getValue(relatedItem).underlying
 }
 
 fun lots(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>) = createPCR.tender.lots

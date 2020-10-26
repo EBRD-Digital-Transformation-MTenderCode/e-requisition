@@ -237,8 +237,20 @@ fun CreatePCRRequest.Tender.Target.Observation.Dimensions.convert(path: String):
 /**
  * Criterion
  */
+val allowedRelatesTo = CriterionRelatesTo.allowedElements
+    .asSequence()
+    .filter {
+        when (it) {
+            CriterionRelatesTo.ITEM,
+            CriterionRelatesTo.LOT -> true
+
+            CriterionRelatesTo.AWARD -> false
+        }
+    }
+    .toSet()
+
 fun CreatePCRRequest.Tender.Criterion.convert(path: String): Result<CreatePCRCommand.Tender.Criterion, JsonErrors> {
-    val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo, path = "$path/relatesTo")
+    val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo, path = "$path/relatesTo", allowedElements = allowedRelatesTo)
         ?.onFailure { return it }
     val requirementGroups = requirementGroups
         .failureIfEmpty { return failure(JsonErrors.EmptyArray(path = "$path/requirementGroups")) }
