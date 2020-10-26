@@ -1,12 +1,15 @@
 package com.procurement.requisition.infrastructure.handler.v2.pcr.validate
 
 import com.procurement.requisition.application.extension.tryMapping
+import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.validate.ValidatePCRService
 import com.procurement.requisition.domain.failure.error.RequestErrors
+import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.AbstractHandler
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
+import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model.ValidatePCRDataRequest
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model.convert
 import com.procurement.requisition.infrastructure.web.v2.CommandsV2
@@ -55,6 +58,13 @@ class ValidatePCRDataHandler(
         validatePCRService.validate(params)
             .onFailure { return failure(it.reason) }
 
-        return success(null)
+        val response = ApiResponseV2.Success(version = descriptor.version, id = descriptor.id, result = null)
+            .trySerialization(transform)
+            .mapFailure { failure ->
+                InternalServerError(description = failure.description, reason = failure.reason)
+            }
+            .onFailure { failure -> return failure }
+
+        return success(response)
     }
 }

@@ -48,14 +48,14 @@ object CommandsV1 {
                 CommandDescriptor(
                     version = node.getVersion().onFailure { failure -> return failure },
                     id = node.getId().onFailure { failure -> return failure },
-                    action = node.getAction().onFailure { failure -> return failure },
+                    action = node.getCommand().onFailure { failure -> return failure },
                     body = CommandDescriptor.Body(asString = content, asJsonNode = node)
                 )
             }
             .asSuccess()
 
     fun JsonNode.getId(): Result<CommandId, JsonErrors> = tryGetTextAttribute("id")
-    fun JsonNode.getAction(): Result<CommandType, JsonErrors> = tryGetAttributeAsEnum("action", CommandType)
+    fun JsonNode.getCommand(): Result<CommandType, JsonErrors> = tryGetAttributeAsEnum("command", CommandType)
     fun JsonNode.getVersion(): Result<ApiVersion, JsonErrors> = tryGetTextAttribute("version")
         .flatMap { version ->
             ApiVersion.orNull(version)
