@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.pcr.create.model
 
-import com.procurement.requisition.application.service.create.model.CreatePCRResult
+import com.procurement.requisition.application.service.create.pcr.model.CreatePCRResult
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.handler.converter.asStringOrNull
 

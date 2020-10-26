@@ -2,7 +2,7 @@ package com.procurement.requisition.infrastructure.configuration
 
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.create.CreatePCRService
+import com.procurement.requisition.application.service.create.pcr.CreatePCRService
 import com.procurement.requisition.application.service.create.request.CreateRequestsForEvPanelsService
 import com.procurement.requisition.application.service.get.lot.GetActiveLotsService
 import com.procurement.requisition.application.service.get.tender.state.GetTenderStateService

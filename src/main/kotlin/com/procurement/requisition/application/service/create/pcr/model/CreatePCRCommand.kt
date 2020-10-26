@@ -1,4 +1,4 @@
-package com.procurement.requisition.application.service.create.model
+package com.procurement.requisition.application.service.create.pcr.model
 
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.EntityBase

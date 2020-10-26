@@ -1,11 +1,11 @@
-package com.procurement.requisition.application.service.create
+package com.procurement.requisition.application.service.create.pcr
 
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.repository.pcr.PCRSerializer
-import com.procurement.requisition.application.service.create.model.CreatePCRCommand
-import com.procurement.requisition.application.service.create.model.CreatePCRResult
-import com.procurement.requisition.application.service.create.model.StateFE
-import com.procurement.requisition.application.service.create.model.convertToCreatedPCR
+import com.procurement.requisition.application.service.create.pcr.model.CreatePCRCommand
+import com.procurement.requisition.application.service.create.pcr.model.CreatePCRResult
+import com.procurement.requisition.application.service.create.pcr.model.StateFE
+import com.procurement.requisition.application.service.create.pcr.model.convertToCreatedPCR
 import com.procurement.requisition.domain.extension.nowDefaultUTC
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
