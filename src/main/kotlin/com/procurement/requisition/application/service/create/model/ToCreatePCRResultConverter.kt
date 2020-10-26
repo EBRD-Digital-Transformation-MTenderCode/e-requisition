@@ -18,7 +18,7 @@ import com.procurement.requisition.domain.model.tender.target.Target
 import com.procurement.requisition.domain.model.tender.target.observation.Dimensions
 import com.procurement.requisition.domain.model.tender.target.observation.Observation
 
-fun PCR.convertToCreatedPCR() = CreatedPCR(
+fun PCR.convertToCreatedPCR() = CreatePCRResult(
     ocid = ocid,
     token = token,
     tender = tender.convert(),
@@ -28,7 +28,7 @@ fun PCR.convertToCreatedPCR() = CreatedPCR(
 /**
  * Tender
  */
-fun Tender.convert() = CreatedPCR.Tender(
+fun Tender.convert() = CreatePCRResult.Tender(
     id = id,
     title = title,
     status = status,
@@ -52,12 +52,12 @@ fun Tender.convert() = CreatedPCR.Tender(
  * Classification
  */
 fun Classification.convert() =
-    CreatedPCR.Classification(id = id, scheme = scheme, description = description)
+    CreatePCRResult.Classification(id = id, scheme = scheme, description = description)
 
 /**
  * Unit
  */
-fun com.procurement.requisition.domain.model.tender.unit.Unit.convert() = CreatedPCR.Unit(
+fun com.procurement.requisition.domain.model.tender.unit.Unit.convert() = CreatePCRResult.Unit(
     id = id,
     name = name
 )
@@ -65,7 +65,7 @@ fun com.procurement.requisition.domain.model.tender.unit.Unit.convert() = Create
 /**
  * Lot
  */
-fun Lot.convert() = CreatedPCR.Tender.Lot(
+fun Lot.convert() = CreatePCRResult.Tender.Lot(
     id = id,
     internalId = internalId,
     title = title,
@@ -77,12 +77,12 @@ fun Lot.convert() = CreatedPCR.Tender.Lot(
 )
 
 fun Variant.convert() =
-    CreatedPCR.Tender.Lot.Variant(hasVariants = hasVariants, variantsDetails = variantsDetails)
+    CreatePCRResult.Tender.Lot.Variant(hasVariants = hasVariants, variantsDetails = variantsDetails)
 
 /**
  * Item
  */
-fun Item.convert() = CreatedPCR.Tender.Item(
+fun Item.convert() = CreatePCRResult.Tender.Item(
     id = id,
     internalId = internalId,
     description = description,
@@ -95,7 +95,7 @@ fun Item.convert() = CreatedPCR.Tender.Item(
 /**
  * Target
  */
-fun Target.convert() = CreatedPCR.Tender.Target(
+fun Target.convert() = CreatePCRResult.Tender.Target(
     id = id,
     title = title,
     relatesTo = relatesTo,
@@ -103,7 +103,7 @@ fun Target.convert() = CreatedPCR.Tender.Target(
     observations = observations.map { it.convert() }
 )
 
-fun Observation.convert() = CreatedPCR.Tender.Target.Observation(
+fun Observation.convert() = CreatePCRResult.Tender.Target.Observation(
     id = id,
     period = period?.convert(),
     measure = measure,
@@ -113,18 +113,18 @@ fun Observation.convert() = CreatedPCR.Tender.Target.Observation(
     relatedRequirementId = relatedRequirementId,
 )
 
-fun Period.convert() = CreatedPCR.Tender.Target.Observation.Period(
+fun Period.convert() = CreatePCRResult.Tender.Target.Observation.Period(
     startDate = startDate,
     endDate = endDate
 )
 
 fun Dimensions.convert() =
-    CreatedPCR.Tender.Target.Observation.Dimensions(requirementClassIdPR = requirementClassIdPR)
+    CreatePCRResult.Tender.Target.Observation.Dimensions(requirementClassIdPR = requirementClassIdPR)
 
 /**
  * Criterion
  */
-fun Criterion.convert() = CreatedPCR.Tender.Criterion(
+fun Criterion.convert() = CreatePCRResult.Tender.Criterion(
     id = id,
     title = title,
     source = source,
@@ -134,7 +134,7 @@ fun Criterion.convert() = CreatedPCR.Tender.Criterion(
     requirementGroups = requirementGroups.map { it.convert() },
 )
 
-fun RequirementGroup.convert() = CreatedPCR.Tender.Criterion.RequirementGroup(
+fun RequirementGroup.convert() = CreatePCRResult.Tender.Criterion.RequirementGroup(
     id = id,
     description = description,
     requirements = requirements.toList(),
@@ -143,7 +143,7 @@ fun RequirementGroup.convert() = CreatedPCR.Tender.Criterion.RequirementGroup(
 /**
  * Conversion
  */
-fun Conversion.convert() = CreatedPCR.Tender.Conversion(
+fun Conversion.convert() = CreatePCRResult.Tender.Conversion(
     id = id,
     relatesTo = relatesTo,
     relatedItem = relatedItem,
@@ -153,12 +153,12 @@ fun Conversion.convert() = CreatedPCR.Tender.Conversion(
 )
 
 fun Coefficient.convert() =
-    CreatedPCR.Tender.Conversion.Coefficient(id = id, value = value, coefficient = coefficient)
+    CreatePCRResult.Tender.Conversion.Coefficient(id = id, value = value, coefficient = coefficient)
 
 /**
  * RelatedProcess
  */
-fun RelatedProcess.convert() = CreatedPCR.RelatedProcess(
+fun RelatedProcess.convert() = CreatePCRResult.RelatedProcess(
     id = id,
     scheme = scheme,
     identifier = identifier,
@@ -169,7 +169,7 @@ fun RelatedProcess.convert() = CreatedPCR.RelatedProcess(
 /**
  * Document
  */
-fun Document.convert() = CreatedPCR.Tender.Document(
+fun Document.convert() = CreatePCRResult.Tender.Document(
     id = id,
     documentType = documentType,
     title = title,
@@ -180,4 +180,4 @@ fun Document.convert() = CreatedPCR.Tender.Document(
 /**
  * Value
  */
-fun Value.convert() = CreatedPCR.Tender.Value(currency = currency)
+fun Value.convert() = CreatePCRResult.Tender.Value(currency = currency)

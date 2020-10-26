@@ -3,7 +3,7 @@ package com.procurement.requisition.application.service.create
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.repository.pcr.PCRSerializer
 import com.procurement.requisition.application.service.create.model.CreatePCRCommand
-import com.procurement.requisition.application.service.create.model.CreatedPCR
+import com.procurement.requisition.application.service.create.model.CreatePCRResult
 import com.procurement.requisition.application.service.create.model.StateFE
 import com.procurement.requisition.application.service.create.model.convertToCreatedPCR
 import com.procurement.requisition.domain.extension.nowDefaultUTC
@@ -79,7 +79,7 @@ class CreatePCRService(
     val pcrSerializer: PCRSerializer
 ) {
 
-    fun create(command: CreatePCRCommand): Result<CreatedPCR, Failure> {
+    fun create(command: CreatePCRCommand): Result<CreatePCRResult, Failure> {
 
         val lotsMapping: Map<String, LotId> = command.tender.lots
             .asSequence()
