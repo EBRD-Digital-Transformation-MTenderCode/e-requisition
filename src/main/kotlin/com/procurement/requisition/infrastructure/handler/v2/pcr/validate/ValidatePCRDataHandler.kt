@@ -16,7 +16,6 @@ import com.procurement.requisition.infrastructure.web.v2.CommandsV2
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
-import com.procurement.requisition.lib.functional.Result.Companion.success
 
 class ValidatePCRDataHandler(
     override val logger: Logger,
@@ -58,13 +57,10 @@ class ValidatePCRDataHandler(
         validatePCRService.validate(params)
             .onFailure { return failure(it.reason) }
 
-        val response = ApiResponseV2.Success(version = descriptor.version, id = descriptor.id, result = null)
+        return ApiResponseV2.Success(version = descriptor.version, id = descriptor.id, result = null)
             .trySerialization(transform)
             .mapFailure { failure ->
                 InternalServerError(description = failure.description, reason = failure.reason)
             }
-            .onFailure { failure -> return failure }
-
-        return success(response)
     }
 }
