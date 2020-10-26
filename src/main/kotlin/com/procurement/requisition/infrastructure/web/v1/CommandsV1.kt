@@ -55,7 +55,7 @@ object CommandsV1 {
             .asSuccess()
 
     fun JsonNode.getId(): Result<CommandId, JsonErrors> = tryGetTextAttribute("id")
-    fun JsonNode.getAction(): Result<CommandType, JsonErrors> = tryGetAttributeAsEnum("action", CommandType)
+    fun JsonNode.getAction(): Result<CommandType, JsonErrors> = tryGetAttributeAsEnum("command", CommandType)
     fun JsonNode.getVersion(): Result<ApiVersion, JsonErrors> = tryGetTextAttribute("version")
         .flatMap { version ->
             ApiVersion.orNull(version)
