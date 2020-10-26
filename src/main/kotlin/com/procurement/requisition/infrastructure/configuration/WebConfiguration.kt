@@ -8,6 +8,7 @@ import com.procurement.requisition.application.service.get.lot.GetActiveLotsServ
 import com.procurement.requisition.application.service.get.tender.state.GetTenderStateService
 import com.procurement.requisition.application.service.relation.CreateRelationService
 import com.procurement.requisition.application.service.set.SetLotsStatusUnsuccessfulService
+import com.procurement.requisition.application.service.set.SetTenderStatusDetailsService
 import com.procurement.requisition.application.service.set.SetTenderStatusUnsuccessfulService
 import com.procurement.requisition.application.service.validate.ValidatePCRService
 import com.procurement.requisition.infrastructure.handler.Handler
@@ -16,6 +17,7 @@ import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
 import com.procurement.requisition.infrastructure.handler.v1.create.request.CreateRequestsForEvPanelsHandler
 import com.procurement.requisition.infrastructure.handler.v1.get.lot.GetActiveLotsHandler
 import com.procurement.requisition.infrastructure.handler.v1.set.SetLotsStatusUnsuccessfulHandler
+import com.procurement.requisition.infrastructure.handler.v1.set.SetTenderStatusDetailsHandler
 import com.procurement.requisition.infrastructure.handler.v1.set.SetTenderStatusUnsuccessfulHandler
 import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.create.CreatePCRHandler
@@ -44,6 +46,7 @@ class WebConfiguration(
     val getActiveLotsService: GetActiveLotsService,
     val getTenderStateService: GetTenderStateService,
     val setLotsStatusUnsuccessfulService: SetLotsStatusUnsuccessfulService,
+    val setTenderStatusDetailsService: SetTenderStatusDetailsService,
     val setTenderStatusUnsuccessfulService: SetTenderStatusUnsuccessfulService,
     val validatePCRService: ValidatePCRService,
 ) {
@@ -54,6 +57,7 @@ class WebConfiguration(
             HandlerDescription(CommandsV1.CommandType.CREATE_REQUESTS_FOR_EV_PANELS, createRequestsForEvPanelsHandler()),
             HandlerDescription(CommandsV1.CommandType.GET_ACTIVE_LOTS, getActiveLotsHandler()),
             HandlerDescription(CommandsV1.CommandType.SET_LOTS_STATUS_UNSUCCESSFUL, setLotsStatusUnsuccessfulHandler()),
+            HandlerDescription(CommandsV1.CommandType.SET_TENDER_STATUS_DETAILS, setTenderStatusUnsuccessfulHandler()),
             HandlerDescription(CommandsV1.CommandType.SET_TENDER_STATUS_UNSUCCESSFUL, setTenderStatusUnsuccessfulHandler()),
         )
     )
@@ -73,6 +77,10 @@ class WebConfiguration(
     @Bean
     fun setLotsStatusUnsuccessfulHandler(): Handler =
         SetLotsStatusUnsuccessfulHandler(logger = logger, transform = transform, setLotsStatusUnsuccessfulService = setLotsStatusUnsuccessfulService)
+    
+    @Bean
+    fun setTenderStatusDetailsHandler(): Handler =
+        SetTenderStatusDetailsHandler(logger = logger, transform = transform, setTenderStatusDetailsService = setTenderStatusDetailsService)
     
     @Bean
     fun setTenderStatusUnsuccessfulHandler(): Handler =
