@@ -7,7 +7,7 @@ import com.procurement.requisition.lib.functional.Result
 import java.time.LocalDateTime
 
 interface HistoryRepository {
-    fun getHistory(commandId: CommandId): Result<HistoryEntity?, DatabaseIncident>
+    fun getHistory(commandId: CommandId): Result<String?, DatabaseIncident>
     fun saveHistory(entity: HistoryEntity): Result<HistoryEntity, DatabaseIncident>
 }
 

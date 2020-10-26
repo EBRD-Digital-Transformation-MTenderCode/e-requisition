@@ -10,11 +10,11 @@ import com.procurement.requisition.domain.extension.parseLocalDateTime
 import com.procurement.requisition.infrastructure.handler.Action
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.handler.model.CommandId
-import com.procurement.requisition.infrastructure.handler.model.CommandType
 import com.procurement.requisition.infrastructure.repository.CassandraTestContainer
 import com.procurement.requisition.infrastructure.repository.DatabaseTestConfiguration
 import com.procurement.requisition.infrastructure.service.HistoryEntity
 import com.procurement.requisition.infrastructure.service.HistoryRepository
+import com.procurement.requisition.infrastructure.web.api.CommandsV2
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -41,7 +41,7 @@ class CassandraHistoryRepositoryIT {
         private const val JSON_DATA_COLUMN = "json_data"
 
         private val COMMAND_ID: CommandId = UUID.randomUUID().toString()
-        private val COMMAND_NAME: Action = CommandType.VALIDATE_PCR_DATA
+        private val COMMAND_NAME: Action = CommandsV2.CommandType.VALIDATE_PCR_DATA
         private val COMMAND_DATE = LocalDateTime.now().asString().parseLocalDateTime()
         private const val JSON_DATA: String = """{"tender": {"title" : "Tender-Title"}}"""
 
@@ -113,10 +113,7 @@ class CassandraHistoryRepositoryIT {
         assertTrue(loadedResult.isSuccess)
         loadedResult.forEach {
             assertNotNull(it)
-            assertEquals(HISTORY_ENTITY.commandId, it!!.commandId)
-            assertEquals(HISTORY_ENTITY.action, it.action)
-            assertEquals(HISTORY_ENTITY.date, it.date)
-            assertEquals(HISTORY_ENTITY.data, it.data)
+            assertEquals(HISTORY_ENTITY.data, it)
         }
     }
 

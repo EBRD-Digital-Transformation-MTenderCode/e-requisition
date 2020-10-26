@@ -26,6 +26,11 @@ sealed class Result<out T, out E> {
         is Failure<E> -> f(this)
     }
 
+    inline fun recovery(f: (E) -> @UnsafeVariance T): T = when (this) {
+        is Success<T> -> value
+        is Failure<E> -> f(this.reason)
+    }
+
     val asOption: Option<T>
         get() = when (this) {
             is Success -> Option.pure(value)

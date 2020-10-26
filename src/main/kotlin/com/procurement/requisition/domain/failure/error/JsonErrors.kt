@@ -4,6 +4,13 @@ import com.procurement.requisition.lib.fail.Failure
 
 sealed class JsonErrors(override val code: String, val path: String) : Failure.Error() {
 
+    class Parsing(override val reason: Exception?) :
+        JsonErrors(code = "DR-1", path = "#/") {
+
+        override val description: String
+            get() = "Error of parsing."
+    }
+
     class MissingRequiredAttribute(path: String, override val reason: Exception?) :
         JsonErrors(code = "DR-1", path = path) {
 
