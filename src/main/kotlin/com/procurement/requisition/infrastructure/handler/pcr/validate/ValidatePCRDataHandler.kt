@@ -9,7 +9,7 @@ import com.procurement.requisition.infrastructure.handler.AbstractHandler
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.pcr.validate.model.ValidatePCRDataRequest
 import com.procurement.requisition.infrastructure.handler.pcr.validate.model.convert
-import com.procurement.requisition.infrastructure.web.api.CommandsV2
+import com.procurement.requisition.infrastructure.web.v2.CommandsV2
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure

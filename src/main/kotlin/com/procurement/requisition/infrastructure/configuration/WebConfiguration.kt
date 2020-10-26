@@ -16,8 +16,8 @@ import com.procurement.requisition.infrastructure.handler.pcr.validate.ValidateP
 import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
 import com.procurement.requisition.infrastructure.handler.v1.lot.GetActiveLotsHandler
 import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
-import com.procurement.requisition.infrastructure.web.api.CommandsV1
-import com.procurement.requisition.infrastructure.web.api.CommandsV2
+import com.procurement.requisition.infrastructure.web.v1.CommandsV1
+import com.procurement.requisition.infrastructure.web.v2.CommandsV2
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration

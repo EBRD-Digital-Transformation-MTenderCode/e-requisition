@@ -12,7 +12,7 @@ import com.procurement.requisition.infrastructure.handler.model.CommandDescripto
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV2
 import com.procurement.requisition.infrastructure.handler.pcr.query.model.GetTenderStateRequest
 import com.procurement.requisition.infrastructure.handler.pcr.query.model.convert
-import com.procurement.requisition.infrastructure.web.api.CommandsV2
+import com.procurement.requisition.infrastructure.web.v2.CommandsV2
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 

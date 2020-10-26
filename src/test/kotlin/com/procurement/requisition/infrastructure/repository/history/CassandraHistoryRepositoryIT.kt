@@ -14,7 +14,7 @@ import com.procurement.requisition.infrastructure.repository.CassandraTestContai
 import com.procurement.requisition.infrastructure.repository.DatabaseTestConfiguration
 import com.procurement.requisition.infrastructure.service.HistoryEntity
 import com.procurement.requisition.infrastructure.service.HistoryRepository
-import com.procurement.requisition.infrastructure.web.api.CommandsV2
+import com.procurement.requisition.infrastructure.web.v2.CommandsV2
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull

@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.web.api
+package com.procurement.requisition.infrastructure.web.v1
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.requisition.application.service.Transform
