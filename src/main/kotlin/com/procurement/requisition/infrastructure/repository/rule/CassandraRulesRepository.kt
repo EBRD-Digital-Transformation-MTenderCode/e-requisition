@@ -69,41 +69,4 @@ class CassandraRulesRepository(
             ?.asSuccess()
             ?: RuleIncident.NotFound(country = country, pmd = pmd, operationType = operationType, parameter = parameter)
                 .asFailure()
-
-/*    override fun lotStatuses(
-        country: String,
-        pmd: ProcurementMethodDetails,
-        operationType: OperationType
-    ): Result<LotStatesRule, Failure> =
-        get(country = country, pmd = pmd, operationType = operationType, parameter = PARAMETER_VALID_LOT_STATES)
-            .deserialization<LotStatusesEntity>(transform)
-            .converting(LotStatusesEntity::convert)
-
-    override fun tenderStates(
-        country: String,
-        pmd: ProcurementMethodDetails,
-        operationType: OperationType
-    ): Result<TenderStatesRule, Failure> =
-        get(country = country, pmd = pmd, operationType = operationType, parameter = PARAMETER_VALID_STATES)
-            .deserialization<TenderStatesEntity>(transform)
-            .converting(TenderStatesEntity::convert)
-
-    private inline fun <reified T> Result<String, Failure>.deserialization(transform: Transform): Result<T, Failure> =
-        flatMap { json ->
-            json.tryDeserialization<T>(transform)
-                .mapFailure { failure ->
-                    DatabaseIncident.Data(
-                        description = failure.description + " Json: '$json'.",
-                        reason = failure.reason
-                    )
-                }
-        }
-
-    private fun <T, R> Result<T, Failure>.converting(converter: T.() -> Result<R, Failure>): Result<R, Failure> =
-        this.flatMap { entity ->
-            entity.converter()
-                .mapFailure { failure ->
-                    DatabaseIncident.Data(description = failure.description, reason = failure.reason)
-                }
-        }*/
 }
