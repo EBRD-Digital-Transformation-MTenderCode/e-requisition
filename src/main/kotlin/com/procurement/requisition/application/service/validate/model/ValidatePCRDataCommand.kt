@@ -41,7 +41,7 @@ data class ValidatePCRDataCommand(
             val title: String,
             val description: String?,
             val classification: Classification,
-            val variants: Variant
+            val variants: List<Variant>
         ) : EntityBase<String>() {
 
             data class Variant(

@@ -64,7 +64,9 @@ data class ValidatePCRDataRequest(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
             @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
-            @field:JsonProperty("variants") @param:JsonProperty("variants") val variants: Variant
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("variants") @param:JsonProperty("variants") val variants: List<Variant>
         ) {
 
             data class Variant(

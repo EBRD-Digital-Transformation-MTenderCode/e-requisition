@@ -14,9 +14,11 @@
           "id": "string",
           "scheme": "CPV"
         },
-        "variants": {
-          "hasVariants": true
-        }
+        "variants": [
+          {
+            "hasVariants": true
+          }
+        ]
       }
     ],
     "items": [

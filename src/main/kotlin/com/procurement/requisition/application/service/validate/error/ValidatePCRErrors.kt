@@ -14,7 +14,12 @@ sealed class ValidatePCRErrors(
     sealed class Lot(code: String, description: String) : ValidatePCRErrors(code = code, description = description) {
         class DuplicateId : Lot(code = "VR.COM-17.1.1", description = "")
         class InvalidClassificationId : Lot(code = "VR.COM-17.1.2", description = "")
-        class VariantsDetails : Lot(code = "VR.COM-17.1.3", description = "")
+        class VariantsDetails(lotId: String) :
+            Lot(
+                code = "VR.COM-17.1.3",
+                description = "Invalid value of attribute 'variantsDetails' in lot with id '$lotId'."
+            )
+
         class MissingItem : Lot(code = "VR.COM-17.1.29", description = "")
     }
 
