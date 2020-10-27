@@ -25,7 +25,7 @@ data class DocumentEntity(
     @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>
+    @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String> = emptyList()
 )
 
 fun Document.serialization() = DocumentEntity(
