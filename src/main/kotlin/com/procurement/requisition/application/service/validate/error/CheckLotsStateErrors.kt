@@ -28,7 +28,7 @@ sealed class CheckLotsStateErrors(
 
         class InvalidState(lotId: LotId, status: TenderStatus) :
             CheckLotsStateErrors(
-                code = "VR.COM-17.6.2",
+                code = "VR.COM-17.6.3",
                 description = "Lot with id '$lotId' has invalid status '${status.key}'."
             )
     }
