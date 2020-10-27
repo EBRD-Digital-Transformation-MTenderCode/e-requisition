@@ -63,7 +63,7 @@ class WebConfiguration(
             HandlerDescription(CommandsV1.CommandType.CREATE_REQUESTS_FOR_EV_PANELS, createRequestsForEvPanelsHandler()),
             HandlerDescription(CommandsV1.CommandType.GET_ACTIVE_LOTS, getActiveLotsHandler()),
             HandlerDescription(CommandsV1.CommandType.SET_LOTS_STATUS_UNSUCCESSFUL, setLotsStatusUnsuccessfulHandler()),
-            HandlerDescription(CommandsV1.CommandType.SET_TENDER_STATUS_DETAILS, setTenderStatusUnsuccessfulHandler()),
+            HandlerDescription(CommandsV1.CommandType.SET_TENDER_STATUS_DETAILS, setTenderStatusDetailsHandler()),
             HandlerDescription(CommandsV1.CommandType.SET_TENDER_STATUS_UNSUCCESSFUL, setTenderStatusUnsuccessfulHandler()),
         )
     )
