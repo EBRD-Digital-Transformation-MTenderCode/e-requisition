@@ -34,8 +34,12 @@ class ValidatePCRService {
                     return Validated.error(ValidatePCRErrors.Lot.InvalidClassificationId())
 
                 // VR.COM-17.1.3
-                if (!lot.variants.hasVariants && lot.variants.variantsDetails != null)
-                    return Validated.error(ValidatePCRErrors.Lot.VariantsDetails())
+                lot.variants
+                    .forEach { variant ->
+                        if (!variant.hasVariants && variant.variantsDetails != null)
+                            return Validated.error(ValidatePCRErrors.Lot.VariantsDetails(lot.id))
+                    }
+
             }
 
         // VR.COM-17.1.4

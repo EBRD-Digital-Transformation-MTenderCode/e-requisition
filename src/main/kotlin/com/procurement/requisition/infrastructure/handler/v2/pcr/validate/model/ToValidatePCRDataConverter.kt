@@ -127,7 +127,10 @@ fun ValidatePCRDataRequest.Tender.Lot.convert(path: String): Result<ValidatePCRD
             )
         )
     val classification = classification.convert(path = "$path/classification").onFailure { return it }
-    val variants = variants.convert(path = "$path/variants").onFailure { return it }
+    val variants = variants.map { variant ->
+        variant.convert(path = "$path/variants")
+            .onFailure { return it }
+    }
 
     return ValidatePCRDataCommand.Tender.Lot(
         id = id,
