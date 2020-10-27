@@ -25,10 +25,12 @@
           "scheme": "CPV",
           "description": "string"
         },
-        "variants": {
-          "hasVariants": true,
-          "variantsDetails": "string"
-        }
+        "variants": [
+          {
+            "hasVariants": true,
+            "variantsDetails": "string"
+          }
+        ]
       }
     ],
     "items": [
@@ -159,7 +161,7 @@
     ],
     "awardCriteria": "priceOnly",
     "awardCriteriaDetails": "automated",
-    "value" : {
+    "value": {
       "currency": "MDL"
     }
   },

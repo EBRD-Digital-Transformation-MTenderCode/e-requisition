@@ -58,6 +58,7 @@ import com.procurement.requisition.domain.model.tender.lot.LotStatusDetails
 import com.procurement.requisition.domain.model.tender.lot.Lots
 import com.procurement.requisition.domain.model.tender.lot.RelatedLots
 import com.procurement.requisition.domain.model.tender.lot.Variant
+import com.procurement.requisition.domain.model.tender.lot.Variants
 import com.procurement.requisition.domain.model.tender.target.Target
 import com.procurement.requisition.domain.model.tender.target.TargetId
 import com.procurement.requisition.domain.model.tender.target.TargetRelatedItem
@@ -197,12 +198,13 @@ fun lots(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>) = createP
             statusDetails = LotStatusDetails.EMPTY,
             classification = lot.classification,
             variants = lot.variants
-                .let { variant ->
+                .map { variant ->
                     Variant(
                         hasVariants = variant.hasVariants,
                         variantsDetails = variant.variantsDetails
                     )
-                },
+                }
+                .let { Variants(it) },
         )
     }
     .let { Lots(it) }

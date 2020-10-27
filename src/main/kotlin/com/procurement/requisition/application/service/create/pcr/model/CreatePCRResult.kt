@@ -74,7 +74,7 @@ data class CreatePCRResult(
             val status: LotStatus,
             val statusDetails: LotStatusDetails,
             val classification: Classification,
-            val variants: Variant
+            val variants: List<Variant>
         ) {
 
             data class Variant(

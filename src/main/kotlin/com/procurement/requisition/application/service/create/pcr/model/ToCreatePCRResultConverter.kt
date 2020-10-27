@@ -73,7 +73,7 @@ fun Lot.convert() = CreatePCRResult.Tender.Lot(
     status = status,
     statusDetails = statusDetails,
     classification = classification.convert(),
-    variants = variants.convert(),
+    variants = variants.map { it.convert() },
 )
 
 fun Variant.convert() =

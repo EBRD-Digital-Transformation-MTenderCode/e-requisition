@@ -7,6 +7,7 @@ import com.procurement.requisition.domain.model.tender.lot.Lot
 import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.LotStatus
 import com.procurement.requisition.domain.model.tender.lot.LotStatusDetails
+import com.procurement.requisition.domain.model.tender.lot.Variants
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.repository.pcr.model.ClassificationEntity
@@ -29,7 +30,7 @@ data class LotEntity(
     @field:JsonProperty("status") @param:JsonProperty("status") val status: String,
     @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: String,
     @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: ClassificationEntity,
-    @field:JsonProperty("variants") @param:JsonProperty("variants") val variants: VariantEntity
+    @field:JsonProperty("variants") @param:JsonProperty("variants") val variants: List<VariantEntity>
 )
 
 fun Lot.serialization() = LotEntity(
@@ -40,7 +41,7 @@ fun Lot.serialization() = LotEntity(
     status = status.asString(),
     statusDetails = statusDetails.asString(),
     classification = classification.serialization(),
-    variants = variants.serialization(),
+    variants = variants.map { it.serialization() },
 )
 
 fun LotEntity.deserialization(path: String): Result<Lot, JsonErrors> {
@@ -58,7 +59,12 @@ fun LotEntity.deserialization(path: String): Result<Lot, JsonErrors> {
     val statusDetails = statusDetails.asEnum(target = LotStatusDetails, path = "$path/statusDetails")
         .onFailure { return it }
     val classification = classification.deserialization(path = "$path/classification").onFailure { return it }
-    val variants = variants.deserialization(path = "$path/variants").onFailure { return it }
+    val variants = variants
+        .map { variant ->
+            variant.deserialization(path = "$path/variants")
+                .onFailure { return it }
+        }
+        .let { Variants(it) }
 
     return Lot(
         id = id,
