@@ -3,6 +3,7 @@ package com.procurement.requisition.application.service.relation
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.service.relation.model.CreateRelationCommand
 import com.procurement.requisition.application.service.relation.model.CreateRelationResult
+import com.procurement.requisition.domain.failure.incident.InvalidArgumentValueIncident
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.OperationType
@@ -14,6 +15,7 @@ import com.procurement.requisition.domain.model.relatedprocesses.Relationships
 import com.procurement.requisition.infrastructure.configuration.properties.UriProperties
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
+import com.procurement.requisition.lib.functional.asFailure
 import com.procurement.requisition.lib.functional.asSuccess
 import org.springframework.stereotype.Service
 
@@ -49,11 +51,17 @@ class CreateRelationService(
     }
 }
 
-fun relationship(operationType: OperationType): Result<Relationship, Failure> = when (operationType) {
-    OperationType.CREATE_PCR -> Relationship.X_PRE_AWARD_CATALOG_REQUEST.asSuccess()
-    OperationType.SUBMIT_BID_IN_PCR -> TODO()
-    OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR -> TODO()
-    OperationType.TENDER_PERIOD_END_IN_PCR -> TODO()
-}
+fun relationship(operationType: OperationType): Result<Relationship, InvalidArgumentValueIncident> =
+    when (operationType) {
+        OperationType.CREATE_PCR -> Relationship.X_PRE_AWARD_CATALOG_REQUEST.asSuccess()
+
+        OperationType.SUBMIT_BID_IN_PCR,
+        OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,
+        OperationType.TENDER_PERIOD_END_IN_PCR -> InvalidArgumentValueIncident(
+            name = "operationType",
+            value = operationType,
+            expectedValue = listOf(Relationship.X_PRE_AWARD_CATALOG_REQUEST)
+        ).asFailure()
+    }
 
 fun uri(prefix: String, cpid: Cpid, relatedOcid: Ocid) = "$prefix/${cpid.underlying}/${relatedOcid.underlying}"
