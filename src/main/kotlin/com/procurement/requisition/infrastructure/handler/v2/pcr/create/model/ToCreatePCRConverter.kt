@@ -145,7 +145,11 @@ fun CreatePCRRequest.Unit.convert(path: String): Result<CreatePCRCommand.Unit, J
  */
 fun CreatePCRRequest.Tender.Lot.convert(path: String): Result<CreatePCRCommand.Tender.Lot, JsonErrors> {
     val classification = classification.convert(path = "$path/classification").onFailure { return it }
-    val variants = variants.convert(path = "$path/variants").onFailure { return it }
+    val variants = variants
+        .map { variant ->
+            variant.convert(path = "$path/variants")
+                .onFailure { return it }
+        }
 
     return CreatePCRCommand.Tender.Lot(
         id = id,
@@ -250,8 +254,9 @@ val allowedRelatesTo = CriterionRelatesTo.allowedElements
     .toSet()
 
 fun CreatePCRRequest.Tender.Criterion.convert(path: String): Result<CreatePCRCommand.Tender.Criterion, JsonErrors> {
-    val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo, path = "$path/relatesTo", allowedElements = allowedRelatesTo)
-        ?.onFailure { return it }
+    val relatesTo =
+        relatesTo?.asEnum(target = CriterionRelatesTo, path = "$path/relatesTo", allowedElements = allowedRelatesTo)
+            ?.onFailure { return it }
     val requirementGroups = requirementGroups
         .failureIfEmpty { return failure(JsonErrors.EmptyArray(path = "$path/requirementGroups")) }
         .mapIndexedOrEmpty { idx, requirementGroup ->

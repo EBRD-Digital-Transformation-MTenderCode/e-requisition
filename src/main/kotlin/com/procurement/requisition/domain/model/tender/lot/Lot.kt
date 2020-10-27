@@ -11,5 +11,5 @@ data class Lot(
     val status: LotStatus,
     val statusDetails: LotStatusDetails,
     val classification: Classification,
-    val variants: Variant
+    val variants: Variants
 ) : EntityBase<LotId>()

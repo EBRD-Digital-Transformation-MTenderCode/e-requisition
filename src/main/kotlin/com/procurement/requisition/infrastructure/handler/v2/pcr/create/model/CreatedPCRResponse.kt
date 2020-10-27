@@ -81,7 +81,9 @@ data class CreatedPCRResponse(
             @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: String?,
 
             @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
-            @field:JsonProperty("variants") @param:JsonProperty("variants") val variants: Variant
+
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
+            @field:JsonProperty("variants") @param:JsonProperty("variants") val variants: List<Variant>
         ) {
 
             data class Variant(
