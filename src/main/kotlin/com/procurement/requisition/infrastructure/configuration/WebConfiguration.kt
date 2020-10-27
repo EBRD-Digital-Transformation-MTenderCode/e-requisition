@@ -10,6 +10,7 @@ import com.procurement.requisition.application.service.relation.CreateRelationSe
 import com.procurement.requisition.application.service.set.SetLotsStatusUnsuccessfulService
 import com.procurement.requisition.application.service.set.SetTenderStatusDetailsService
 import com.procurement.requisition.application.service.set.SetTenderStatusUnsuccessfulService
+import com.procurement.requisition.application.service.validate.CheckLotsStateService
 import com.procurement.requisition.application.service.validate.CheckTenderStateService
 import com.procurement.requisition.application.service.validate.ValidatePCRService
 import com.procurement.requisition.infrastructure.handler.Handler
@@ -24,6 +25,7 @@ import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.create.CreatePCRHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.GetTenderStateHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.relation.CreateRelationHandler
+import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.CheckLotsStateHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.CheckTenderStateHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.ValidatePCRDataHandler
 import com.procurement.requisition.infrastructure.web.v1.CommandsV1
@@ -42,6 +44,7 @@ import org.springframework.context.annotation.Configuration
 class WebConfiguration(
     val logger: Logger,
     val transform: Transform,
+    val checkLotsStateService: CheckLotsStateService,
     val checkTenderStateService: CheckTenderStateService,
     val createPCRService: CreatePCRService,
     val createRelationService: CreateRelationService,
@@ -80,11 +83,11 @@ class WebConfiguration(
     @Bean
     fun setLotsStatusUnsuccessfulHandler(): Handler =
         SetLotsStatusUnsuccessfulHandler(logger = logger, transform = transform, setLotsStatusUnsuccessfulService = setLotsStatusUnsuccessfulService)
-    
+
     @Bean
     fun setTenderStatusDetailsHandler(): Handler =
         SetTenderStatusDetailsHandler(logger = logger, transform = transform, setTenderStatusDetailsService = setTenderStatusDetailsService)
-    
+
     @Bean
     fun setTenderStatusUnsuccessfulHandler(): Handler =
         SetTenderStatusUnsuccessfulHandler(logger = logger, transform = transform, setTenderStatusUnsuccessfulService = setTenderStatusUnsuccessfulService)
@@ -92,6 +95,7 @@ class WebConfiguration(
     @Bean
     fun handlersV2() = HandlersV2(
         listOf(
+            HandlerDescription(CommandsV2.CommandType.CHECK_LOTS_STATE, checkTenderStateHandler()),
             HandlerDescription(CommandsV2.CommandType.CHECK_TENDER_STATE, checkTenderStateHandler()),
             HandlerDescription(CommandsV2.CommandType.VALIDATE_PCR_DATA, validatePcrDataHandler()),
             HandlerDescription(CommandsV2.CommandType.CREATE_PCR, createPCRHandler()),
@@ -102,6 +106,10 @@ class WebConfiguration(
             )
         )
     )
+
+    @Bean
+    fun checkLotsStateHandler(): Handler =
+        CheckLotsStateHandler(logger = logger, transform = transform, checkLotsStateService = checkLotsStateService)
 
     @Bean
     fun checkTenderStateHandler(): Handler =

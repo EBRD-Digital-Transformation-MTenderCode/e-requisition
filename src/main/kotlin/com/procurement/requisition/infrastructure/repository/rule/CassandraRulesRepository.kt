@@ -2,15 +2,11 @@ package com.procurement.requisition.infrastructure.repository.rule
 
 import com.datastax.driver.core.Session
 import com.procurement.requisition.application.repository.rule.RulesRepository
-import com.procurement.requisition.application.repository.rule.model.TenderStatesRule
-import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.domain.failure.incident.DatabaseIncident
 import com.procurement.requisition.domain.failure.incident.RuleIncident
 import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.infrastructure.extension.cassandra.tryExecute
-import com.procurement.requisition.infrastructure.repository.rule.model.TenderStatesEntity
-import com.procurement.requisition.infrastructure.repository.rule.model.convert
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asFailure
@@ -19,13 +15,10 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class CassandraRulesRepository(
-    private val session: Session,
-    private val transform: Transform
+    private val session: Session
 ) : RulesRepository {
 
     companion object {
-
-        private const val PARAMETER_VALID_STATES = "validStates"
 
         private const val KEYSPACE = "requisition"
         private const val RULES_TABLE = "rules"
@@ -47,7 +40,7 @@ class CassandraRulesRepository(
 
     private val preparedGetRuleCQL = session.prepare(GET_RULE_CQL)
 
-    override fun get(
+    override fun find(
         country: String,
         pmd: ProcurementMethodDetails,
         operationType: OperationType,
@@ -65,28 +58,52 @@ class CassandraRulesRepository(
         ?.getString(COLUMN_VALUE)
         .asSuccess()
 
+    override fun get(
+        country: String,
+        pmd: ProcurementMethodDetails,
+        operationType: OperationType,
+        parameter: String
+    ): Result<String, Failure> =
+        find(country = country, pmd = pmd, operationType = operationType, parameter = parameter)
+            .onFailure { return it }
+            ?.asSuccess()
+            ?: RuleIncident.NotFound(country = country, pmd = pmd, operationType = operationType, parameter = parameter)
+                .asFailure()
+
+/*    override fun lotStatuses(
+        country: String,
+        pmd: ProcurementMethodDetails,
+        operationType: OperationType
+    ): Result<LotStatesRule, Failure> =
+        get(country = country, pmd = pmd, operationType = operationType, parameter = PARAMETER_VALID_LOT_STATES)
+            .deserialization<LotStatusesEntity>(transform)
+            .converting(LotStatusesEntity::convert)
+
     override fun tenderStates(
         country: String,
         pmd: ProcurementMethodDetails,
         operationType: OperationType
-    ): Result<TenderStatesRule, Failure> {
-        val json = get(country = country, pmd = pmd, operationType = operationType, parameter = PARAMETER_VALID_STATES)
-            .onFailure { return it }
-            ?: return RuleIncident.NotFound(
-                country = country,
-                pmd = pmd,
-                operationType = operationType,
-                parameter = PARAMETER_VALID_STATES
-            ).asFailure()
+    ): Result<TenderStatesRule, Failure> =
+        get(country = country, pmd = pmd, operationType = operationType, parameter = PARAMETER_VALID_STATES)
+            .deserialization<TenderStatesEntity>(transform)
+            .converting(TenderStatesEntity::convert)
 
-        return transform.tryDeserialization(json, TenderStatesEntity::class.java)
-            .mapFailure { failure ->
-                DatabaseIncident.Data(description = failure.description + " Json: '$json'.", reason = failure.reason)
-            }
-            .onFailure { return it }
-            .convert()
-            .mapFailure { failure ->
-                DatabaseIncident.Data(description = failure.description + " Json: '$json'.", reason = failure.reason)
-            }
-    }
+    private inline fun <reified T> Result<String, Failure>.deserialization(transform: Transform): Result<T, Failure> =
+        flatMap { json ->
+            json.tryDeserialization<T>(transform)
+                .mapFailure { failure ->
+                    DatabaseIncident.Data(
+                        description = failure.description + " Json: '$json'.",
+                        reason = failure.reason
+                    )
+                }
+        }
+
+    private fun <T, R> Result<T, Failure>.converting(converter: T.() -> Result<R, Failure>): Result<R, Failure> =
+        this.flatMap { entity ->
+            entity.converter()
+                .mapFailure { failure ->
+                    DatabaseIncident.Data(description = failure.description, reason = failure.reason)
+                }
+        }*/
 }
