@@ -6,12 +6,16 @@ import com.datastax.driver.core.PlainTextAuthProvider
 import com.datastax.driver.core.PoolingOptions
 import com.datastax.driver.core.Session
 import com.datastax.driver.core.querybuilder.QueryBuilder
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.spy
 import com.procurement.requisition.application.repository.rule.RulesRepository
+import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
+import com.procurement.requisition.infrastructure.bind.jackson.configuration
 import com.procurement.requisition.infrastructure.repository.CassandraTestContainer
 import com.procurement.requisition.infrastructure.repository.DatabaseTestConfiguration
+import com.procurement.requisition.infrastructure.service.JacksonJsonTransform
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -45,6 +49,7 @@ class CassandraRuleRepositoryIT {
     @Autowired
     private lateinit var container: CassandraTestContainer
     private lateinit var session: Session
+    private val transform: Transform = JacksonJsonTransform(ObjectMapper().apply { configuration() })
     private lateinit var repository: RulesRepository
 
     @BeforeEach
@@ -64,7 +69,7 @@ class CassandraRuleRepositoryIT {
         createKeyspace()
         createTable()
 
-        repository = CassandraRulesRepository(session)
+        repository = CassandraRulesRepository(session = session, transform = transform)
     }
 
     @AfterEach

@@ -10,6 +10,7 @@ import com.procurement.requisition.application.service.relation.CreateRelationSe
 import com.procurement.requisition.application.service.set.SetLotsStatusUnsuccessfulService
 import com.procurement.requisition.application.service.set.SetTenderStatusDetailsService
 import com.procurement.requisition.application.service.set.SetTenderStatusUnsuccessfulService
+import com.procurement.requisition.application.service.validate.CheckTenderStateService
 import com.procurement.requisition.application.service.validate.ValidatePCRService
 import com.procurement.requisition.infrastructure.handler.Handler
 import com.procurement.requisition.infrastructure.handler.HandlerDescription
@@ -23,6 +24,7 @@ import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.create.CreatePCRHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.GetTenderStateHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.relation.CreateRelationHandler
+import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.CheckTenderStateHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.ValidatePCRDataHandler
 import com.procurement.requisition.infrastructure.web.v1.CommandsV1
 import com.procurement.requisition.infrastructure.web.v2.CommandsV2
@@ -40,6 +42,7 @@ import org.springframework.context.annotation.Configuration
 class WebConfiguration(
     val logger: Logger,
     val transform: Transform,
+    val checkTenderStateService: CheckTenderStateService,
     val createPCRService: CreatePCRService,
     val createRelationService: CreateRelationService,
     val createRequestsForEvPanelsService: CreateRequestsForEvPanelsService,
@@ -89,6 +92,7 @@ class WebConfiguration(
     @Bean
     fun handlersV2() = HandlersV2(
         listOf(
+            HandlerDescription(CommandsV2.CommandType.CHECK_TENDER_STATE, checkTenderStateHandler()),
             HandlerDescription(CommandsV2.CommandType.VALIDATE_PCR_DATA, validatePcrDataHandler()),
             HandlerDescription(CommandsV2.CommandType.CREATE_PCR, createPCRHandler()),
             HandlerDescription(CommandsV2.CommandType.GET_TENDER_STATE, getTenderStateHandler()),
@@ -98,6 +102,10 @@ class WebConfiguration(
             )
         )
     )
+
+    @Bean
+    fun checkTenderStateHandler(): Handler =
+        CheckTenderStateHandler(logger = logger, transform = transform, checkTenderStateService = checkTenderStateService)
 
     @Bean
     fun validatePcrDataHandler(): Handler =
