@@ -1,23 +1,36 @@
 package com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.procurement.requisition.application.service.validate.model.CheckTenderStateCommand
+import com.procurement.requisition.application.service.validate.model.CheckLotsStateCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
+import com.procurement.requisition.domain.model.document.DocumentId
+import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
+import com.procurement.requisition.lib.failureIfEmpty
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
 
-data class CheckTenderStateRequest(
+data class CheckLotsStateRequest(
     @field:JsonProperty("cpid") @param:JsonProperty("cpid") val cpid: String,
     @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
     @field:JsonProperty("pmd") @param:JsonProperty("pmd") val pmd: String,
     @field:JsonProperty("country") @param:JsonProperty("country") val country: String,
-    @field:JsonProperty("operationType") @param:JsonProperty("operationType") val operationType: String
-)
+    @field:JsonProperty("operationType") @param:JsonProperty("operationType") val operationType: String,
+    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
+) {
+
+    data class Tender(
+        @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>
+    ) {
+        data class Lot(
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String
+        )
+    }
+}
 
 private val allowedProcurementMethodDetails = ProcurementMethodDetails.allowedElements
     .asSequence()
@@ -58,7 +71,7 @@ private val allowedOperationType = OperationType.allowedElements
     }
     .toSet()
 
-fun CheckTenderStateRequest.convert(): Result<CheckTenderStateCommand, JsonErrors> {
+fun CheckLotsStateRequest.convert(): Result<CheckLotsStateCommand, JsonErrors> {
     val cpid = Cpid.tryCreateOrNull(cpid)
         ?: return Result.failure(
             JsonErrors.DataFormatMismatch(
@@ -94,11 +107,38 @@ fun CheckTenderStateRequest.convert(): Result<CheckTenderStateCommand, JsonError
         )
         .onFailure { return it }
 
-    return CheckTenderStateCommand(
+    val tender = tender.convert(path = "#/params/tender").onFailure { return it }
+    return CheckLotsStateCommand(
         cpid = cpid,
         ocid = ocid,
         pmd = pmd,
         country = country,
-        operationType = operationType
+        operationType = operationType,
+        tender = tender
     ).asSuccess()
+}
+
+fun CheckLotsStateRequest.Tender.convert(path: String): Result<CheckLotsStateCommand.Tender, JsonErrors> {
+    val lots = lots.failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/lots")) }
+        .mapIndexed { idx, lot ->
+            lot.convert(path = "$path/lots[$idx]").onFailure { return it }
+        }
+
+    return CheckLotsStateCommand.Tender(
+        lots = lots
+    ).asSuccess()
+}
+
+fun CheckLotsStateRequest.Tender.Lot.convert(path: String): Result<CheckLotsStateCommand.Tender.Lot, JsonErrors> {
+    val id = LotId.orNull(id)
+        ?: return Result.failure(
+            JsonErrors.DataFormatMismatch(
+                path = "$path/id",
+                actualValue = id,
+                expectedFormat = DocumentId.pattern,
+                reason = null
+            )
+        )
+
+    return CheckLotsStateCommand.Tender.Lot(id = id).asSuccess()
 }

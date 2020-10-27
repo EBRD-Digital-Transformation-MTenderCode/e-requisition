@@ -26,12 +26,13 @@ fun TenderStatesEntity.convert(): Result<TenderStatesRule, JsonErrors> =
         }
         .let { TenderStatesRule(it).asSuccess() }
 
-fun TenderStatesEntity.TenderStateEntity.convert(path: String): Result<TenderStatesRule.TenderState, JsonErrors> {
+fun TenderStatesEntity.TenderStateEntity.convert(path: String): Result<TenderStatesRule.State, JsonErrors> {
     val status = status.asEnum(target = TenderStatus, path = "$path/status")
         .onFailure { return it }
     val statusDetails = statusDetails.asEnum(target = TenderStatusDetails, path = "$path/statusDetails")
         .onFailure { return it }
-    return TenderStatesRule.TenderState(
+
+    return TenderStatesRule.State(
         status = status,
         statusDetails = statusDetails
     ).asSuccess()

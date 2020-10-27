@@ -2,15 +2,11 @@ package com.procurement.requisition.infrastructure.repository.rule
 
 import com.datastax.driver.core.Session
 import com.procurement.requisition.application.repository.rule.RulesRepository
-import com.procurement.requisition.application.repository.rule.model.TenderStatesRule
-import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.domain.failure.incident.DatabaseIncident
 import com.procurement.requisition.domain.failure.incident.RuleIncident
 import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.infrastructure.extension.cassandra.tryExecute
-import com.procurement.requisition.infrastructure.repository.rule.model.TenderStatesEntity
-import com.procurement.requisition.infrastructure.repository.rule.model.convert
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asFailure
@@ -19,13 +15,10 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class CassandraRulesRepository(
-    private val session: Session,
-    private val transform: Transform
+    private val session: Session
 ) : RulesRepository {
 
     companion object {
-
-        private const val PARAMETER_VALID_STATES = "validStates"
 
         private const val KEYSPACE = "requisition"
         private const val RULES_TABLE = "rules"
@@ -47,7 +40,7 @@ class CassandraRulesRepository(
 
     private val preparedGetRuleCQL = session.prepare(GET_RULE_CQL)
 
-    override fun get(
+    override fun find(
         country: String,
         pmd: ProcurementMethodDetails,
         operationType: OperationType,
@@ -65,28 +58,15 @@ class CassandraRulesRepository(
         ?.getString(COLUMN_VALUE)
         .asSuccess()
 
-    override fun tenderStates(
+    override fun get(
         country: String,
         pmd: ProcurementMethodDetails,
-        operationType: OperationType
-    ): Result<TenderStatesRule, Failure> {
-        val json = get(country = country, pmd = pmd, operationType = operationType, parameter = PARAMETER_VALID_STATES)
+        operationType: OperationType,
+        parameter: String
+    ): Result<String, Failure> =
+        find(country = country, pmd = pmd, operationType = operationType, parameter = parameter)
             .onFailure { return it }
-            ?: return RuleIncident.NotFound(
-                country = country,
-                pmd = pmd,
-                operationType = operationType,
-                parameter = PARAMETER_VALID_STATES
-            ).asFailure()
-
-        return transform.tryDeserialization(json, TenderStatesEntity::class.java)
-            .mapFailure { failure ->
-                DatabaseIncident.Data(description = failure.description + " Json: '$json'.", reason = failure.reason)
-            }
-            .onFailure { return it }
-            .convert()
-            .mapFailure { failure ->
-                DatabaseIncident.Data(description = failure.description + " Json: '$json'.", reason = failure.reason)
-            }
-    }
+            ?.asSuccess()
+            ?: RuleIncident.NotFound(country = country, pmd = pmd, operationType = operationType, parameter = parameter)
+                .asFailure()
 }
