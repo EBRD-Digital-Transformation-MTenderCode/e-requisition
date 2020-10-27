@@ -7,6 +7,7 @@ import com.procurement.requisition.application.service.create.pcr.model.CreatePC
 import com.procurement.requisition.application.service.create.pcr.model.StateFE
 import com.procurement.requisition.application.service.create.pcr.model.convertToCreatedPCR
 import com.procurement.requisition.domain.extension.nowDefaultUTC
+import com.procurement.requisition.domain.failure.incident.InvalidArgumentValueIncident
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.PCR
@@ -69,6 +70,7 @@ import com.procurement.requisition.domain.model.tender.unit.Unit
 import com.procurement.requisition.infrastructure.configuration.properties.UriProperties
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
+import com.procurement.requisition.lib.functional.asFailure
 import com.procurement.requisition.lib.functional.asSuccess
 import org.springframework.stereotype.Service
 
@@ -109,7 +111,7 @@ class CreatePCRService(
             lots = lots(command, lotsMapping),
             items = items(command, lotsMapping, itemsMapping),
             targets = targets(command, lotsMapping, itemsMapping, requirementsMapping),
-            criteria = criteria(command, lotsMapping, itemsMapping, requirementsMapping),
+            criteria = criteria(command, lotsMapping, itemsMapping, requirementsMapping).onFailure { return it },
             conversions = conversions(command, requirementsMapping),
             procurementMethodModalities =
             ProcurementMethodModalities(command.tender.procurementMethodModalities.toList()),
@@ -172,10 +174,16 @@ fun criteriaRelatedItem(
     relatedItem: CriterionRelatedItem,
     lotsMapping: Map<String, LotId>,
     itemsMapping: Map<String, ItemId>
-): String = when (relatesTo) {
-    CriterionRelatesTo.AWARD -> TODO()
-    CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem).underlying
-    CriterionRelatesTo.LOT -> lotsMapping.getValue(relatedItem).underlying
+): Result<String, InvalidArgumentValueIncident> = when (relatesTo) {
+    CriterionRelatesTo.AWARD -> InvalidArgumentValueIncident(
+        name = "relatesTo",
+        value = relatesTo,
+        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT)
+    ).asFailure()
+
+    CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem).underlying.asSuccess()
+    CriterionRelatesTo.LOT -> lotsMapping.getValue(relatedItem).underlying.asSuccess()
+
 }
 
 fun lots(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>) = createPCR.tender.lots
@@ -222,7 +230,7 @@ fun criteria(
     lotsMapping: Map<String, LotId>,
     itemsMapping: Map<String, ItemId>,
     requirementsMapping: Map<String, RequirementId>
-) = createPCR.tender.criteria
+): Result<Criteria, InvalidArgumentValueIncident> = createPCR.tender.criteria
     .map { criterion ->
         Criterion(
             id = CriterionId.generate(),
@@ -264,10 +272,11 @@ fun criteria(
                         lotsMapping = lotsMapping,
                         itemsMapping = itemsMapping
                     )
+                        .onFailure { return it }
                 },
         )
     }
-    .let { Criteria(it) }
+    .let { Criteria(it).asSuccess() }
 
 fun conversions(createPCR: CreatePCRCommand, requirementsMapping: Map<String, RequirementId>) =
     createPCR.tender.conversions

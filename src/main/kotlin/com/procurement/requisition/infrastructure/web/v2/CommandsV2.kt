@@ -32,6 +32,7 @@ object CommandsV2 {
     enum class CommandType(override val key: String, override val kind: Action.Kind) :
         EnumElementProvider.Element, Action {
 
+        CHECK_TENDER_STATE("checkTenderState", kind = Action.Kind.QUERY),
         CREATE_PCR(key = "createPcr", kind = Action.Kind.COMMAND),
         CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE("createRelationToContractProcessStage", kind = Action.Kind.COMMAND),
         GET_TENDER_STATE("getTenderState", kind = Action.Kind.QUERY),
