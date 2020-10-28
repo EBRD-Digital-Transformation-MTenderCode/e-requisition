@@ -55,19 +55,19 @@ data class TenderEntity(
     @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<LotEntity>,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("items") @param:JsonProperty("items") val items: List<ItemEntity> = emptyList(),
+    @field:JsonProperty("items") @param:JsonProperty("items") val items: List<ItemEntity>?,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("targets") @param:JsonProperty("targets") val targets: List<TargetEntity> = emptyList(),
+    @field:JsonProperty("targets") @param:JsonProperty("targets") val targets: List<TargetEntity>?,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<CriterionEntity> = emptyList(),
+    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<CriterionEntity>?,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<ConversionEntity> = emptyList(),
+    @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<ConversionEntity>?,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<String> = emptyList(),
+    @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<String>?,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @field:JsonProperty("awardCriteria") @param:JsonProperty("awardCriteria") val awardCriteria: String,
@@ -76,7 +76,7 @@ data class TenderEntity(
     @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: String,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<DocumentEntity> = emptyList(),
+    @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<DocumentEntity>?,
 
     @field:JsonProperty("value") @param:JsonProperty("value") val value: ValueEntity
 )
