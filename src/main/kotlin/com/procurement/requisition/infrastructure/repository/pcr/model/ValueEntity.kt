@@ -16,7 +16,7 @@ data class ValueEntity(
     @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
 )
 
-fun Value.serialization() = ValueEntity(amount = amount?.underlying, currency = currency)
+fun Value.mappingToEntity() = ValueEntity(amount = amount?.underlying, currency = currency)
 
-fun ValueEntity.deserialization(path: String): Result<Value, JsonErrors> =
+fun ValueEntity.mappingToDomain(path: String): Result<Value, JsonErrors> =
     Value(amount = amount?.let { Amount(it) }, currency = currency).asSuccess() //TODO

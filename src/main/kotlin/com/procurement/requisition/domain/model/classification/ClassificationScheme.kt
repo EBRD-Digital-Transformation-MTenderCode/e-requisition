@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.bind.classification
+package com.procurement.requisition.domain.model.classification
 
 import com.procurement.requisition.lib.enumerator.EnumElementProvider
 

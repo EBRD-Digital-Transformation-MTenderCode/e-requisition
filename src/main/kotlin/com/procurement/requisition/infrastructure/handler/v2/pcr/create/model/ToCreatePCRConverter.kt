@@ -13,7 +13,7 @@ import com.procurement.requisition.domain.model.tender.ProcurementMethodModality
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
-import com.procurement.requisition.infrastructure.bind.classification.ClassificationScheme
+import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
 import com.procurement.requisition.lib.failureIfEmpty

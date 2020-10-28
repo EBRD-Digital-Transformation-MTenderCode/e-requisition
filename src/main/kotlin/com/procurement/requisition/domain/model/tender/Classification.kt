@@ -1,8 +1,8 @@
 package com.procurement.requisition.domain.model.tender
 
 import com.procurement.requisition.domain.model.EntityBase
-import com.procurement.requisition.infrastructure.bind.classification.ClassificationId
-import com.procurement.requisition.infrastructure.bind.classification.ClassificationScheme
+import com.procurement.requisition.domain.model.classification.ClassificationId
+import com.procurement.requisition.domain.model.classification.ClassificationScheme
 
 data class Classification(
     override val id: ClassificationId,

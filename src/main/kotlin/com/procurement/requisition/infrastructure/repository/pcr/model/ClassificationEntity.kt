@@ -3,7 +3,7 @@ package com.procurement.requisition.infrastructure.repository.pcr.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.tender.Classification
-import com.procurement.requisition.infrastructure.bind.classification.ClassificationScheme
+import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.lib.functional.Result
@@ -15,13 +15,13 @@ data class ClassificationEntity(
     @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
 )
 
-fun Classification.serialization() = ClassificationEntity(
+fun Classification.mappingToEntity() = ClassificationEntity(
     id = id,
     scheme = scheme.asString(),
     description = description
 )
 
-fun ClassificationEntity.deserialization(path: String): Result<Classification, JsonErrors> {
+fun ClassificationEntity.mappingToDomain(path: String): Result<Classification, JsonErrors> {
     val scheme = scheme.asEnum(target = ClassificationScheme, path = "$path/scheme")
         .onFailure { return it }
     return Classification(id = id, scheme = scheme, description = description).asSuccess()
