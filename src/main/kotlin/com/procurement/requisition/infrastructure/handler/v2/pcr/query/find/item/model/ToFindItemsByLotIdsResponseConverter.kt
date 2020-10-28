@@ -8,13 +8,13 @@ fun FindItemsByLotIdsResult.convert(): FindItemsByLotIdsResponse =
             FindItemsByLotIdsResponse.Tender(
                 items = tender.items.map { item ->
                     FindItemsByLotIdsResponse.Tender.Item(
-                        id = item.id.toString(),
+                        id = item.id.underlying,
                         internalId = item.internalId,
                         description = item.description,
                         quantity = item.quantity,
                         classification = item.classification.convert(),
                         unit = item.unit.convert(),
-                        relatedLot = item.relatedLot.toString()
+                        relatedLot = item.relatedLot.underlying
                     )
                 }
             )
