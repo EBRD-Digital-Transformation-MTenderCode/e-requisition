@@ -11,8 +11,8 @@ import com.procurement.requisition.domain.model.tender.lot.Variants
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.repository.pcr.model.ClassificationEntity
-import com.procurement.requisition.infrastructure.repository.pcr.model.deserialization
-import com.procurement.requisition.infrastructure.repository.pcr.model.serialization
+import com.procurement.requisition.infrastructure.repository.pcr.model.mappingToDomain
+import com.procurement.requisition.infrastructure.repository.pcr.model.mappingToEntity
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
 
@@ -40,7 +40,7 @@ fun Lot.serialization() = LotEntity(
     description = description,
     status = status.asString(),
     statusDetails = statusDetails.asString(),
-    classification = classification.serialization(),
+    classification = classification.mappingToEntity(),
     variants = variants.map { it.serialization() },
 )
 
@@ -58,7 +58,7 @@ fun LotEntity.deserialization(path: String): Result<Lot, JsonErrors> {
         .onFailure { return it }
     val statusDetails = statusDetails.asEnum(target = LotStatusDetails, path = "$path/statusDetails")
         .onFailure { return it }
-    val classification = classification.deserialization(path = "$path/classification").onFailure { return it }
+    val classification = classification.mappingToDomain(path = "$path/classification").onFailure { return it }
     val variants = variants
         .map { variant ->
             variant.deserialization(path = "$path/variants")

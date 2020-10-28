@@ -8,8 +8,8 @@ import com.procurement.requisition.domain.model.PCR
 import com.procurement.requisition.domain.model.Token
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcesses
 import com.procurement.requisition.infrastructure.repository.pcr.model.tender.TenderEntity
-import com.procurement.requisition.infrastructure.repository.pcr.model.tender.deserialization
-import com.procurement.requisition.infrastructure.repository.pcr.model.tender.serialization
+import com.procurement.requisition.infrastructure.repository.pcr.model.tender.mappingToDomain
+import com.procurement.requisition.infrastructure.repository.pcr.model.tender.mappingToEntity
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.mapIndexedOrEmpty
@@ -23,16 +23,16 @@ data class PCREntity(
     @field:JsonProperty("relatedProcesses") @param:JsonProperty("relatedProcesses") val relatedProcesses: List<RelatedProcessEntity>
 )
 
-fun PCR.serialization() = PCREntity(
+fun PCR.mappingToEntity() = PCREntity(
     cpid = cpid.underlying,
     ocid = ocid.underlying,
     token = token.underlying,
     owner = owner,
-    tender = tender.serialization(),
-    relatedProcesses = relatedProcesses.map { it.serialization() }
+    tender = tender.mappingToEntity(),
+    relatedProcesses = relatedProcesses.map { it.mappingToEntity() }
 )
 
-fun PCREntity.deserialization(): Result<PCR, JsonErrors> {
+fun PCREntity.mappingToDomain(): Result<PCR, JsonErrors> {
     val cpid = Cpid.tryCreateOrNull(cpid)
         ?: return Result.failure(
             JsonErrors.DataFormatMismatch(
@@ -60,11 +60,11 @@ fun PCREntity.deserialization(): Result<PCR, JsonErrors> {
                 reason = null
             )
         )
-    val tender = tender.deserialization("#/tender")
+    val tender = tender.mappingToDomain("#/tender")
         .onFailure { return it }
     val relatedProcesses = relatedProcesses
         .mapIndexedOrEmpty { idx, relatedProcess ->
-            relatedProcess.deserialization(path = "#/relatedProcesses[$idx]").onFailure { return it }
+            relatedProcess.mappingToDomain(path = "#/relatedProcesses[$idx]").onFailure { return it }
         }
         .let { RelatedProcesses(it) }
 

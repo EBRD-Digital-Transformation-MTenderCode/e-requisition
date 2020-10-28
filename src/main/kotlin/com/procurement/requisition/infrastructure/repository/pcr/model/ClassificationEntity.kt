@@ -15,13 +15,13 @@ data class ClassificationEntity(
     @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
 )
 
-fun Classification.serialization() = ClassificationEntity(
+fun Classification.mappingToEntity() = ClassificationEntity(
     id = id,
     scheme = scheme.asString(),
     description = description
 )
 
-fun ClassificationEntity.deserialization(path: String): Result<Classification, JsonErrors> {
+fun ClassificationEntity.mappingToDomain(path: String): Result<Classification, JsonErrors> {
     val scheme = scheme.asEnum(target = ClassificationScheme, path = "$path/scheme")
         .onFailure { return it }
     return Classification(id = id, scheme = scheme, description = description).asSuccess()

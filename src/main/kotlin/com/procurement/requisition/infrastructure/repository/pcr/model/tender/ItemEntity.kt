@@ -12,8 +12,8 @@ import com.procurement.requisition.infrastructure.bind.quantity.QuantityDeserial
 import com.procurement.requisition.infrastructure.bind.quantity.QuantitySerializer
 import com.procurement.requisition.infrastructure.repository.pcr.model.ClassificationEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.UnitEntity
-import com.procurement.requisition.infrastructure.repository.pcr.model.deserialization
-import com.procurement.requisition.infrastructure.repository.pcr.model.serialization
+import com.procurement.requisition.infrastructure.repository.pcr.model.mappingToDomain
+import com.procurement.requisition.infrastructure.repository.pcr.model.mappingToEntity
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
 import java.math.BigDecimal
@@ -37,17 +37,17 @@ data class ItemEntity(
     @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String
 )
 
-fun Item.serialization() = ItemEntity(
+fun Item.mappingToEntity() = ItemEntity(
     id = id.underlying,
     internalId = internalId,
     description = description,
     quantity = quantity,
-    classification = classification.serialization(),
-    unit = unit.serialization(),
+    classification = classification.mappingToEntity(),
+    unit = unit.mappingToEntity(),
     relatedLot = relatedLot.underlying,
 )
 
-fun ItemEntity.deserialization(path: String): Result<Item, JsonErrors> {
+fun ItemEntity.mappingToDomain(path: String): Result<Item, JsonErrors> {
     val id = ItemId.orNull(id)
         ?: return Result.failure(
             JsonErrors.DataFormatMismatch(
@@ -57,8 +57,8 @@ fun ItemEntity.deserialization(path: String): Result<Item, JsonErrors> {
                 reason = null
             )
         )
-    val classification = classification.deserialization("$path/classification").onFailure { return it }
-    val unit = unit.deserialization("$path/unit").onFailure { return it }
+    val classification = classification.mappingToDomain("$path/classification").onFailure { return it }
+    val unit = unit.mappingToDomain("$path/unit").onFailure { return it }
     val relatedLot = LotId.orNull(relatedLot)
         ?: return Result.failure(
             JsonErrors.DataFormatMismatch(

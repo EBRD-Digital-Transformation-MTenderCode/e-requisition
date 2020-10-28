@@ -13,12 +13,12 @@ data class PeriodEntity(
     @param:JsonProperty("startDate") @field:JsonProperty("startDate") val startDate: String
 )
 
-fun Period.serialization() = PeriodEntity(
+fun Period.mappingToEntity() = PeriodEntity(
     startDate = startDate.asString(),
     endDate = endDate.asString()
 )
 
-fun PeriodEntity.deserialization(path: String): Result<Period, JsonErrors> {
+fun PeriodEntity.mappingToDomain(path: String): Result<Period, JsonErrors> {
 
     val startDate = endDate.asLocalDateTime(path = "$path/startDate")
         .onFailure { return it }

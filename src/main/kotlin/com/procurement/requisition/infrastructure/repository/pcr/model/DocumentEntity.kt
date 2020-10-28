@@ -28,7 +28,7 @@ data class DocumentEntity(
     @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
 )
 
-fun Document.serialization() = DocumentEntity(
+fun Document.mappingToEntity() = DocumentEntity(
     id = id.underlying,
     documentType = documentType.asString(),
     title = title,
@@ -36,7 +36,7 @@ fun Document.serialization() = DocumentEntity(
     relatedLots = relatedLots.map { it.underlying }
 )
 
-fun DocumentEntity.deserialization(path: String): Result<Document, JsonErrors> {
+fun DocumentEntity.mappingToDomain(path: String): Result<Document, JsonErrors> {
     val id = DocumentId.orNull(id)
         ?: return Result.failure(
             JsonErrors.DataFormatMismatch(

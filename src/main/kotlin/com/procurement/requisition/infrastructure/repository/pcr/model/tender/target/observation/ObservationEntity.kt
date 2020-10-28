@@ -8,8 +8,8 @@ import com.procurement.requisition.domain.model.tender.target.observation.Observ
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
 import com.procurement.requisition.infrastructure.repository.pcr.model.PeriodEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.UnitEntity
-import com.procurement.requisition.infrastructure.repository.pcr.model.deserialization
-import com.procurement.requisition.infrastructure.repository.pcr.model.serialization
+import com.procurement.requisition.infrastructure.repository.pcr.model.mappingToDomain
+import com.procurement.requisition.infrastructure.repository.pcr.model.mappingToEntity
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
 
@@ -30,9 +30,9 @@ data class ObservationEntity(
 
 fun Observation.serialization() = ObservationEntity(
     id = id.underlying,
-    period = period?.serialization(),
+    period = period?.mappingToEntity(),
     measure = measure,
-    unit = unit.serialization(),
+    unit = unit.mappingToEntity(),
     dimensions = dimensions.serialization(),
     notes = notes,
     relatedRequirementId = relatedRequirementId,
@@ -48,8 +48,8 @@ fun ObservationEntity.deserialization(path: String): Result<Observation, JsonErr
                 reason = null
             )
         )
-    val period = period?.deserialization(path = "$path/period")?.onFailure { return it }
-    val unit = unit.deserialization(path = "$path/unit").onFailure { return it }
+    val period = period?.mappingToDomain(path = "$path/period")?.onFailure { return it }
+    val unit = unit.mappingToDomain(path = "$path/unit").onFailure { return it }
     val dimensions = dimensions.deserialization(path = "$path/dimensions").onFailure { return it }
 
     return Observation(
