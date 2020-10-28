@@ -18,14 +18,14 @@ object ToFindItemsByLotIdsResultConverter {
                 relatedLot = item.relatedLot
             )
 
-        private fun Classification.convert(): FindItemsByLotIdsResult.Tender.Classification =
+        fun Classification.convert(): FindItemsByLotIdsResult.Tender.Classification =
             FindItemsByLotIdsResult.Tender.Classification(
                 id = this.id,
                 scheme = this.scheme,
                 description = this.description
             )
 
-        private fun Unit.convert(): FindItemsByLotIdsResult.Tender.Unit =
+        fun Unit.convert(): FindItemsByLotIdsResult.Tender.Unit =
             FindItemsByLotIdsResult.Tender.Unit(
                 id = this.id,
                 name = this.name
