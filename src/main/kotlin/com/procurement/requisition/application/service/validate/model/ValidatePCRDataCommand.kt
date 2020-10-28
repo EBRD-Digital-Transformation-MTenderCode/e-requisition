@@ -12,7 +12,7 @@ import com.procurement.requisition.domain.model.tender.conversion.coefficient.Co
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
-import com.procurement.requisition.infrastructure.bind.classification.ClassificationScheme
+import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import java.math.BigDecimal
 import java.time.LocalDateTime
 

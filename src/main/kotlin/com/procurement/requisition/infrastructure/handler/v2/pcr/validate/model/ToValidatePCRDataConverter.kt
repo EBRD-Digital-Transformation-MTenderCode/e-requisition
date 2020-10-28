@@ -11,7 +11,7 @@ import com.procurement.requisition.domain.model.tender.conversion.ConversionRela
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.domain.model.tender.item.ItemId
 import com.procurement.requisition.domain.model.tender.lot.LotId
-import com.procurement.requisition.infrastructure.bind.classification.ClassificationScheme
+import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
 import com.procurement.requisition.lib.failureIfEmpty
