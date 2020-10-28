@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.v2.pcr.query.model
+package com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.state.model
 
 import com.procurement.requisition.application.service.get.tender.state.model.GetTenderStateCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors

@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.v2.pcr.query
+package com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.state
 
 import com.procurement.requisition.application.extension.tryMapping
 import com.procurement.requisition.application.extension.trySerialization
@@ -10,8 +10,8 @@ import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.AbstractHandler
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV2
-import com.procurement.requisition.infrastructure.handler.v2.pcr.query.model.GetTenderStateRequest
-import com.procurement.requisition.infrastructure.handler.v2.pcr.query.model.convert
+import com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.state.model.GetTenderStateRequest
+import com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.state.model.convert
 import com.procurement.requisition.infrastructure.web.v2.CommandsV2
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
