@@ -21,12 +21,11 @@ fun FindItemsByLotIdsRequest.convert(): Result<FindItemsByLotIdsCommand, JsonErr
             JsonErrors.DataFormatMismatch(path = "#/ocid", actualValue = ocid, expectedFormat = Cpid.pattern)
         )
 
-    return FindItemsByLotIdsCommand(
-        cpid = cpid,
-        ocid = ocid,
-        tender = this.tender.convert("#tender")
-            .onFailure { return it }
-    ).asSuccess()
+    val tender = this.tender.convert("#tender")
+        .onFailure { return it }
+
+    return FindItemsByLotIdsCommand(cpid = cpid, ocid = ocid, tender = tender)
+        .asSuccess()
 }
 
 fun FindItemsByLotIdsRequest.Tender.convert(path: String): Result<FindItemsByLotIdsCommand.Tender, JsonErrors> {
@@ -37,7 +36,7 @@ fun FindItemsByLotIdsRequest.Tender.convert(path: String): Result<FindItemsByLot
             LotId.orNull(lot.id)
                 ?: return failure(
                     JsonErrors.DataFormatMismatch(
-                        path = "${path}/lots[${idx}]",
+                        path = "$path/lots[$idx]",
                         actualValue = lot.id,
                         expectedFormat = LotId.pattern
                     )
