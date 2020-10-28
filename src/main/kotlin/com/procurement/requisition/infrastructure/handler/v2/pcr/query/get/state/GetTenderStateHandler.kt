@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.v2.pcr.query
+package com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.state
 
 import com.procurement.requisition.application.extension.tryMapping
 import com.procurement.requisition.application.extension.trySerialization
@@ -16,7 +16,7 @@ import com.procurement.requisition.infrastructure.web.v2.CommandsV2
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
-class FindItemsByLotIdsHandler(
+class GetTenderStateHandler(
     override val logger: Logger,
     override val transform: Transform,
     private val getTenderStateService: GetTenderStateService
