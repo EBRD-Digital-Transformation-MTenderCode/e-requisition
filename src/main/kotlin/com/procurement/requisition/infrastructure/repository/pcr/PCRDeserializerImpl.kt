@@ -2,6 +2,7 @@ package com.procurement.requisition.infrastructure.repository.pcr
 
 import com.procurement.requisition.application.repository.pcr.PCRDeserializer
 import com.procurement.requisition.application.service.Transform
+import com.procurement.requisition.domain.failure.incident.DatabaseIncident
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.domain.model.PCR
 import com.procurement.requisition.infrastructure.repository.pcr.model.PCREntity
@@ -22,4 +23,10 @@ class PCRDeserializerImpl(val transform: Transform) : PCRDeserializer {
             }
             .onFailure { return it }
             .deserialization()
+            .mapFailure { failure ->
+                DatabaseIncident.Data(
+                    description = "Error of mapping 'PCREntity' to 'PCR'. ${failure.description}",
+                    reason = failure.reason
+                )
+            }
 }
