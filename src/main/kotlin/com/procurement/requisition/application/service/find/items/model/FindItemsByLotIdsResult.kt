@@ -1,10 +1,10 @@
 package com.procurement.requisition.application.service.find.items.model
 
+import com.procurement.requisition.domain.model.classification.ClassificationId
+import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.tender.item.ItemId
 import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.unit.UnitId
-import com.procurement.requisition.infrastructure.bind.classification.ClassificationId
-import com.procurement.requisition.infrastructure.bind.classification.ClassificationScheme
 import java.math.BigDecimal
 
 data class FindItemsByLotIdsResult(

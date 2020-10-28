@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.procurement.requisition.infrastructure.bind.classification.ClassificationScheme
+import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.requisition.infrastructure.bind.quantity.QuantitySerializer
 import java.math.BigDecimal
