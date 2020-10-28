@@ -99,7 +99,7 @@ class WebConfiguration(
     fun handlersV2() = HandlersV2(
         listOf(
             HandlerDescription(CommandsV2.CommandType.CHECK_LOTS_STATE, checkTenderStateHandler()),
-            HandlerDescription(CommandsV2.CommandType.FIND_ITEMS_BY_LOT_IDS, checkTenderStateHandler()),
+            HandlerDescription(CommandsV2.CommandType.FIND_ITEMS_BY_LOT_IDS, findItemsByLotIds()),
             HandlerDescription(CommandsV2.CommandType.CHECK_TENDER_STATE, checkTenderStateHandler()),
             HandlerDescription(CommandsV2.CommandType.VALIDATE_PCR_DATA, validatePcrDataHandler()),
             HandlerDescription(CommandsV2.CommandType.CREATE_PCR, createPCRHandler()),
