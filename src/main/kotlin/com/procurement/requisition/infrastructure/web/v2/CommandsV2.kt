@@ -37,6 +37,7 @@ object CommandsV2 {
         CREATE_PCR(key = "createPcr", kind = Action.Kind.COMMAND),
         CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE("createRelationToContractProcessStage", kind = Action.Kind.COMMAND),
         FIND_ITEMS_BY_LOT_IDS("findItemsByLotIds", kind = Action.Kind.QUERY),
+        FIND_PROCUREMENT_METHOD_MODALITIES("findProcurementMethodModalities", kind = Action.Kind.QUERY),
         GET_TENDER_STATE("getTenderState", kind = Action.Kind.QUERY),
         VALIDATE_PCR_DATA("validatePcrData", kind = Action.Kind.QUERY);
 
