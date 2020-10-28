@@ -23,7 +23,7 @@ import com.procurement.requisition.infrastructure.handler.v1.set.SetTenderStatus
 import com.procurement.requisition.infrastructure.handler.v1.set.SetTenderStatusUnsuccessfulHandler
 import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.create.CreatePCRHandler
-import com.procurement.requisition.infrastructure.handler.v2.pcr.query.GetTenderStateHandler
+import com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.state.GetTenderStateHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.relation.CreateRelationHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.CheckLotsStateHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.CheckTenderStateHandler
