@@ -34,8 +34,8 @@ import com.procurement.requisition.domain.model.tender.target.TargetRelatedItem
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationId
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
 import com.procurement.requisition.domain.model.tender.unit.UnitId
-import com.procurement.requisition.infrastructure.bind.classification.ClassificationId
-import com.procurement.requisition.infrastructure.bind.classification.ClassificationScheme
+import com.procurement.requisition.domain.model.classification.ClassificationId
+import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import java.math.BigDecimal
 import java.time.LocalDateTime
 

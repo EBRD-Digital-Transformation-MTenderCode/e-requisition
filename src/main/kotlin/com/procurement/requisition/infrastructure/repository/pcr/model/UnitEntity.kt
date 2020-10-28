@@ -11,7 +11,7 @@ data class UnitEntity(
     @field:JsonProperty("name") @param:JsonProperty("name") val name: String
 )
 
-fun Unit.serialization() = UnitEntity(id = id, name = name)
+fun Unit.mappingToEntity() = UnitEntity(id = id, name = name)
 
-fun UnitEntity.deserialization(path: String): Result<Unit, JsonErrors> =
+fun UnitEntity.mappingToDomain(path: String): Result<Unit, JsonErrors> =
     Unit(id = id, name = name).asSuccess()

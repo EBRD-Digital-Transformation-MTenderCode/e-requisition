@@ -22,7 +22,7 @@ data class RelatedProcessEntity(
     @field:JsonProperty("uri") @param:JsonProperty("uri") val uri: String
 )
 
-fun RelatedProcess.serialization() = RelatedProcessEntity(
+fun RelatedProcess.mappingToEntity() = RelatedProcessEntity(
     id = id.underlying,
     scheme = scheme.asString(),
     identifier = identifier,
@@ -30,7 +30,7 @@ fun RelatedProcess.serialization() = RelatedProcessEntity(
     uri = uri
 )
 
-fun RelatedProcessEntity.deserialization(path: String): Result<RelatedProcess, JsonErrors> {
+fun RelatedProcessEntity.mappingToDomain(path: String): Result<RelatedProcess, JsonErrors> {
     val id = RelatedProcessId.orNull(id)
         ?: return Result.failure(
             JsonErrors.DataFormatMismatch(

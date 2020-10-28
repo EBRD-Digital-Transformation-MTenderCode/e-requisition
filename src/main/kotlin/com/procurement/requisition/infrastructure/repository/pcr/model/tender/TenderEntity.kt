@@ -23,8 +23,8 @@ import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.repository.pcr.model.ClassificationEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.DocumentEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.ValueEntity
-import com.procurement.requisition.infrastructure.repository.pcr.model.deserialization
-import com.procurement.requisition.infrastructure.repository.pcr.model.serialization
+import com.procurement.requisition.infrastructure.repository.pcr.model.mappingToDomain
+import com.procurement.requisition.infrastructure.repository.pcr.model.mappingToEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.tender.conversion.ConversionEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.tender.conversion.deserialization
 import com.procurement.requisition.infrastructure.repository.pcr.model.tender.conversion.serialization
@@ -55,19 +55,19 @@ data class TenderEntity(
     @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<LotEntity>,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("items") @param:JsonProperty("items") val items: List<ItemEntity> = emptyList(),
+    @field:JsonProperty("items") @param:JsonProperty("items") val items: List<ItemEntity>?,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("targets") @param:JsonProperty("targets") val targets: List<TargetEntity> = emptyList(),
+    @field:JsonProperty("targets") @param:JsonProperty("targets") val targets: List<TargetEntity>?,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<CriterionEntity> = emptyList(),
+    @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<CriterionEntity>?,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<ConversionEntity> = emptyList(),
+    @field:JsonProperty("conversions") @param:JsonProperty("conversions") val conversions: List<ConversionEntity>?,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<String> = emptyList(),
+    @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<String>?,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @field:JsonProperty("awardCriteria") @param:JsonProperty("awardCriteria") val awardCriteria: String,
@@ -76,32 +76,32 @@ data class TenderEntity(
     @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: String,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<DocumentEntity> = emptyList(),
+    @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<DocumentEntity>?,
 
     @field:JsonProperty("value") @param:JsonProperty("value") val value: ValueEntity
 )
 
-fun Tender.serialization() = TenderEntity(
+fun Tender.mappingToEntity() = TenderEntity(
     id = id.underlying,
     title = title,
     status = status.asString(),
     statusDetails = statusDetails.asString(),
     date = date.asString(),
     description = description,
-    classification = classification.serialization(),
+    classification = classification.mappingToEntity(),
     lots = lots.map { it.serialization() },
-    items = items.map { it.serialization() },
+    items = items.map { it.mappingToEntity() },
     targets = targets.map { it.serialization() },
     criteria = criteria.map { it.serialization() },
     conversions = conversions.map { it.serialization() },
     procurementMethodModalities = procurementMethodModalities.map { it.asString() },
     awardCriteria = awardCriteria.asString(),
     awardCriteriaDetails = awardCriteriaDetails.asString(),
-    documents = documents.map { it.serialization() },
-    value = value.serialization()
+    documents = documents.map { it.mappingToEntity() },
+    value = value.mappingToEntity()
 )
 
-fun TenderEntity.deserialization(path: String): Result<Tender, JsonErrors> {
+fun TenderEntity.mappingToDomain(path: String): Result<Tender, JsonErrors> {
     val id = TenderId.orNull(id)
         ?: return Result.failure(
             JsonErrors.DataFormatMismatch(
@@ -116,7 +116,7 @@ fun TenderEntity.deserialization(path: String): Result<Tender, JsonErrors> {
     val statusDetails = statusDetails.asEnum(target = TenderStatusDetails, path = "$path/statusDetails")
         .onFailure { return it }
     val date = date.asLocalDateTime(path = "$path/date").onFailure { return it }
-    val classification = classification.deserialization(path = "$path/classification")
+    val classification = classification.mappingToDomain(path = "$path/classification")
         .onFailure { return it }
     val lots = lots
         .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/lots")) }
@@ -125,7 +125,7 @@ fun TenderEntity.deserialization(path: String): Result<Tender, JsonErrors> {
     val items = items
         .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/items")) }
         .mapIndexedOrEmpty { idx, item ->
-            item.deserialization(path = "$path/items[$idx]").onFailure { return it }
+            item.mappingToDomain(path = "$path/items[$idx]").onFailure { return it }
         }
         .let { Items(it) }
     val targets = targets
@@ -164,10 +164,10 @@ fun TenderEntity.deserialization(path: String): Result<Tender, JsonErrors> {
     val documents = documents
         .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/documents")) }
         .mapIndexedOrEmpty { idx, document ->
-            document.deserialization(path = "$path/documents[$idx]").onFailure { return it }
+            document.mappingToDomain(path = "$path/documents[$idx]").onFailure { return it }
         }
         .let { Documents(it) }
-    val value = value.deserialization(path = "$path/id")
+    val value = value.mappingToDomain(path = "$path/id")
         .onFailure { return it }
 
     return Tender(
