@@ -5,6 +5,7 @@ import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.create.pcr.CreatePCRService
 import com.procurement.requisition.application.service.create.request.CreateRequestsForEvPanelsService
 import com.procurement.requisition.application.service.find.items.FindItemsByLotIdsService
+import com.procurement.requisition.application.service.find.pmm.FindProcurementMethodModalitiesService
 import com.procurement.requisition.application.service.get.lot.GetActiveLotsService
 import com.procurement.requisition.application.service.get.tender.currency.GetTenderCurrencyService
 import com.procurement.requisition.application.service.get.tender.state.GetTenderStateService
@@ -26,6 +27,7 @@ import com.procurement.requisition.infrastructure.handler.v1.set.SetTenderStatus
 import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.create.CreatePCRHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.find.item.FindItemsByLotIdsHandler
+import com.procurement.requisition.infrastructure.handler.v2.pcr.query.find.pmm.FindProcurementMethodModalitiesHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.currency.GetTenderCurrencyHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.state.GetTenderStateHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.relation.CreateRelationHandler
@@ -51,6 +53,7 @@ class WebConfiguration(
     val checkLotsStateService: CheckLotsStateService,
     val checkTenderStateService: CheckTenderStateService,
     val findItemsByLotIdsService: FindItemsByLotIdsService,
+    val findProcurementMethodModalitiesService: FindProcurementMethodModalitiesService,
     val createPCRService: CreatePCRService,
     val createRelationService: CreateRelationService,
     val createRequestsForEvPanelsService: CreateRequestsForEvPanelsService,
@@ -103,6 +106,7 @@ class WebConfiguration(
         listOf(
             HandlerDescription(CommandsV2.CommandType.CHECK_LOTS_STATE, checkTenderStateHandler()),
             HandlerDescription(CommandsV2.CommandType.FIND_ITEMS_BY_LOT_IDS, findItemsByLotIds()),
+            HandlerDescription(CommandsV2.CommandType.FIND_PROCUREMENT_METHOD_MODALITIES, findProcurementMethodModalities()),
             HandlerDescription(CommandsV2.CommandType.CHECK_TENDER_STATE, checkTenderStateHandler()),
             HandlerDescription(CommandsV2.CommandType.VALIDATE_PCR_DATA, validatePcrDataHandler()),
             HandlerDescription(CommandsV2.CommandType.CREATE_PCR, createPCRHandler()),
@@ -126,6 +130,10 @@ class WebConfiguration(
     @Bean
     fun findItemsByLotIds(): Handler =
         FindItemsByLotIdsHandler(logger = logger, transform = transform, findItemsByLotIdsService = findItemsByLotIdsService)
+
+    @Bean
+    fun findProcurementMethodModalities(): Handler =
+        FindProcurementMethodModalitiesHandler(logger = logger, transform = transform, findProcurementMethodModalities = findProcurementMethodModalitiesService)
 
     @Bean
     fun validatePcrDataHandler(): Handler =
