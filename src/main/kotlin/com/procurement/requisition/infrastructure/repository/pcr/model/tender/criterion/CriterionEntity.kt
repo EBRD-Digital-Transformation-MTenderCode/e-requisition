@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.requirement.RequirementGroups
 import com.procurement.requisition.domain.model.tender.criterion.Criterion
-import com.procurement.requisition.domain.model.tender.criterion.CriterionId
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.domain.model.tender.criterion.CriterionSource
+import com.procurement.requisition.infrastructure.handler.converter.asCriterionId
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.lib.failureIfEmpty
@@ -42,15 +42,7 @@ fun Criterion.serialization() = CriterionEntity(
 )
 
 fun CriterionEntity.deserialization(path: String): Result<Criterion, JsonErrors> {
-    val id = CriterionId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = CriterionId.pattern,
-                reason = null
-            )
-        )
+    val id = id.asCriterionId(path = "$path/id").onFailure { return it }
     val source = source.asEnum(target = CriterionSource, path = "$path/source")
         .onFailure { return it }
     val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo, path = "$path/relatesTo")

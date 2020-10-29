@@ -3,17 +3,17 @@ package com.procurement.requisition.infrastructure.handler.v2.pcr.create.model
 import com.procurement.requisition.application.service.create.pcr.model.CreatePCRCommand
 import com.procurement.requisition.application.service.create.pcr.model.StateFE
 import com.procurement.requisition.domain.failure.error.JsonErrors
-import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
-import com.procurement.requisition.domain.model.document.DocumentId
+import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.document.DocumentType
 import com.procurement.requisition.domain.model.tender.Classification
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
-import com.procurement.requisition.domain.model.classification.ClassificationScheme
+import com.procurement.requisition.infrastructure.handler.converter.asCpid
+import com.procurement.requisition.infrastructure.handler.converter.asDocumentId
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
 import com.procurement.requisition.lib.failureIfEmpty
@@ -23,15 +23,7 @@ import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.mapIndexedOrEmpty
 
 fun CreatePCRRequest.convert(): Result<CreatePCRCommand, JsonErrors> {
-    val cpid = Cpid.tryCreateOrNull(cpid)
-        ?: return failure(
-            JsonErrors.DataFormatMismatch(
-                path = "#/cpid",
-                actualValue = cpid,
-                expectedFormat = Cpid.pattern,
-                reason = null
-            )
-        )
+    val cpid = cpid.asCpid(path = "#/params/cpid").onFailure { return it }
     val date = date.asLocalDateTime(path = "#/date")
         .onFailure { return it }
 
@@ -317,19 +309,9 @@ fun CreatePCRRequest.Tender.Conversion.Coefficient.convert(path: String): Result
  * Document
  */
 fun CreatePCRRequest.Tender.Document.convert(path: String): Result<CreatePCRCommand.Tender.Document, JsonErrors> {
-    val id = DocumentId.orNull(id)
-        ?: return failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = DocumentId.pattern,
-                reason = null
-            )
-        )
-
+    val id = id.asDocumentId(path = "$path/id").onFailure { return it }
     val documentType = documentType.asEnum(target = DocumentType, path = "$path/documentType")
         .onFailure { return it }
-
     val relatedLots = relatedLots
         .failureIfEmpty { return failure(JsonErrors.EmptyArray(path = "$path/relatedLots")) }
         ?.toList()

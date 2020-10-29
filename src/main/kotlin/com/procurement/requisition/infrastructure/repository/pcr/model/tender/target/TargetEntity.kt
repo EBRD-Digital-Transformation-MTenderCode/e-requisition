@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.target.Target
-import com.procurement.requisition.domain.model.tender.target.TargetId
 import com.procurement.requisition.domain.model.tender.target.observation.Observations
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asString
+import com.procurement.requisition.infrastructure.handler.converter.asTargetId
 import com.procurement.requisition.infrastructure.repository.pcr.model.tender.target.observation.ObservationEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.tender.target.observation.deserialization
 import com.procurement.requisition.infrastructure.repository.pcr.model.tender.target.observation.serialization
@@ -33,15 +33,7 @@ fun Target.serialization() = TargetEntity(
 )
 
 fun TargetEntity.deserialization(path: String): Result<Target, JsonErrors> {
-    val id = TargetId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = TargetId.pattern,
-                reason = null
-            )
-        )
+    val id = id.asTargetId(path = "$path/id").onFailure { return it }
     val relatesTo = relatesTo.asEnum(target = TargetRelatesTo, path = "$path/relatesTo")
         .onFailure { return it }
     val observations = observations

@@ -6,6 +6,7 @@ import com.procurement.requisition.domain.failure.error.DataTimeParseError
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
+import com.procurement.requisition.domain.model.Token
 import com.procurement.requisition.domain.model.bid.BidId
 import com.procurement.requisition.domain.model.document.DocumentId
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessId
@@ -73,6 +74,12 @@ fun String.asCpid(path: String): Result<Cpid, JsonErrors> = Cpid.tryCreateOrNull
     ?.asSuccess()
     ?: failure(
         JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = Cpid.pattern)
+    )
+
+fun String.asToken(path: String): Result<Token, JsonErrors> = Token.orNull(this)
+    ?.asSuccess()
+    ?: failure(
+        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = Token.pattern)
     )
 
 fun String.asSingleStageOcid(path: String): Result<Ocid, JsonErrors> = Ocid.SingleStage.tryCreateOrNull(this)

@@ -3,9 +3,7 @@ package com.procurement.requisition.infrastructure.handler.v1.set.model
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.application.service.set.model.SetLotsStatusUnsuccessfulCommand
-import com.procurement.requisition.domain.failure.error.JsonErrors
-import com.procurement.requisition.domain.model.document.DocumentId
-import com.procurement.requisition.domain.model.tender.lot.LotId
+import com.procurement.requisition.infrastructure.handler.converter.asLotId
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
@@ -20,15 +18,6 @@ class SetLotsStatusUnsuccessfulRequest(
 }
 
 fun SetLotsStatusUnsuccessfulRequest.Lot.convert(path: String): Result<SetLotsStatusUnsuccessfulCommand.Lot, Failure> {
-    val id = LotId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = LotId.pattern,
-                reason = null
-            )
-        )
-
+    val id = id.asLotId(path = "$path/id").onFailure { return it }
     return SetLotsStatusUnsuccessfulCommand.Lot(id = id).asSuccess()
 }

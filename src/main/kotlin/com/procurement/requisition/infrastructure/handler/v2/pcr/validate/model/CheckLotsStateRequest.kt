@@ -3,13 +3,12 @@ package com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.application.service.validate.model.CheckLotsStateCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
-import com.procurement.requisition.domain.model.Cpid
-import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
-import com.procurement.requisition.domain.model.document.DocumentId
-import com.procurement.requisition.domain.model.tender.lot.LotId
+import com.procurement.requisition.infrastructure.handler.converter.asCpid
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
+import com.procurement.requisition.infrastructure.handler.converter.asLotId
+import com.procurement.requisition.infrastructure.handler.converter.asSingleStageOcid
 import com.procurement.requisition.lib.failureIfEmpty
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
@@ -72,24 +71,8 @@ private val allowedOperationType = OperationType.allowedElements
     .toSet()
 
 fun CheckLotsStateRequest.convert(): Result<CheckLotsStateCommand, JsonErrors> {
-    val cpid = Cpid.tryCreateOrNull(cpid)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "#/params/cpid",
-                actualValue = cpid,
-                expectedFormat = Cpid.pattern,
-                reason = null
-            )
-        )
-    val ocid = Ocid.SingleStage.tryCreateOrNull(ocid)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "#/params/ocid",
-                actualValue = ocid,
-                expectedFormat = Ocid.SingleStage.pattern,
-                reason = null
-            )
-        )
+    val cpid = cpid.asCpid(path = "#/params/cpid").onFailure { return it }
+    val ocid = ocid.asSingleStageOcid(path = "#/params/ocid").onFailure { return it }
 
     val pmd = pmd
         .asEnum(
@@ -130,15 +113,6 @@ fun CheckLotsStateRequest.Tender.convert(path: String): Result<CheckLotsStateCom
 }
 
 fun CheckLotsStateRequest.Tender.Lot.convert(path: String): Result<CheckLotsStateCommand.Tender.Lot, JsonErrors> {
-    val id = LotId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = LotId.pattern,
-                reason = null
-            )
-        )
-
+    val id = id.asLotId(path = "$path/id").onFailure { return it }
     return CheckLotsStateCommand.Tender.Lot(id = id).asSuccess()
 }

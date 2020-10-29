@@ -3,11 +3,11 @@ package com.procurement.requisition.infrastructure.repository.pcr.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcess
-import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessId
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessScheme
 import com.procurement.requisition.domain.model.relatedprocesses.Relationship
 import com.procurement.requisition.domain.model.relatedprocesses.Relationships
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
+import com.procurement.requisition.infrastructure.handler.converter.asRelatedProcessId
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.lib.failureIfEmpty
 import com.procurement.requisition.lib.functional.Result
@@ -31,15 +31,7 @@ fun RelatedProcess.mappingToEntity() = RelatedProcessEntity(
 )
 
 fun RelatedProcessEntity.mappingToDomain(path: String): Result<RelatedProcess, JsonErrors> {
-    val id = RelatedProcessId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = RelatedProcessId.pattern,
-                reason = null
-            )
-        )
+    val id = id.asRelatedProcessId(path = "$path/id").onFailure { return it }
     val scheme = scheme.asEnum(target = RelatedProcessScheme, path = "$path/scheme")
         .onFailure { return it }
 

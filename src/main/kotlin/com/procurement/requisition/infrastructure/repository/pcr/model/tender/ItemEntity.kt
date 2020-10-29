@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.tender.item.Item
-import com.procurement.requisition.domain.model.tender.item.ItemId
-import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.requisition.infrastructure.bind.quantity.QuantitySerializer
+import com.procurement.requisition.infrastructure.handler.converter.asItemId
+import com.procurement.requisition.infrastructure.handler.converter.asLotId
 import com.procurement.requisition.infrastructure.repository.pcr.model.ClassificationEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.UnitEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.mappingToDomain
@@ -48,26 +48,10 @@ fun Item.mappingToEntity() = ItemEntity(
 )
 
 fun ItemEntity.mappingToDomain(path: String): Result<Item, JsonErrors> {
-    val id = ItemId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = ItemId.pattern,
-                reason = null
-            )
-        )
+    val id = id.asItemId(path = "$path/id").onFailure { return it }
     val classification = classification.mappingToDomain("$path/classification").onFailure { return it }
     val unit = unit.mappingToDomain("$path/unit").onFailure { return it }
-    val relatedLot = LotId.orNull(relatedLot)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/relatedLot",
-                actualValue = relatedLot,
-                expectedFormat = LotId.pattern,
-                reason = null
-            )
-        )
+    val relatedLot = relatedLot.asLotId(path = "$path/relatedLot").onFailure { return it }
 
     return Item(
         id = id,
