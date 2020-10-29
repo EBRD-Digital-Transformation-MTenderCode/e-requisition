@@ -40,7 +40,9 @@ object CommandsV2 {
         FIND_PROCUREMENT_METHOD_MODALITIES("findProcurementMethodModalities", kind = Action.Kind.QUERY),
         GET_CURRENCY("getCurrency", kind = Action.Kind.QUERY),
         GET_TENDER_STATE("getTenderState", kind = Action.Kind.QUERY),
-        VALIDATE_PCR_DATA("validatePcrData", kind = Action.Kind.QUERY);
+        VALIDATE_PCR_DATA("validatePcrData", kind = Action.Kind.QUERY),
+        VALIDATE_REQUIREMENT_RESPONSES("validateRequirementResponses", kind = Action.Kind.QUERY),
+        ;
 
         override fun toString(): String = key
 

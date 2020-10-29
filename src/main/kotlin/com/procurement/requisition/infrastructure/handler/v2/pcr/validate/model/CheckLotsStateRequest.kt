@@ -135,7 +135,7 @@ fun CheckLotsStateRequest.Tender.Lot.convert(path: String): Result<CheckLotsStat
             JsonErrors.DataFormatMismatch(
                 path = "$path/id",
                 actualValue = id,
-                expectedFormat = DocumentId.pattern,
+                expectedFormat = LotId.pattern,
                 reason = null
             )
         )

@@ -25,7 +25,7 @@ fun SetLotsStatusUnsuccessfulRequest.Lot.convert(path: String): Result<SetLotsSt
             JsonErrors.DataFormatMismatch(
                 path = "$path/id",
                 actualValue = id,
-                expectedFormat = DocumentId.pattern,
+                expectedFormat = LotId.pattern,
                 reason = null
             )
         )

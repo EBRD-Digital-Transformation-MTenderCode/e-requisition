@@ -248,7 +248,9 @@ val allowedRelatesTo = CriterionRelatesTo.allowedElements
             CriterionRelatesTo.ITEM,
             CriterionRelatesTo.LOT -> true
 
-            CriterionRelatesTo.AWARD -> false
+            CriterionRelatesTo.AWARD,
+            CriterionRelatesTo.TENDER,
+            CriterionRelatesTo.TENDERER -> false
         }
     }
     .toSet()

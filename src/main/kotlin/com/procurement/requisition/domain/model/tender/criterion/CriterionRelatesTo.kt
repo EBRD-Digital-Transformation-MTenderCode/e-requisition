@@ -6,7 +6,10 @@ enum class CriterionRelatesTo(override val key: String) : EnumElementProvider.El
 
     AWARD("award"),
     ITEM("item"),
-    LOT("lot");
+    LOT("lot"),
+    TENDER("tender"),
+    TENDERER("tenderer")
+    ;
 
     override fun toString(): String = key
 
