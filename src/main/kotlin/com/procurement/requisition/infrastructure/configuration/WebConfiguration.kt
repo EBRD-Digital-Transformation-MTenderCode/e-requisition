@@ -7,6 +7,7 @@ import com.procurement.requisition.application.service.create.request.CreateRequ
 import com.procurement.requisition.application.service.find.items.FindItemsByLotIdsService
 import com.procurement.requisition.application.service.find.pmm.FindProcurementMethodModalitiesService
 import com.procurement.requisition.application.service.get.lot.GetActiveLotsService
+import com.procurement.requisition.application.service.get.tender.currency.GetTenderCurrencyService
 import com.procurement.requisition.application.service.get.tender.state.GetTenderStateService
 import com.procurement.requisition.application.service.relation.CreateRelationService
 import com.procurement.requisition.application.service.set.SetLotsStatusUnsuccessfulService
@@ -27,6 +28,7 @@ import com.procurement.requisition.infrastructure.handler.v2.HandlersV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.create.CreatePCRHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.find.item.FindItemsByLotIdsHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.find.pmm.FindProcurementMethodModalitiesHandler
+import com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.currency.GetTenderCurrencyHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.state.GetTenderStateHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.relation.CreateRelationHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.CheckLotsStateHandler
@@ -57,6 +59,7 @@ class WebConfiguration(
     val createRequestsForEvPanelsService: CreateRequestsForEvPanelsService,
     val getActiveLotsService: GetActiveLotsService,
     val getTenderStateService: GetTenderStateService,
+    val getTenderCurrencyService: GetTenderCurrencyService,
     val setLotsStatusUnsuccessfulService: SetLotsStatusUnsuccessfulService,
     val setTenderStatusDetailsService: SetTenderStatusDetailsService,
     val setTenderStatusUnsuccessfulService: SetTenderStatusUnsuccessfulService,
@@ -108,6 +111,7 @@ class WebConfiguration(
             HandlerDescription(CommandsV2.CommandType.VALIDATE_PCR_DATA, validatePcrDataHandler()),
             HandlerDescription(CommandsV2.CommandType.CREATE_PCR, createPCRHandler()),
             HandlerDescription(CommandsV2.CommandType.GET_TENDER_STATE, getTenderStateHandler()),
+            HandlerDescription(CommandsV2.CommandType.GET_CURRENCY, getCurrencyHandler()),
             HandlerDescription(
                 CommandsV2.CommandType.CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE,
                 createRelationHandler()
@@ -146,6 +150,10 @@ class WebConfiguration(
     @Bean
     fun getTenderStateHandler(): Handler =
         GetTenderStateHandler(logger = logger, transform = transform, getTenderStateService = getTenderStateService)
+
+    @Bean
+    fun getCurrencyHandler(): Handler =
+        GetTenderCurrencyHandler(logger = logger, transform = transform, getTenderCurrencyService = getTenderCurrencyService)
 
     @Bean
     fun createRelationHandler(): Handler =
