@@ -55,7 +55,13 @@ class FindItemsByLotIdsHandler(
 
         return findItemsByLotIdsService.find(command)
             .flatMap { result ->
-                ApiResponseV2.Success(version = descriptor.version, id = descriptor.id, result = result.convert())
+                val response =
+                    if (result.tender.items.isEmpty())
+                        null
+                    else
+                        result.convert()
+
+                ApiResponseV2.Success(version = descriptor.version, id = descriptor.id, result = response)
                     .trySerialization(transform)
                     .mapFailure { failure ->
                         InternalServerError(description = failure.description, reason = failure.reason)
