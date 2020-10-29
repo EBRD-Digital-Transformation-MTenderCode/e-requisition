@@ -35,6 +35,7 @@ object CommandsV1 {
 
         CREATE_REQUESTS_FOR_EV_PANELS(key = "createRequestsForEvPanels", kind = Action.Kind.COMMAND),
         GET_ACTIVE_LOTS(key = "getActiveLots", kind = Action.Kind.QUERY),
+        GET_TENDER_OWNER(key = "getTenderOwner", kind = Action.Kind.QUERY),
         SET_LOTS_STATUS_UNSUCCESSFUL(key = "setLotsStatusUnsuccessful", kind = Action.Kind.COMMAND),
         SET_TENDER_STATUS_DETAILS(key = "setTenderStatusDetails", kind = Action.Kind.COMMAND),
         SET_TENDER_STATUS_UNSUCCESSFUL(key = "setTenderUnsuccessful", kind = Action.Kind.COMMAND),
