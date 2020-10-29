@@ -3,11 +3,11 @@ package com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.application.service.validate.model.CheckTenderStateCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
-import com.procurement.requisition.domain.model.Cpid
-import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
+import com.procurement.requisition.infrastructure.handler.converter.asCpid
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
+import com.procurement.requisition.infrastructure.handler.converter.asSingleStageOcid
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
 
@@ -59,24 +59,8 @@ private val allowedOperationType = OperationType.allowedElements
     .toSet()
 
 fun CheckTenderStateRequest.convert(): Result<CheckTenderStateCommand, JsonErrors> {
-    val cpid = Cpid.tryCreateOrNull(cpid)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "#/params/cpid",
-                actualValue = cpid,
-                expectedFormat = Cpid.pattern,
-                reason = null
-            )
-        )
-    val ocid = Ocid.SingleStage.tryCreateOrNull(ocid)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "#/params/ocid",
-                actualValue = ocid,
-                expectedFormat = Ocid.SingleStage.pattern,
-                reason = null
-            )
-        )
+    val cpid = cpid.asCpid(path = "#/params/cpid").onFailure { return it }
+    val ocid = ocid.asSingleStageOcid(path = "#/params/ocid").onFailure { return it }
 
     val pmd = pmd
         .asEnum(

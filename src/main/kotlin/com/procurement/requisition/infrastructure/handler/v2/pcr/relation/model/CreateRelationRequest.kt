@@ -3,9 +3,9 @@ package com.procurement.requisition.infrastructure.handler.v2.pcr.relation.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.application.service.relation.model.CreateRelationCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
-import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.OperationType
+import com.procurement.requisition.infrastructure.handler.converter.asCpid
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
@@ -31,15 +31,7 @@ val allowedOperationType = OperationType.allowedElements
     .toSet()
 
 fun CreateRelationRequest.convert(): Result<CreateRelationCommand, JsonErrors> {
-    val cpid = Cpid.tryCreateOrNull(cpid)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "#/cpid",
-                actualValue = cpid,
-                expectedFormat = Cpid.pattern,
-                reason = null
-            )
-        )
+    val cpid = cpid.asCpid(path = "#/params/cpid").onFailure { return it }
     val ocid = Ocid.SingleStage.tryCreateOrNull(ocid)
         ?: Ocid.MultiStage.tryCreateOrNull(ocid)
         ?: return Result.failure(

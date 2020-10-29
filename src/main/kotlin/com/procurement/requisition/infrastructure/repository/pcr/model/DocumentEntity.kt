@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.document.Document
-import com.procurement.requisition.domain.model.document.DocumentId
 import com.procurement.requisition.domain.model.document.DocumentType
 import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.RelatedLots
+import com.procurement.requisition.infrastructure.handler.converter.asDocumentId
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.lib.failureIfEmpty
@@ -37,15 +37,7 @@ fun Document.mappingToEntity() = DocumentEntity(
 )
 
 fun DocumentEntity.mappingToDomain(path: String): Result<Document, JsonErrors> {
-    val id = DocumentId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = DocumentId.pattern,
-                reason = null
-            )
-        )
+    val id = id.asDocumentId(path = "$path/id").onFailure { return it }
     val documentType = documentType.asEnum(target = DocumentType, path = "$path/documentType")
         .onFailure { return it }
     val relatedLots = relatedLots

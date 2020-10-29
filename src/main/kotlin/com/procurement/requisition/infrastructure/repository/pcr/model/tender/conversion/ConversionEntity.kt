@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.tender.conversion.Conversion
-import com.procurement.requisition.domain.model.tender.conversion.ConversionId
 import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.Coefficients
+import com.procurement.requisition.infrastructure.handler.converter.asConversionId
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.lib.failureIfEmpty
@@ -36,18 +36,9 @@ fun Conversion.serialization() = ConversionEntity(
 )
 
 fun ConversionEntity.deserialization(path: String): Result<Conversion, JsonErrors> {
-    val id = ConversionId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = ConversionId.pattern,
-                reason = null
-            )
-        )
+    val id = id.asConversionId(path = "$path/id").onFailure { return it }
     val relatesTo = relatesTo.asEnum(target = ConversionRelatesTo, path = "$path/relatesTo")
         .onFailure { return it }
-
     val coefficients = coefficients
         .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/coefficients")) }
         .mapIndexedOrEmpty { idx, coefficient ->

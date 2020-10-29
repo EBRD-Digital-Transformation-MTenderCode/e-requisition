@@ -16,6 +16,7 @@ import com.procurement.requisition.application.service.set.SetTenderStatusUnsucc
 import com.procurement.requisition.application.service.validate.CheckLotsStateService
 import com.procurement.requisition.application.service.validate.CheckTenderStateService
 import com.procurement.requisition.application.service.validate.ValidatePCRService
+import com.procurement.requisition.application.service.validate.ValidateRequirementResponsesService
 import com.procurement.requisition.infrastructure.handler.Handler
 import com.procurement.requisition.infrastructure.handler.HandlerDescription
 import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
@@ -34,6 +35,7 @@ import com.procurement.requisition.infrastructure.handler.v2.pcr.relation.Create
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.CheckLotsStateHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.CheckTenderStateHandler
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.ValidatePCRDataHandler
+import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.ValidateRequirementResponsesHandler
 import com.procurement.requisition.infrastructure.web.v1.CommandsV1
 import com.procurement.requisition.infrastructure.web.v2.CommandsV2
 import org.springframework.context.annotation.Bean
@@ -52,18 +54,19 @@ class WebConfiguration(
     val transform: Transform,
     val checkLotsStateService: CheckLotsStateService,
     val checkTenderStateService: CheckTenderStateService,
-    val findItemsByLotIdsService: FindItemsByLotIdsService,
-    val findProcurementMethodModalitiesService: FindProcurementMethodModalitiesService,
     val createPCRService: CreatePCRService,
     val createRelationService: CreateRelationService,
     val createRequestsForEvPanelsService: CreateRequestsForEvPanelsService,
+    val findItemsByLotIdsService: FindItemsByLotIdsService,
+    val findProcurementMethodModalitiesService: FindProcurementMethodModalitiesService,
     val getActiveLotsService: GetActiveLotsService,
-    val getTenderStateService: GetTenderStateService,
     val getTenderCurrencyService: GetTenderCurrencyService,
+    val getTenderStateService: GetTenderStateService,
     val setLotsStatusUnsuccessfulService: SetLotsStatusUnsuccessfulService,
     val setTenderStatusDetailsService: SetTenderStatusDetailsService,
     val setTenderStatusUnsuccessfulService: SetTenderStatusUnsuccessfulService,
     val validatePCRService: ValidatePCRService,
+    val validateRequirementResponsesService: ValidateRequirementResponsesService,
 ) {
 
     @Bean
@@ -105,17 +108,15 @@ class WebConfiguration(
     fun handlersV2() = HandlersV2(
         listOf(
             HandlerDescription(CommandsV2.CommandType.CHECK_LOTS_STATE, checkTenderStateHandler()),
+            HandlerDescription(CommandsV2.CommandType.CHECK_TENDER_STATE, checkTenderStateHandler()),
+            HandlerDescription(CommandsV2.CommandType.CREATE_PCR, createPCRHandler()),
+            HandlerDescription(CommandsV2.CommandType.CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE, createRelationHandler()),
             HandlerDescription(CommandsV2.CommandType.FIND_ITEMS_BY_LOT_IDS, findItemsByLotIds()),
             HandlerDescription(CommandsV2.CommandType.FIND_PROCUREMENT_METHOD_MODALITIES, findProcurementMethodModalities()),
-            HandlerDescription(CommandsV2.CommandType.CHECK_TENDER_STATE, checkTenderStateHandler()),
-            HandlerDescription(CommandsV2.CommandType.VALIDATE_PCR_DATA, validatePcrDataHandler()),
-            HandlerDescription(CommandsV2.CommandType.CREATE_PCR, createPCRHandler()),
-            HandlerDescription(CommandsV2.CommandType.GET_TENDER_STATE, getTenderStateHandler()),
             HandlerDescription(CommandsV2.CommandType.GET_CURRENCY, getCurrencyHandler()),
-            HandlerDescription(
-                CommandsV2.CommandType.CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE,
-                createRelationHandler()
-            )
+            HandlerDescription(CommandsV2.CommandType.GET_TENDER_STATE, getTenderStateHandler()),
+            HandlerDescription(CommandsV2.CommandType.VALIDATE_PCR_DATA, validatePcrDataHandler()),
+            HandlerDescription(CommandsV2.CommandType.VALIDATE_REQUIREMENT_RESPONSES, validateRequirementResponsesHandler()),
         )
     )
 
@@ -161,5 +162,13 @@ class WebConfiguration(
             logger = logger,
             transform = transform,
             createRelationService = createRelationService
+        )
+
+    @Bean
+    fun validateRequirementResponsesHandler(): Handler =
+        ValidateRequirementResponsesHandler(
+            logger = logger,
+            transform = transform,
+            validateRequirementResponsesService = validateRequirementResponsesService
         )
 }

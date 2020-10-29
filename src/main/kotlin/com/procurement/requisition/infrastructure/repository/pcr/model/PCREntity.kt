@@ -2,11 +2,11 @@ package com.procurement.requisition.infrastructure.repository.pcr.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
-import com.procurement.requisition.domain.model.Cpid
-import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.PCR
-import com.procurement.requisition.domain.model.Token
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcesses
+import com.procurement.requisition.infrastructure.handler.converter.asCpid
+import com.procurement.requisition.infrastructure.handler.converter.asSingleStageOcid
+import com.procurement.requisition.infrastructure.handler.converter.asToken
 import com.procurement.requisition.infrastructure.repository.pcr.model.tender.TenderEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.tender.mappingToDomain
 import com.procurement.requisition.infrastructure.repository.pcr.model.tender.mappingToEntity
@@ -33,35 +33,10 @@ fun PCR.mappingToEntity() = PCREntity(
 )
 
 fun PCREntity.mappingToDomain(): Result<PCR, JsonErrors> {
-    val cpid = Cpid.tryCreateOrNull(cpid)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "#/cpid",
-                actualValue = cpid,
-                expectedFormat = Cpid.pattern,
-                reason = null
-            )
-        )
-    val ocid = Ocid.SingleStage.tryCreateOrNull(ocid)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "#/ocid",
-                actualValue = ocid,
-                expectedFormat = Ocid.SingleStage.pattern,
-                reason = null
-            )
-        )
-    val token = Token.orNull(token)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "#/token",
-                actualValue = token,
-                expectedFormat = Token.pattern,
-                reason = null
-            )
-        )
-    val tender = tender.mappingToDomain("#/tender")
-        .onFailure { return it }
+    val cpid = cpid.asCpid(path = "#/cpid").onFailure { return it }
+    val ocid = ocid.asSingleStageOcid(path = "#/ocid").onFailure { return it }
+    val token = token.asToken(path = "#/token").onFailure { return it }
+    val tender = tender.mappingToDomain("#/tender").onFailure { return it }
     val relatedProcesses = relatedProcesses
         .mapIndexedOrEmpty { idx, relatedProcess ->
             relatedProcess.mappingToDomain(path = "#/relatedProcesses[$idx]").onFailure { return it }

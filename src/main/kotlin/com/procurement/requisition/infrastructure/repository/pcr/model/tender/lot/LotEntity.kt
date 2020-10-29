@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.tender.lot.Lot
-import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.LotStatus
 import com.procurement.requisition.domain.model.tender.lot.LotStatusDetails
 import com.procurement.requisition.domain.model.tender.lot.Variants
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
+import com.procurement.requisition.infrastructure.handler.converter.asLotId
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.repository.pcr.model.ClassificationEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.mappingToDomain
@@ -45,15 +45,7 @@ fun Lot.serialization() = LotEntity(
 )
 
 fun LotEntity.deserialization(path: String): Result<Lot, JsonErrors> {
-    val id = LotId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = LotId.pattern,
-                reason = null
-            )
-        )
+    val id = id.asLotId(path = "$path/id").onFailure { return it }
     val status = status.asEnum(target = LotStatus, path = "$path/status")
         .onFailure { return it }
     val statusDetails = statusDetails.asEnum(target = LotStatusDetails, path = "$path/statusDetails")

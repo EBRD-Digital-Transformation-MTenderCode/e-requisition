@@ -9,7 +9,6 @@ import com.procurement.requisition.domain.model.document.Documents
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModalities
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality
 import com.procurement.requisition.domain.model.tender.Tender
-import com.procurement.requisition.domain.model.tender.TenderId
 import com.procurement.requisition.domain.model.tender.TenderStatus
 import com.procurement.requisition.domain.model.tender.TenderStatusDetails
 import com.procurement.requisition.domain.model.tender.conversion.Conversions
@@ -20,6 +19,7 @@ import com.procurement.requisition.domain.model.tender.target.Targets
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
 import com.procurement.requisition.infrastructure.handler.converter.asString
+import com.procurement.requisition.infrastructure.handler.converter.asTenderId
 import com.procurement.requisition.infrastructure.repository.pcr.model.ClassificationEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.DocumentEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.ValueEntity
@@ -102,15 +102,7 @@ fun Tender.mappingToEntity() = TenderEntity(
 )
 
 fun TenderEntity.mappingToDomain(path: String): Result<Tender, JsonErrors> {
-    val id = TenderId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = TenderId.pattern,
-                reason = null
-            )
-        )
+    val id = id.asTenderId(path = "$path/id").onFailure { return it }
     val status = status.asEnum(target = TenderStatus, path = "$path/status")
         .onFailure { return it }
     val statusDetails = statusDetails.asEnum(target = TenderStatusDetails, path = "$path/statusDetails")

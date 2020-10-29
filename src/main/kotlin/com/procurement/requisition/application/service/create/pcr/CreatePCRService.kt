@@ -185,6 +185,17 @@ fun criteriaRelatedItem(
     CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem).underlying.asSuccess()
     CriterionRelatesTo.LOT -> lotsMapping.getValue(relatedItem).underlying.asSuccess()
 
+    CriterionRelatesTo.TENDER -> InvalidArgumentValueIncident(
+        name = "relatesTo",
+        value = relatesTo,
+        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT)
+    ).asFailure()
+
+    CriterionRelatesTo.TENDERER -> InvalidArgumentValueIncident(
+        name = "relatesTo",
+        value = relatesTo,
+        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT)
+    ).asFailure()
 }
 
 fun lots(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>) = createPCR.tender.lots
