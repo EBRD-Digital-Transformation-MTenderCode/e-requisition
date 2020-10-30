@@ -63,9 +63,11 @@ object CommandsV1 {
             }
             .asSuccess()
 
-    fun JsonNode.getId(): Result<CommandId, JsonErrors> = tryGetTextAttribute("/id")
-    fun JsonNode.getAction(): Result<CommandType, JsonErrors> = tryGetAttributeAsEnum("/command", CommandType)
-    fun JsonNode.getVersion(): Result<ApiVersion, JsonErrors> = tryGetTextAttribute("/version")
+    fun JsonNode.getId(): Result<CommandId, JsonErrors> = tryGetTextAttribute("id")
+
+    fun JsonNode.getAction(): Result<CommandType, JsonErrors> = tryGetAttributeAsEnum("command", CommandType)
+
+    fun JsonNode.getVersion(): Result<ApiVersion, JsonErrors> = tryGetTextAttribute("version")
         .flatMap { version ->
             ApiVersion.orNull(version)
                 ?.asSuccess()
@@ -75,8 +77,8 @@ object CommandsV1 {
                 )
         }
 
-    fun getContext(node: JsonNode): Result<CommandContext, JsonErrors> = node.tryGetAttribute("/context")
+    fun getContext(node: JsonNode): Result<CommandContext, JsonErrors> = node.tryGetAttribute("context")
         .map { CommandContext(it) }
 
-    fun getData(node: JsonNode): Result<JsonNode, JsonErrors> = node.tryGetAttribute("/data")
+    fun getData(node: JsonNode): Result<JsonNode, JsonErrors> = node.tryGetAttribute("data")
 }
