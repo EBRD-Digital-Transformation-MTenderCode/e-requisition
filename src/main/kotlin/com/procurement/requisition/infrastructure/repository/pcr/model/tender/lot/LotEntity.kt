@@ -69,5 +69,6 @@ fun LotEntity.deserialization(): Result<Lot, JsonErrors> {
         statusDetails = statusDetails,
         classification = classification,
         variants = variants,
+        value = null
     ).asSuccess()
 }

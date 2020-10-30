@@ -216,6 +216,7 @@ fun lots(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>) = createP
                     )
                 }
                 .let { Variants(it) },
+            value = null
         )
     }
     .let { Lots(it) }
