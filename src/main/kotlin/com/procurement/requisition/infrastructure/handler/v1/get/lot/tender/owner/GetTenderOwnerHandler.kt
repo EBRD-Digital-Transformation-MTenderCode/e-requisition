@@ -7,17 +7,24 @@ import com.procurement.requisition.application.service.get.tender.owner.GetTende
 import com.procurement.requisition.application.service.get.tender.owner.model.GetTenderOwnerCommand
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.AbstractHandler
+import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.infrastructure.handler.CommandHandler
+import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
 import com.procurement.requisition.infrastructure.web.v1.CommandsV1
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
+@CommandHandler
 class GetTenderOwnerHandler(
     override val logger: Logger,
     override val transform: Transform,
     private val getTenderOwnerService: GetTenderOwnerService
 ) : AbstractHandler() {
+
+    override val version: ApiVersion = CommandsV1.apiVersion
+    override val action: Action = CommandsV1.CommandType.GET_TENDER_OWNER
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 
