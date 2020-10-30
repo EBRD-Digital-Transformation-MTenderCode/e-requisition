@@ -46,14 +46,14 @@ sealed class JsonErrors(override val code: String, val path: Path = Path()) : Fa
         JsonErrors(code = "DR-1") {
 
         override val description: String
-            get() = "Missing required attribute '$path'."
+            get() = "Missing required attribute '${path.asString()}'."
     }
 
     class DataTypeMismatch(val expected: String, val actual: String, override val reason: Exception? = null) :
         JsonErrors(code = "DR-2") {
 
         override val description: String
-            get() = "Data type mismatch of '$path' attribute. Expected data type: '$expected', actual data type: '$actual'."
+            get() = "Data type mismatch of '${path.asString()}' attribute. Expected data type: '$expected', actual data type: '$actual'."
     }
 
     class UnknownValue(
@@ -80,12 +80,12 @@ sealed class JsonErrors(override val code: String, val path: Path = Path()) : Fa
         JsonErrors(code = "DR-10") {
 
         override val description: String
-            get() = "Array by path '$path' is empty."
+            get() = "Array by path '${path.asString()}' is empty."
     }
 
     class DateTimeInvalid(val value: String, override val reason: Exception? = null) : JsonErrors(code = "DR-13") {
 
         override val description: String
-            get() = "Invalid date-time '$value' by path '$path'."
+            get() = "Invalid date-time '$value' by path '${path.asString()}'."
     }
 }
