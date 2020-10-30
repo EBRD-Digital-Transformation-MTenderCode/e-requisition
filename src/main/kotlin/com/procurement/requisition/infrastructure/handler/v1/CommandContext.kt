@@ -15,26 +15,26 @@ import java.time.LocalDateTime
 class CommandContext(private val node: JsonNode) {
 
     val cpid: Result<Cpid, JsonErrors>
-        get() = node.tryGetTextAttribute("/cpid")
+        get() = node.tryGetTextAttribute("cpid")
             .flatMap { value -> value.asCpid() }
             .repath(path = "/context")
 
     val ocid: Result<Ocid, JsonErrors>
-        get() = node.tryGetTextAttribute("/ocid")
+        get() = node.tryGetTextAttribute("ocid")
             .flatMap { value -> value.asSingleStageOcid() }
             .repath(path = "/context")
 
     val owner: Result<String, JsonErrors>
-        get() = node.tryGetTextAttribute("/owner")
+        get() = node.tryGetTextAttribute("owner")
             .repath(path = "/context")
 
     val startDate: Result<LocalDateTime, JsonErrors>
-        get() = node.tryGetTextAttribute("/startDate")
+        get() = node.tryGetTextAttribute("startDate")
             .flatMap { value -> value.asLocalDateTime() }
             .repath(path = "/context")
 
     val phase: Result<String, JsonErrors>
-        get() = node.tryGetTextAttribute("/phase")
+        get() = node.tryGetTextAttribute("phase")
             .repath(path = "/context")
 
     val pmd: Result<String, JsonErrors>
