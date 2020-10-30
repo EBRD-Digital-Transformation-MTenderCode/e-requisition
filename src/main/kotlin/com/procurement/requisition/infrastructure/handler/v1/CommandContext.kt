@@ -51,4 +51,7 @@ class CommandContext(private val node: JsonNode) {
 
     val phase: Result<String, JsonErrors>
         get() = node.tryGetTextAttribute("phase")
+
+    val pmd: Result<String, JsonErrors>
+        get() = node.tryGetTextAttribute("pmd")
 }
