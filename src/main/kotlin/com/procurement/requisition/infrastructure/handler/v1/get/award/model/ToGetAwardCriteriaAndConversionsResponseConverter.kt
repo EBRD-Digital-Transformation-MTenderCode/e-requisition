@@ -1,7 +1,6 @@
-package com.procurement.requisition.infrastructure.handler.v1.get.award
+package com.procurement.requisition.infrastructure.handler.v1.get.award.model
 
 import com.procurement.requisition.application.service.get.award.model.GetAwardCriteriaAndConversionsResult
-import com.procurement.requisition.infrastructure.handler.v1.get.award.model.GetAwardCriteriaAndConversionsResponse
 
 fun GetAwardCriteriaAndConversionsResult.convert() = GetAwardCriteriaAndConversionsResponse(
 
