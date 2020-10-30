@@ -6,7 +6,6 @@ object ToGetLotsAuctionResultConverter {
     fun fromDomain(lot: Lot) = GetLotsAuctionResult.Tender.Lot(
         id = lot.id,
         title = lot.title,
-        description = lot.description!!,
-        value = lot.value!!
+        description = lot.description!!
     )
 }

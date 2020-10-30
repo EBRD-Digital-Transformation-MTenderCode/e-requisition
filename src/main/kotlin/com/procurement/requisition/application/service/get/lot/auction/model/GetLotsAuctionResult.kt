@@ -1,7 +1,6 @@
 package com.procurement.requisition.application.service.get.lot.auction.model
 
 import com.procurement.requisition.domain.model.tender.TenderId
-import com.procurement.requisition.domain.model.tender.Value
 import com.procurement.requisition.domain.model.tender.lot.LotId
 
 data class GetLotsAuctionResult(
@@ -16,8 +15,7 @@ data class GetLotsAuctionResult(
         data class Lot(
             val id: LotId,
             val title: String,
-            val description: String,
-            val value: Value
+            val description: String
         )
     }
 }

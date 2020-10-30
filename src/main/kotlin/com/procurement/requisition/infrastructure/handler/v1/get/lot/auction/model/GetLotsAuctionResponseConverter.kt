@@ -11,13 +11,7 @@ fun GetLotsAuctionResult.convert() = GetLotsAuctionResponse(
             GetLotsAuctionResponse.Tender.Lot(
                 id = lot.id,
                 title = lot.title,
-                description = lot.description,
-                value = lot.value.let { value ->
-                    GetLotsAuctionResponse.Tender.Lot.Value(
-                        amount = value.amount,
-                        currency = value.currency
-                    )
-                }
+                description = lot.description
             )
         }
     )
