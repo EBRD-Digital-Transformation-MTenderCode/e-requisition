@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.requirement.Requirement
 import com.procurement.requisition.domain.model.requirement.RequirementGroup
-import com.procurement.requisition.domain.model.requirement.RequirementGroupId
 import com.procurement.requisition.domain.model.requirement.Requirements
 import com.procurement.requisition.infrastructure.bind.requirement.RequirementsDeserializer
 import com.procurement.requisition.infrastructure.bind.requirement.RequirementsSerializer
+import com.procurement.requisition.infrastructure.handler.converter.asRequirementGroupId
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
 
@@ -31,16 +32,8 @@ fun RequirementGroup.serialization() = RequirementGroupEntity(
     requirements = requirements.toList(),
 )
 
-fun RequirementGroupEntity.deserialization(path: String): Result<RequirementGroup, JsonErrors> {
-    val id = RequirementGroupId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = RequirementGroupId.pattern,
-                reason = null
-            )
-        )
+fun RequirementGroupEntity.deserialization(): Result<RequirementGroup, JsonErrors> {
+    val id = id.asRequirementGroupId().onFailure { return it.repath(path = "/id") }
     return RequirementGroup(
         id = id,
         description = description,

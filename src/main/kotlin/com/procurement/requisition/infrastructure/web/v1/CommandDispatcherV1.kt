@@ -6,11 +6,11 @@ import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.domain.extension.nowDefaultUTC
 import com.procurement.requisition.infrastructure.handler.Action
 import com.procurement.requisition.infrastructure.handler.Handler
+import com.procurement.requisition.infrastructure.handler.Handlers
 import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.CommandId
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
-import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
 import com.procurement.requisition.infrastructure.service.HistoryEntity
 import com.procurement.requisition.infrastructure.service.HistoryRepository
 import com.procurement.requisition.lib.fail.Failure
@@ -29,9 +29,13 @@ import org.springframework.web.bind.annotation.RestController
 class CommandDispatcherV1(
     private val transform: Transform,
     private val logger: Logger,
-    private val handlers: HandlersV1,
+    private val handlers: Handlers,
     private val historyRepository: HistoryRepository
 ) {
+
+    companion object {
+        private val apiVersion = ApiVersion(1, 0, 0)
+    }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_UTF8_VALUE])
     fun command(@RequestBody body: String): ResponseEntity<Any> {
@@ -43,7 +47,7 @@ class CommandDispatcherV1(
                 return ResponseEntity(response, HttpStatus.OK)
             }
 
-        val handler = handlers[descriptor.action]
+        val handler = handlers[apiVersion, descriptor.action]
             ?: run {
                 val message = "Handler for command '${descriptor.action}' version api 'v1' is not found."
                 logger.info(message = message)

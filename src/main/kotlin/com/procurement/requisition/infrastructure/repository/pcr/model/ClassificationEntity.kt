@@ -2,8 +2,9 @@ package com.procurement.requisition.infrastructure.repository.pcr.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
-import com.procurement.requisition.domain.model.tender.Classification
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.classification.ClassificationScheme
+import com.procurement.requisition.domain.model.tender.Classification
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.lib.functional.Result
@@ -21,8 +22,8 @@ fun Classification.mappingToEntity() = ClassificationEntity(
     description = description
 )
 
-fun ClassificationEntity.mappingToDomain(path: String): Result<Classification, JsonErrors> {
-    val scheme = scheme.asEnum(target = ClassificationScheme, path = "$path/scheme")
-        .onFailure { return it }
+fun ClassificationEntity.mappingToDomain(): Result<Classification, JsonErrors> {
+    val scheme = scheme.asEnum(target = ClassificationScheme)
+        .onFailure { return it.repath(path = "/scheme") }
     return Classification(id = id, scheme = scheme, description = description).asSuccess()
 }

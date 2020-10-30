@@ -6,8 +6,12 @@ import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.set.SetLotsStatusUnsuccessfulService
 import com.procurement.requisition.application.service.set.model.SetLotsStatusUnsuccessfulCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.AbstractHandler
+import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.infrastructure.handler.CommandHandler
+import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.v1.set.model.SetLotsStatusUnsuccessfulRequest
@@ -16,11 +20,15 @@ import com.procurement.requisition.infrastructure.web.v1.CommandsV1
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
+@CommandHandler
 class SetLotsStatusUnsuccessfulHandler(
     override val logger: Logger,
     override val transform: Transform,
     val setLotsStatusUnsuccessfulService: SetLotsStatusUnsuccessfulService
 ) : AbstractHandler() {
+
+    override val version: ApiVersion = CommandsV1.apiVersion
+    override val action: Action = CommandsV1.CommandType.SET_LOTS_STATUS_UNSUCCESSFUL
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 
@@ -41,7 +49,7 @@ class SetLotsStatusUnsuccessfulHandler(
         val startDate = context.startDate.onFailure { return it }
         val lots = data.lots
             .mapIndexed { idx, lot ->
-                lot.convert(path = "#/data/unsuccessfulLots[$idx]").onFailure { return it }
+                lot.convert().onFailure { return it.repath(path = "/data/unsuccessfulLots[$idx]") }
             }
 
         val command = SetLotsStatusUnsuccessfulCommand(

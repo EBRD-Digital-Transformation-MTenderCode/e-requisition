@@ -3,6 +3,7 @@ package com.procurement.requisition.infrastructure.repository.rule.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.application.repository.rule.model.TenderStatesRule
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.tender.TenderStatus
 import com.procurement.requisition.domain.model.tender.TenderStatusDetails
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
@@ -20,17 +21,16 @@ class TenderStatesEntity(states: List<TenderStateEntity>) : List<TenderStatesEnt
 }
 
 fun TenderStatesEntity.convert(): Result<TenderStatesRule, JsonErrors> =
-    failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$#/")) }
+    failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "/")) }
         .mapIndexedOrEmpty { idx, state ->
-            state.convert(path = "#[$idx]").onFailure { return it }
+            state.convert().onFailure { return it.repath(path = "/[$idx]") }
         }
         .let { TenderStatesRule(it).asSuccess() }
 
-fun TenderStatesEntity.TenderStateEntity.convert(path: String): Result<TenderStatesRule.State, JsonErrors> {
-    val status = status.asEnum(target = TenderStatus, path = "$path/status")
-        .onFailure { return it }
-    val statusDetails = statusDetails.asEnum(target = TenderStatusDetails, path = "$path/statusDetails")
-        .onFailure { return it }
+fun TenderStatesEntity.TenderStateEntity.convert(): Result<TenderStatesRule.State, JsonErrors> {
+    val status = status.asEnum(target = TenderStatus).onFailure { return it.repath(path = "/status") }
+    val statusDetails = statusDetails.asEnum(target = TenderStatusDetails)
+        .onFailure { return it.repath(path = "/statusDetails") }
 
     return TenderStatesRule.State(
         status = status,

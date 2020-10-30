@@ -3,9 +3,10 @@ package com.procurement.requisition.infrastructure.repository.pcr.model.tender.t
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.tender.target.observation.Observation
-import com.procurement.requisition.domain.model.tender.target.observation.ObservationId
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
+import com.procurement.requisition.infrastructure.handler.converter.asObservationId
 import com.procurement.requisition.infrastructure.repository.pcr.model.PeriodEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.UnitEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.mappingToDomain
@@ -38,19 +39,11 @@ fun Observation.serialization() = ObservationEntity(
     relatedRequirementId = relatedRequirementId,
 )
 
-fun ObservationEntity.deserialization(path: String): Result<Observation, JsonErrors> {
-    val id = ObservationId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = ObservationId.pattern,
-                reason = null
-            )
-        )
-    val period = period?.mappingToDomain(path = "$path/period")?.onFailure { return it }
-    val unit = unit.mappingToDomain(path = "$path/unit").onFailure { return it }
-    val dimensions = dimensions.deserialization(path = "$path/dimensions").onFailure { return it }
+fun ObservationEntity.deserialization(): Result<Observation, JsonErrors> {
+    val id = id.asObservationId().onFailure { return it.repath(path = "/id") }
+    val period = period?.mappingToDomain()?.onFailure { return it.repath(path = "/period") }
+    val unit = unit.mappingToDomain().onFailure { return it.repath(path = "/unit") }
+    val dimensions = dimensions.deserialization().onFailure { return it.repath(path = "/dimensions") }
 
     return Observation(
         id = id,

@@ -7,6 +7,9 @@ import com.procurement.requisition.application.service.set.SetTenderStatusDetail
 import com.procurement.requisition.application.service.set.model.SetTenderStatusDetailsCommand
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.AbstractHandler
+import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.infrastructure.handler.CommandHandler
+import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.v1.set.model.convert
@@ -14,11 +17,15 @@ import com.procurement.requisition.infrastructure.web.v1.CommandsV1
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
+@CommandHandler
 class SetTenderStatusDetailsHandler(
     override val logger: Logger,
     override val transform: Transform,
     val setTenderStatusDetailsService: SetTenderStatusDetailsService
 ) : AbstractHandler() {
+
+    override val version: ApiVersion = CommandsV1.apiVersion
+    override val action: Action = CommandsV1.CommandType.SET_TENDER_STATUS_DETAILS
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 

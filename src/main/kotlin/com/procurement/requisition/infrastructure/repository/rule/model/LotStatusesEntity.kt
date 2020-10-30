@@ -3,6 +3,7 @@ package com.procurement.requisition.infrastructure.repository.rule.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.application.repository.rule.model.LotStatesRule
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.tender.lot.LotStatus
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.lib.failureIfEmpty
@@ -18,14 +19,13 @@ class LotStatusesEntity(states: List<LotStatusEntity>) : List<LotStatusesEntity.
 }
 
 fun LotStatusesEntity.convert(): Result<LotStatesRule, JsonErrors> =
-    failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$#/")) }
+    failureIfEmpty { return Result.failure(JsonErrors.EmptyArray()) }
         .mapIndexedOrEmpty { idx, state ->
-            state.convert(path = "#[$idx]").onFailure { return it }
+            state.convert().onFailure { return it.repath(path = "/[$idx]") }
         }
         .let { LotStatesRule(it).asSuccess() }
 
-fun LotStatusesEntity.LotStatusEntity.convert(path: String): Result<LotStatesRule.State, JsonErrors> {
-    val status = status.asEnum(target = LotStatus, path = "$path/status")
-        .onFailure { return it }
+fun LotStatusesEntity.LotStatusEntity.convert(): Result<LotStatesRule.State, JsonErrors> {
+    val status = status.asEnum(target = LotStatus).onFailure { return it.repath(path = "/status") }
     return LotStatesRule.State(status = status).asSuccess()
 }

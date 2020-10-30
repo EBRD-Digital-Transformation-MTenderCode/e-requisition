@@ -3,13 +3,13 @@ package com.procurement.requisition.infrastructure.repository.pcr.model.tender
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
 import com.procurement.requisition.domain.model.document.Documents
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModalities
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality
 import com.procurement.requisition.domain.model.tender.Tender
-import com.procurement.requisition.domain.model.tender.TenderId
 import com.procurement.requisition.domain.model.tender.TenderStatus
 import com.procurement.requisition.domain.model.tender.TenderStatusDetails
 import com.procurement.requisition.domain.model.tender.conversion.Conversions
@@ -20,6 +20,7 @@ import com.procurement.requisition.domain.model.tender.target.Targets
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
 import com.procurement.requisition.infrastructure.handler.converter.asString
+import com.procurement.requisition.infrastructure.handler.converter.asTenderId
 import com.procurement.requisition.infrastructure.repository.pcr.model.ClassificationEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.DocumentEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.ValueEntity
@@ -101,74 +102,61 @@ fun Tender.mappingToEntity() = TenderEntity(
     value = value.mappingToEntity()
 )
 
-fun TenderEntity.mappingToDomain(path: String): Result<Tender, JsonErrors> {
-    val id = TenderId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = TenderId.pattern,
-                reason = null
-            )
-        )
-    val status = status.asEnum(target = TenderStatus, path = "$path/status")
-        .onFailure { return it }
-    val statusDetails = statusDetails.asEnum(target = TenderStatusDetails, path = "$path/statusDetails")
-        .onFailure { return it }
-    val date = date.asLocalDateTime(path = "$path/date").onFailure { return it }
-    val classification = classification.mappingToDomain(path = "$path/classification")
-        .onFailure { return it }
+fun TenderEntity.mappingToDomain(): Result<Tender, JsonErrors> {
+    val id = id.asTenderId().onFailure { return it.repath(path = "/id") }
+    val status = status.asEnum(target = TenderStatus)
+        .onFailure { return it.repath(path = "/status") }
+    val statusDetails = statusDetails.asEnum(target = TenderStatusDetails)
+        .onFailure { return it.repath(path = "/statusDetails") }
+    val date = date.asLocalDateTime().onFailure { return it.repath(path = "/date") }
+    val classification = classification.mappingToDomain()
+        .onFailure { return it.repath(path = "/classification") }
     val lots = lots
-        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/lots")) }
-        .mapIndexedOrEmpty { idx, lot -> lot.deserialization(path = "$path/lots[$idx]").onFailure { return it } }
+        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "lots")) }
+        .mapIndexedOrEmpty { idx, lot -> lot.deserialization().onFailure { return it.repath(path = "/lots[$idx]") } }
         .let { Lots(it) }
     val items = items
-        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/items")) }
+        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "items")) }
         .mapIndexedOrEmpty { idx, item ->
-            item.mappingToDomain(path = "$path/items[$idx]").onFailure { return it }
+            item.mappingToDomain().onFailure { return it.repath(path = "/items[$idx]") }
         }
         .let { Items(it) }
     val targets = targets
-        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/targets")) }
+        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "targets")) }
         .mapIndexedOrEmpty { idx, target ->
-            target.deserialization(path = "$path/targets[$idx]").onFailure { return it }
+            target.deserialization().onFailure { return it.repath(path = "/targets[$idx]") }
         }
         .let { Targets(it) }
     val criteria = criteria
-        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/criteria")) }
+        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "criteria")) }
         .mapIndexedOrEmpty { idx, criterion ->
-            criterion.deserialization(path = "$path/criteria[$idx]").onFailure { return it }
+            criterion.deserialization().onFailure { return it.repath(path = "/criteria[$idx]") }
         }
         .let { Criteria(it) }
     val conversions = conversions
-        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/conversions")) }
+        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "conversions")) }
         .mapIndexedOrEmpty { idx, conversion ->
-            conversion.deserialization(path = "$path/conversions[$idx]").onFailure { return it }
+            conversion.deserialization().onFailure { return it.repath(path = "/conversions[$idx]") }
         }
         .let { Conversions(it) }
     val procurementMethodModalities = procurementMethodModalities
-        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/procurementMethodModalities")) }
+        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "procurementMethodModalities")) }
         .mapIndexedOrEmpty { idx, procurementMethodModality ->
-            procurementMethodModality.asEnum(
-                target = ProcurementMethodModality,
-                path = "$path/procurementMethodModalities[$idx]"
-            )
-                .onFailure { return it }
+            procurementMethodModality.asEnum(target = ProcurementMethodModality)
+                .onFailure { return it.repath(path = "/procurementMethodModalities[$idx]") }
         }
         .let { ProcurementMethodModalities(it) }
-    val awardCriteria = awardCriteria.asEnum(target = AwardCriteria, path = "$path/awardCriteria")
-        .onFailure { return it }
-    val awardCriteriaDetails =
-        awardCriteriaDetails.asEnum(target = AwardCriteriaDetails, path = "$path/awardCriteriaDetails")
-            .onFailure { return it }
+    val awardCriteria = awardCriteria.asEnum(target = AwardCriteria)
+        .onFailure { return it.repath(path = "/awardCriteria") }
+    val awardCriteriaDetails = awardCriteriaDetails.asEnum(target = AwardCriteriaDetails)
+        .onFailure { return it.repath(path = "/awardCriteriaDetails") }
     val documents = documents
-        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/documents")) }
+        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "documents")) }
         .mapIndexedOrEmpty { idx, document ->
-            document.mappingToDomain(path = "$path/documents[$idx]").onFailure { return it }
+            document.mappingToDomain().onFailure { return it.repath(path = "/documents[$idx]") }
         }
         .let { Documents(it) }
-    val value = value.mappingToDomain(path = "$path/id")
-        .onFailure { return it }
+    val value = value.mappingToDomain().onFailure { return it.repath(path = "/id") }
 
     return Tender(
         id = id,

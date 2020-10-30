@@ -3,12 +3,13 @@ package com.procurement.requisition.infrastructure.repository.pcr.model.tender.l
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.tender.lot.Lot
-import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.LotStatus
 import com.procurement.requisition.domain.model.tender.lot.LotStatusDetails
 import com.procurement.requisition.domain.model.tender.lot.Variants
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
+import com.procurement.requisition.infrastructure.handler.converter.asLotId
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.repository.pcr.model.ClassificationEntity
 import com.procurement.requisition.infrastructure.repository.pcr.model.mappingToDomain
@@ -44,24 +45,17 @@ fun Lot.serialization() = LotEntity(
     variants = variants.map { it.serialization() },
 )
 
-fun LotEntity.deserialization(path: String): Result<Lot, JsonErrors> {
-    val id = LotId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = LotId.pattern,
-                reason = null
-            )
-        )
-    val status = status.asEnum(target = LotStatus, path = "$path/status")
-        .onFailure { return it }
-    val statusDetails = statusDetails.asEnum(target = LotStatusDetails, path = "$path/statusDetails")
-        .onFailure { return it }
-    val classification = classification.mappingToDomain(path = "$path/classification").onFailure { return it }
+fun LotEntity.deserialization(): Result<Lot, JsonErrors> {
+    val id = id.asLotId().onFailure { return it.repath(path = "/id") }
+    val status = status.asEnum(target = LotStatus)
+        .onFailure { return it.repath(path = "/status") }
+    val statusDetails = statusDetails.asEnum(target = LotStatusDetails)
+        .onFailure { return it.repath(path = "/statusDetails") }
+    val classification = classification.mappingToDomain()
+        .onFailure { return it.repath(path = "/classification") }
     val variants = variants
         .map { variant ->
-            variant.deserialization(path = "$path/variants")
+            variant.deserialization(path = "/variants")
                 .onFailure { return it }
         }
         .let { Variants(it) }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.RequestErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.infrastructure.extension.tryGetAttribute
 import com.procurement.requisition.infrastructure.extension.tryGetAttributeAsEnum
 import com.procurement.requisition.infrastructure.extension.tryGetTextAttribute
@@ -23,12 +24,15 @@ fun CommandDescriptor.Companion.v1(content: String, transform: Transform): Resul
                 code = failure.code,
                 underlying = failure.description,
                 body = content,
-                path = failure.path,
+                path = failure.path.asString(),
                 reason = failure.reason
             )
         }
 
 object CommandsV1 {
+
+    val apiVersion: ApiVersion
+        get() = ApiVersion(1, 0, 0)
 
     enum class CommandType(override val key: String, override val kind: Action.Kind) :
         EnumElementProvider.Element, Action {
@@ -60,24 +64,20 @@ object CommandsV1 {
             }
             .asSuccess()
 
-    fun JsonNode.getId(): Result<CommandId, JsonErrors> = tryGetTextAttribute("id")
-    fun JsonNode.getAction(): Result<CommandType, JsonErrors> = tryGetAttributeAsEnum("command", CommandType)
-    fun JsonNode.getVersion(): Result<ApiVersion, JsonErrors> = tryGetTextAttribute("version")
+    fun JsonNode.getId(): Result<CommandId, JsonErrors> = tryGetTextAttribute("/id")
+    fun JsonNode.getAction(): Result<CommandType, JsonErrors> = tryGetAttributeAsEnum("/command", CommandType)
+    fun JsonNode.getVersion(): Result<ApiVersion, JsonErrors> = tryGetTextAttribute("/version")
         .flatMap { version ->
             ApiVersion.orNull(version)
                 ?.asSuccess()
                 ?: Result.failure(
-                    JsonErrors.DataFormatMismatch(
-                        path = "version",
-                        actualValue = version,
-                        expectedFormat = ApiVersion.pattern,
-                        reason = null
-                    )
+                    JsonErrors.DataFormatMismatch(actualValue = version, expectedFormat = ApiVersion.pattern)
+                        .repath(path = "/version")
                 )
         }
 
-    fun getContext(node: JsonNode): Result<CommandContext, JsonErrors> = node.tryGetAttribute("context")
+    fun getContext(node: JsonNode): Result<CommandContext, JsonErrors> = node.tryGetAttribute("/context")
         .map { CommandContext(it) }
 
-    fun getData(node: JsonNode): Result<JsonNode, JsonErrors> = node.tryGetAttribute("data")
+    fun getData(node: JsonNode): Result<JsonNode, JsonErrors> = node.tryGetAttribute("/data")
 }

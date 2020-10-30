@@ -3,10 +3,11 @@ package com.procurement.requisition.infrastructure.repository.pcr.model.tender.c
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.tender.conversion.Conversion
-import com.procurement.requisition.domain.model.tender.conversion.ConversionId
 import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.Coefficients
+import com.procurement.requisition.infrastructure.handler.converter.asConversionId
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.lib.failureIfEmpty
@@ -35,23 +36,14 @@ fun Conversion.serialization() = ConversionEntity(
     coefficients = coefficients.map { it.serialization() }
 )
 
-fun ConversionEntity.deserialization(path: String): Result<Conversion, JsonErrors> {
-    val id = ConversionId.orNull(id)
-        ?: return Result.failure(
-            JsonErrors.DataFormatMismatch(
-                path = "$path/id",
-                actualValue = id,
-                expectedFormat = ConversionId.pattern,
-                reason = null
-            )
-        )
-    val relatesTo = relatesTo.asEnum(target = ConversionRelatesTo, path = "$path/relatesTo")
-        .onFailure { return it }
-
+fun ConversionEntity.deserialization(): Result<Conversion, JsonErrors> {
+    val id = id.asConversionId().onFailure { return it.repath(path = "/id") }
+    val relatesTo = relatesTo.asEnum(target = ConversionRelatesTo)
+        .onFailure { return it.repath(path = "/relatesTo") }
     val coefficients = coefficients
-        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/coefficients")) }
+        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "/coefficients")) }
         .mapIndexedOrEmpty { idx, coefficient ->
-            coefficient.deserialization(path = "$path/coefficients[$idx]").onFailure { return it }
+            coefficient.deserialization().onFailure { return it.repath(path = "/coefficients[$idx]") }
         }
         .let { Coefficients(it) }
 
