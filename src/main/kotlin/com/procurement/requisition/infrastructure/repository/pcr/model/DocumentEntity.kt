@@ -3,12 +3,13 @@ package com.procurement.requisition.infrastructure.repository.pcr.model
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.document.Document
 import com.procurement.requisition.domain.model.document.DocumentType
-import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.RelatedLots
 import com.procurement.requisition.infrastructure.handler.converter.asDocumentId
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
+import com.procurement.requisition.infrastructure.handler.converter.asLotId
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.lib.failureIfEmpty
 import com.procurement.requisition.lib.functional.Result
@@ -36,22 +37,14 @@ fun Document.mappingToEntity() = DocumentEntity(
     relatedLots = relatedLots.map { it.underlying }
 )
 
-fun DocumentEntity.mappingToDomain(path: String): Result<Document, JsonErrors> {
-    val id = id.asDocumentId(path = "$path/id").onFailure { return it }
-    val documentType = documentType.asEnum(target = DocumentType, path = "$path/documentType")
-        .onFailure { return it }
+fun DocumentEntity.mappingToDomain(): Result<Document, JsonErrors> {
+    val id = id.asDocumentId().onFailure { return it.repath(path = "/id") }
+    val documentType = documentType.asEnum(target = DocumentType)
+        .onFailure { return it.repath(path = "/documentType") }
     val relatedLots = relatedLots
-        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/relatedLots")) }
+        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath("/relatedLots")) }
         .mapIndexedOrEmpty { idx, relatedLot ->
-            LotId.orNull(relatedLot)
-                ?: return Result.failure(
-                    JsonErrors.DataFormatMismatch(
-                        path = "$path/relatedLots[$idx]",
-                        actualValue = relatedLot,
-                        expectedFormat = LotId.pattern,
-                        reason = null
-                    )
-                )
+            relatedLot.asLotId().onFailure { return it.repath(path = "/relatedLots[$idx]") }
         }
         .let { t -> RelatedLots(t) }
 

@@ -6,8 +6,12 @@ import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.get.tender.state.GetTenderStateService
 import com.procurement.requisition.domain.failure.error.RequestErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.AbstractHandler
+import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.infrastructure.handler.CommandHandler
+import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.state.model.GetTenderStateRequest
@@ -16,11 +20,15 @@ import com.procurement.requisition.infrastructure.web.v2.CommandsV2
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
+@CommandHandler
 class GetTenderStateHandler(
     override val logger: Logger,
     override val transform: Transform,
     private val getTenderStateService: GetTenderStateService
 ) : AbstractHandler() {
+
+    override val version: ApiVersion = CommandsV2.apiVersion
+    override val action: Action = CommandsV2.CommandType.GET_TENDER_STATE
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 
@@ -40,6 +48,7 @@ class GetTenderStateHandler(
             }
             .onFailure { failure -> return failure }
             .convert()
+            .repath(path = "/params")
             .mapFailure { failure ->
                 RequestErrors(
                     code = failure.code,
@@ -47,7 +56,7 @@ class GetTenderStateHandler(
                     id = descriptor.id,
                     body = descriptor.body.asString,
                     underlying = failure.description,
-                    path = failure.path,
+                    path = failure.path.asString(),
                     reason = failure.reason
                 )
             }

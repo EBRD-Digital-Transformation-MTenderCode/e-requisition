@@ -2,6 +2,7 @@ package com.procurement.requisition.infrastructure.repository.pcr.model.tender.t
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.target.Target
 import com.procurement.requisition.domain.model.tender.target.observation.Observations
@@ -32,14 +33,14 @@ fun Target.serialization() = TargetEntity(
     observations = observations.map { it.serialization() }
 )
 
-fun TargetEntity.deserialization(path: String): Result<Target, JsonErrors> {
-    val id = id.asTargetId(path = "$path/id").onFailure { return it }
-    val relatesTo = relatesTo.asEnum(target = TargetRelatesTo, path = "$path/relatesTo")
-        .onFailure { return it }
+fun TargetEntity.deserialization(): Result<Target, JsonErrors> {
+    val id = id.asTargetId().onFailure { return it.repath(path = "/id") }
+    val relatesTo = relatesTo.asEnum(target = TargetRelatesTo)
+        .onFailure { return it.repath(path = "/relatesTo") }
     val observations = observations
-        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/observations")) }
+        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath("/observations")) }
         .mapIndexedOrEmpty { observationIdx, observation ->
-            observation.deserialization("$path/observations[$observationIdx]").onFailure { return it }
+            observation.deserialization().onFailure { return it.repath(path = "/observations[$observationIdx]") }
         }
         .let { Observations(it) }
 

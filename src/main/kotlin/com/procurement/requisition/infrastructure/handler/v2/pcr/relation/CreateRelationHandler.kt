@@ -6,8 +6,12 @@ import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.relation.CreateRelationService
 import com.procurement.requisition.domain.failure.error.RequestErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.AbstractHandler
+import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.infrastructure.handler.CommandHandler
+import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.relation.model.CreateRelationRequest
@@ -16,11 +20,15 @@ import com.procurement.requisition.infrastructure.web.v2.CommandsV2
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
+@CommandHandler
 class CreateRelationHandler(
     override val logger: Logger,
     override val transform: Transform,
     private val createRelationService: CreateRelationService
 ) : AbstractHandler() {
+
+    override val version: ApiVersion = CommandsV2.apiVersion
+    override val action: Action = CommandsV2.CommandType.CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 
@@ -40,6 +48,7 @@ class CreateRelationHandler(
             }
             .onFailure { failure -> return failure }
             .convert()
+            .repath(path = "/params")
             .mapFailure { failure ->
                 RequestErrors(
                     code = failure.code,
@@ -47,7 +56,7 @@ class CreateRelationHandler(
                     id = descriptor.id,
                     body = descriptor.body.asString,
                     underlying = failure.description,
-                    path = failure.path,
+                    path = failure.path.asString(),
                     reason = failure.reason
                 )
             }

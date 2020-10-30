@@ -2,6 +2,7 @@ package com.procurement.requisition.infrastructure.repository.pcr.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.PCR
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcesses
 import com.procurement.requisition.infrastructure.handler.converter.asCpid
@@ -33,13 +34,13 @@ fun PCR.mappingToEntity() = PCREntity(
 )
 
 fun PCREntity.mappingToDomain(): Result<PCR, JsonErrors> {
-    val cpid = cpid.asCpid(path = "#/cpid").onFailure { return it }
-    val ocid = ocid.asSingleStageOcid(path = "#/ocid").onFailure { return it }
-    val token = token.asToken(path = "#/token").onFailure { return it }
-    val tender = tender.mappingToDomain("#/tender").onFailure { return it }
+    val cpid = cpid.asCpid().onFailure { return it.repath(path = "/cpid") }
+    val ocid = ocid.asSingleStageOcid().onFailure { return it.repath(path = "/ocid") }
+    val token = token.asToken().onFailure { return it.repath(path = "/token") }
+    val tender = tender.mappingToDomain().onFailure { return it.repath("/tender") }
     val relatedProcesses = relatedProcesses
         .mapIndexedOrEmpty { idx, relatedProcess ->
-            relatedProcess.mappingToDomain(path = "#/relatedProcesses[$idx]").onFailure { return it }
+            relatedProcess.mappingToDomain().onFailure { return it.repath(path = "/relatedProcesses[$idx]") }
         }
         .let { RelatedProcesses(it) }
 

@@ -18,5 +18,5 @@ data class ValueEntity(
 
 fun Value.mappingToEntity() = ValueEntity(amount = amount?.underlying, currency = currency)
 
-fun ValueEntity.mappingToDomain(path: String): Result<Value, JsonErrors> =
+fun ValueEntity.mappingToDomain(): Result<Value, JsonErrors> =
     Value(amount = amount?.let { Amount(it) }, currency = currency).asSuccess() //TODO

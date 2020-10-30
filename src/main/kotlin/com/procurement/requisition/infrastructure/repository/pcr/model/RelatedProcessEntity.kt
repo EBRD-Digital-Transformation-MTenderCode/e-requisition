@@ -2,6 +2,7 @@ package com.procurement.requisition.infrastructure.repository.pcr.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcess
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessScheme
 import com.procurement.requisition.domain.model.relatedprocesses.Relationship
@@ -30,16 +31,14 @@ fun RelatedProcess.mappingToEntity() = RelatedProcessEntity(
     uri = uri
 )
 
-fun RelatedProcessEntity.mappingToDomain(path: String): Result<RelatedProcess, JsonErrors> {
-    val id = id.asRelatedProcessId(path = "$path/id").onFailure { return it }
-    val scheme = scheme.asEnum(target = RelatedProcessScheme, path = "$path/scheme")
-        .onFailure { return it }
-
+fun RelatedProcessEntity.mappingToDomain(): Result<RelatedProcess, JsonErrors> {
+    val id = id.asRelatedProcessId().onFailure { return it.repath(path = "/id") }
+    val scheme = scheme.asEnum(target = RelatedProcessScheme)
+        .onFailure { return it.repath(path = "/scheme") }
     val relationship = relationship
-        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/relationship")) }
+        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "relationship")) }
         .mapIndexedOrEmpty { idx, relationship ->
-            relationship.asEnum(target = Relationship, path = "$path/relationship[idx]")
-                .onFailure { return it }
+            relationship.asEnum(target = Relationship).onFailure { return it.repath(path = "/relationship[idx]") }
         }
         .let { t -> Relationships(t) }
 

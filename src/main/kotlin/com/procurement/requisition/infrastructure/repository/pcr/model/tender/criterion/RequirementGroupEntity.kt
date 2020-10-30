@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.requirement.Requirement
 import com.procurement.requisition.domain.model.requirement.RequirementGroup
 import com.procurement.requisition.domain.model.requirement.Requirements
@@ -31,8 +32,8 @@ fun RequirementGroup.serialization() = RequirementGroupEntity(
     requirements = requirements.toList(),
 )
 
-fun RequirementGroupEntity.deserialization(path: String): Result<RequirementGroup, JsonErrors> {
-    val id = id.asRequirementGroupId(path = "$path/id").onFailure { return it }
+fun RequirementGroupEntity.deserialization(): Result<RequirementGroup, JsonErrors> {
+    val id = id.asRequirementGroupId().onFailure { return it.repath(path = "/id") }
     return RequirementGroup(
         id = id,
         description = description,

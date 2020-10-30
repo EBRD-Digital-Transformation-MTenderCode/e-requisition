@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.Coefficient
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientRate
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
@@ -25,7 +26,7 @@ data class CoefficientEntity(
 fun Coefficient.serialization() =
     CoefficientEntity(id = id.underlying, value = value, coefficient = coefficient)
 
-fun CoefficientEntity.deserialization(path: String): Result<Coefficient, JsonErrors> {
-    val id = id.asCoefficientId(path = "$path/id").onFailure { return it }
+fun CoefficientEntity.deserialization(): Result<Coefficient, JsonErrors> {
+    val id = id.asCoefficientId().onFailure { return it.repath(path = "/id") }
     return Coefficient(id = id, value = value, coefficient = coefficient).asSuccess()
 }

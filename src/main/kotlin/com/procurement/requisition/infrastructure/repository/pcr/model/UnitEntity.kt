@@ -13,5 +13,4 @@ data class UnitEntity(
 
 fun Unit.mappingToEntity() = UnitEntity(id = id, name = name)
 
-fun UnitEntity.mappingToDomain(path: String): Result<Unit, JsonErrors> =
-    Unit(id = id, name = name).asSuccess()
+fun UnitEntity.mappingToDomain(): Result<Unit, JsonErrors> = Unit(id = id, name = name).asSuccess()
