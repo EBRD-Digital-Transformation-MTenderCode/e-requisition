@@ -42,6 +42,7 @@ object CommandsV1 {
         GET_AWARD_CRITERIA_AND_CONVERSIONS(key = "getAwardCriteriaAndConversions", kind = Action.Kind.QUERY),
         GET_CURRENCY("getCurrency", kind = Action.Kind.QUERY),
         GET_TENDER_OWNER(key = "getTenderOwner", kind = Action.Kind.QUERY),
+        GET_LOTS_AUCTION("getLotsAuction", kind = Action.Kind.QUERY),
         SET_LOTS_STATUS_UNSUCCESSFUL(key = "setLotsStatusUnsuccessful", kind = Action.Kind.COMMAND),
         SET_TENDER_STATUS_DETAILS(key = "setTenderStatusDetails", kind = Action.Kind.COMMAND),
         SET_TENDER_STATUS_UNSUCCESSFUL(key = "setTenderUnsuccessful", kind = Action.Kind.COMMAND),
