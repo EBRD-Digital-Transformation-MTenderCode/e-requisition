@@ -3,7 +3,7 @@ package com.procurement.requisition.domain.model.requirement.response
 class RequirementResponseId private constructor(val underlying: String) {
 
     companion object {
-        const val pattern = "\\w"
+        const val pattern = ".*"
         private val regex = pattern.toRegex()
 
         fun validate(text: String) = text.matches(regex)
