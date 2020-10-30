@@ -6,6 +6,7 @@ import com.procurement.requisition.application.service.create.pcr.CreatePCRServi
 import com.procurement.requisition.application.service.create.request.CreateRequestsForEvPanelsService
 import com.procurement.requisition.application.service.find.items.FindItemsByLotIdsService
 import com.procurement.requisition.application.service.find.pmm.FindProcurementMethodModalitiesService
+import com.procurement.requisition.application.service.get.award.GetAwardCriteriaAndConversionsService
 import com.procurement.requisition.application.service.get.lot.GetActiveLotsService
 import com.procurement.requisition.application.service.get.tender.currency.GetTenderCurrencyService
 import com.procurement.requisition.application.service.get.tender.state.GetTenderStateService
@@ -21,6 +22,7 @@ import com.procurement.requisition.infrastructure.handler.Handler
 import com.procurement.requisition.infrastructure.handler.HandlerDescription
 import com.procurement.requisition.infrastructure.handler.v1.HandlersV1
 import com.procurement.requisition.infrastructure.handler.v1.create.request.CreateRequestsForEvPanelsHandler
+import com.procurement.requisition.infrastructure.handler.v1.get.award.GetAwardCriteriaAndConversionsHandler
 import com.procurement.requisition.infrastructure.handler.v1.get.lot.GetActiveLotsHandler
 import com.procurement.requisition.infrastructure.handler.v1.set.SetLotsStatusUnsuccessfulHandler
 import com.procurement.requisition.infrastructure.handler.v1.set.SetTenderStatusDetailsHandler
@@ -60,6 +62,7 @@ class WebConfiguration(
     val findItemsByLotIdsService: FindItemsByLotIdsService,
     val findProcurementMethodModalitiesService: FindProcurementMethodModalitiesService,
     val getActiveLotsService: GetActiveLotsService,
+    val getAwardCriteriaAndConversionsService: GetAwardCriteriaAndConversionsService,
     val getTenderCurrencyService: GetTenderCurrencyService,
     val getTenderStateService: GetTenderStateService,
     val setLotsStatusUnsuccessfulService: SetLotsStatusUnsuccessfulService,
@@ -74,6 +77,7 @@ class WebConfiguration(
         listOf(
             HandlerDescription(CommandsV1.CommandType.CREATE_REQUESTS_FOR_EV_PANELS, createRequestsForEvPanelsHandler()),
             HandlerDescription(CommandsV1.CommandType.GET_ACTIVE_LOTS, getActiveLotsHandler()),
+            HandlerDescription(CommandsV1.CommandType.GET_AWARD_CRITERIA_AND_CONVERSIONS, getAwardCriteriaAndConversionsHandler()),
             HandlerDescription(CommandsV1.CommandType.SET_LOTS_STATUS_UNSUCCESSFUL, setLotsStatusUnsuccessfulHandler()),
             HandlerDescription(CommandsV1.CommandType.SET_TENDER_STATUS_DETAILS, setTenderStatusDetailsHandler()),
             HandlerDescription(CommandsV1.CommandType.SET_TENDER_STATUS_UNSUCCESSFUL, setTenderStatusUnsuccessfulHandler()),
@@ -91,6 +95,10 @@ class WebConfiguration(
     @Bean
     fun getActiveLotsHandler(): Handler =
         GetActiveLotsHandler(logger = logger, transform = transform, getActiveLotsService = getActiveLotsService)
+
+    @Bean
+    fun getAwardCriteriaAndConversionsHandler(): Handler =
+        GetAwardCriteriaAndConversionsHandler(logger = logger, transform = transform, getAwardCriteriaAndConversionsService = getAwardCriteriaAndConversionsService)
 
     @Bean
     fun setLotsStatusUnsuccessfulHandler(): Handler =
