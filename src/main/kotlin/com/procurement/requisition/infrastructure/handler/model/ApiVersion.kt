@@ -2,7 +2,7 @@ package com.procurement.requisition.infrastructure.handler.model
 
 import com.fasterxml.jackson.annotation.JsonValue
 
-class ApiVersion private constructor(@JsonValue val underlying: String) {
+class ApiVersion private constructor(@JsonValue val underlying: String) : Comparable<ApiVersion> {
 
     companion object {
         const val pattern: String = "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\$"
@@ -27,4 +27,6 @@ class ApiVersion private constructor(@JsonValue val underlying: String) {
     override fun hashCode(): Int = underlying.hashCode()
 
     override fun toString(): String = underlying
+
+    override fun compareTo(other: ApiVersion): Int = underlying.compareTo(other.underlying)
 }

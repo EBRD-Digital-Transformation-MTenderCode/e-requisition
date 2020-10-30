@@ -30,6 +30,9 @@ fun CommandDescriptor.Companion.v1(content: String, transform: Transform): Resul
 
 object CommandsV1 {
 
+    val apiVersion: ApiVersion
+        get() = ApiVersion(1, 0, 0)
+
     enum class CommandType(override val key: String, override val kind: Action.Kind) :
         EnumElementProvider.Element, Action {
 

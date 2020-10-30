@@ -8,6 +8,9 @@ import com.procurement.requisition.application.service.validate.CheckTenderState
 import com.procurement.requisition.domain.failure.error.RequestErrors
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.AbstractHandler
+import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.infrastructure.handler.CommandHandler
+import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model.CheckTenderStateRequest
@@ -17,11 +20,15 @@ import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
 
+@CommandHandler
 class CheckTenderStateHandler(
     override val logger: Logger,
     override val transform: Transform,
     val checkTenderStateService: CheckTenderStateService
 ) : AbstractHandler() {
+
+    override val version: ApiVersion = CommandsV2.apiVersion
+    override val action: Action = CommandsV2.CommandType.CHECK_TENDER_STATE
 
     override fun execute(descriptor: CommandDescriptor): Result<String?, Failure> {
 
