@@ -36,4 +36,8 @@ class CommandContext(private val node: JsonNode) {
     val phase: Result<String, JsonErrors>
         get() = node.tryGetTextAttribute("/phase")
             .repath(path = "/context")
+
+    val pmd: Result<String, JsonErrors>
+        get() = node.tryGetTextAttribute("pmd")
+            .repath(path = "/context")
 }
