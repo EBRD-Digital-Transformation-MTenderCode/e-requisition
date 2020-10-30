@@ -55,7 +55,7 @@ class ValidatePCRDataHandler(
                     id = descriptor.id,
                     body = descriptor.body.asString,
                     underlying = failure.description,
-                    path = failure.path,
+                    path = failure.path.asString(),
                     reason = failure.reason
                 )
             }

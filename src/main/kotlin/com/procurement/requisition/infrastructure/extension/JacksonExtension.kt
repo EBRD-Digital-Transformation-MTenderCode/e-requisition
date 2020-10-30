@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeType
 import com.fasterxml.jackson.databind.node.NullNode
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.lib.enumerator.EnumElementProvider
 import com.procurement.requisition.lib.enumerator.EnumElementProvider.Companion.keysAsStrings
 import com.procurement.requisition.lib.functional.Result
@@ -19,17 +20,12 @@ fun JsonNode.tryGetAttribute(name: String): Result<JsonNode, JsonErrors> =
         ?.let { node ->
             if (node is NullNode)
                 failure(
-                    JsonErrors.DataTypeMismatch(
-                        path = name,
-                        actual = "null",
-                        expected = "not null",
-                        reason = null
-                    )
+                    JsonErrors.DataTypeMismatch(actual = "null", expected = "not null").repath(path = "/$name")
                 )
             else
                 success(node)
         }
-        ?: failure(JsonErrors.MissingRequiredAttribute(path = name, reason = null))
+        ?: failure(JsonErrors.MissingRequiredAttribute().repath(path = "/$name"))
 
 fun JsonNode.tryGetAttribute(name: String, type: JsonNodeType): Result<JsonNode, JsonErrors> =
     tryGetAttribute(name = name)
@@ -38,12 +34,8 @@ fun JsonNode.tryGetAttribute(name: String, type: JsonNodeType): Result<JsonNode,
                 success(node)
             else
                 failure(
-                    JsonErrors.DataTypeMismatch(
-                        path = name,
-                        expected = type.name,
-                        actual = node.nodeType.name,
-                        reason = null
-                    )
+                    JsonErrors.DataTypeMismatch(expected = type.name, actual = node.nodeType.name)
+                        .repath(path = "/$name")
                 )
         }
 
@@ -64,10 +56,8 @@ fun <T> JsonNode.tryGetAttributeAsEnum(name: String, enumProvider: EnumElementPr
                 ?.asSuccess<T, JsonErrors.UnknownValue>()
                 ?: failure(
                     JsonErrors.UnknownValue(
-                        path = name,
                         expectedValues = enumProvider.allowedElements.keysAsStrings(),
-                        actualValue = text,
-                        reason = null
-                    )
+                        actualValue = text
+                    ).repath(path = "/$name")
                 )
         }

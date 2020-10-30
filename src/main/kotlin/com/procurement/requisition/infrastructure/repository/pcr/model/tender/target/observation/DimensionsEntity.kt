@@ -12,5 +12,5 @@ data class DimensionsEntity(
 
 fun Dimensions.serialization() = DimensionsEntity(requirementClassIdPR = requirementClassIdPR)
 
-fun DimensionsEntity.deserialization(path: String): Result<Dimensions, JsonErrors> =
+fun DimensionsEntity.deserialization(): Result<Dimensions, JsonErrors> =
     Dimensions(requirementClassIdPR = requirementClassIdPR).asSuccess()

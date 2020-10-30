@@ -29,20 +29,12 @@ import java.time.LocalDateTime
 
 fun <T> String.asEnum(
     target: EnumElementProvider<T>,
-    path: String,
     allowedElements: Set<T> = target.allowedElements
 ): Result<T, JsonErrors.UnknownValue> where T : Enum<T>,
                                             T : EnumElementProvider.Element = target.orNull(this)
     ?.takeIf { it in allowedElements }
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.UnknownValue(
-            path = path,
-            expectedValues = allowedElements.keysAsStrings(),
-            actualValue = this,
-            reason = null
-        )
-    )
+    ?: failure(JsonErrors.UnknownValue(expectedValues = allowedElements.keysAsStrings(), actualValue = this))
 
 fun <T> T.asStringOrNull(): String? where T : Enum<T>,
                                           T : EnumElementProvider.Element = takeIf { !it.isNeutralElement }?.key
@@ -50,123 +42,84 @@ fun <T> T.asStringOrNull(): String? where T : Enum<T>,
 fun <T> T.asString(): String where T : Enum<T>,
                                    T : EnumElementProvider.Element = key
 
-fun String.asLocalDateTime(path: String): Result<LocalDateTime, JsonErrors> = tryParseLocalDateTime()
+fun String.asLocalDateTime(): Result<LocalDateTime, JsonErrors> = tryParseLocalDateTime()
     .mapFailure { failure ->
         when (failure) {
-            is DataTimeParseError.InvalidFormat -> JsonErrors.DataFormatMismatch(
-                path = path,
-                actualValue = failure.value,
-                expectedFormat = failure.pattern,
-                reason = failure.reason
-            )
+            is DataTimeParseError.InvalidFormat ->
+                JsonErrors.DataFormatMismatch(
+                    actualValue = failure.value,
+                    expectedFormat = failure.pattern,
+                    reason = failure.reason
+                )
 
-            is DataTimeParseError.InvalidDateTime -> JsonErrors.DateTimeInvalid(
-                path = path,
-                value = failure.value,
-                reason = failure.reason
-            )
+            is DataTimeParseError.InvalidDateTime ->
+                JsonErrors.DateTimeInvalid(value = failure.value, reason = failure.reason)
         }
     }
 
 fun LocalDateTime.asString() = format()
 
-fun String.asCpid(path: String): Result<Cpid, JsonErrors> = Cpid.tryCreateOrNull(this)
+fun String.asCpid(): Result<Cpid, JsonErrors> = Cpid.tryCreateOrNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = Cpid.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = Cpid.pattern))
 
-fun String.asToken(path: String): Result<Token, JsonErrors> = Token.orNull(this)
+fun String.asToken(): Result<Token, JsonErrors> = Token.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = Token.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = Token.pattern))
 
-fun String.asSingleStageOcid(path: String): Result<Ocid, JsonErrors> = Ocid.SingleStage.tryCreateOrNull(this)
+fun String.asSingleStageOcid(): Result<Ocid, JsonErrors> = Ocid.SingleStage.tryCreateOrNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = Ocid.SingleStage.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = Ocid.SingleStage.pattern))
 
-fun String.asTenderId(path: String): Result<TenderId, JsonErrors> = TenderId.orNull(this)
+fun String.asTenderId(): Result<TenderId, JsonErrors> = TenderId.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = TenderId.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = TenderId.pattern))
 
-fun String.asLotId(path: String): Result<LotId, JsonErrors> = LotId.orNull(this)
+fun String.asLotId(): Result<LotId, JsonErrors> = LotId.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = LotId.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = LotId.pattern))
 
-fun String.asItemId(path: String): Result<ItemId, JsonErrors> = ItemId.orNull(this)
+fun String.asItemId(): Result<ItemId, JsonErrors> = ItemId.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = ItemId.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = ItemId.pattern))
 
-fun String.asTargetId(path: String): Result<TargetId, JsonErrors> = TargetId.orNull(this)
+fun String.asTargetId(): Result<TargetId, JsonErrors> = TargetId.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = TargetId.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = TargetId.pattern))
 
-fun String.asObservationId(path: String): Result<ObservationId, JsonErrors> = ObservationId.orNull(this)
+fun String.asObservationId(): Result<ObservationId, JsonErrors> = ObservationId.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = ObservationId.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = ObservationId.pattern))
 
-fun String.asCriterionId(path: String): Result<CriterionId, JsonErrors> = CriterionId.orNull(this)
+fun String.asCriterionId(): Result<CriterionId, JsonErrors> = CriterionId.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = CriterionId.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = CriterionId.pattern))
 
-fun String.asRequirementGroupId(path: String): Result<RequirementGroupId, JsonErrors> = RequirementGroupId.orNull(this)
+fun String.asRequirementGroupId(): Result<RequirementGroupId, JsonErrors> = RequirementGroupId.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = RequirementGroupId.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = RequirementGroupId.pattern))
 
-fun String.asRequirementResponseId(path: String): Result<RequirementResponseId, JsonErrors> =
+fun String.asRequirementResponseId(): Result<RequirementResponseId, JsonErrors> =
     RequirementResponseId.orNull(this)
         ?.asSuccess()
-        ?: failure(
-            JsonErrors.DataFormatMismatch(
-                path = path,
-                actualValue = this,
-                expectedFormat = RequirementResponseId.pattern
-            )
-        )
+        ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = RequirementResponseId.pattern))
 
-fun String.asConversionId(path: String): Result<ConversionId, JsonErrors> = ConversionId.orNull(this)
+fun String.asConversionId(): Result<ConversionId, JsonErrors> = ConversionId.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = ConversionId.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = ConversionId.pattern))
 
-fun String.asCoefficientId(path: String): Result<CoefficientId, JsonErrors> = CoefficientId.orNull(this)
+fun String.asCoefficientId(): Result<CoefficientId, JsonErrors> = CoefficientId.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = CoefficientId.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = CoefficientId.pattern))
 
-fun String.asDocumentId(path: String): Result<DocumentId, JsonErrors> = DocumentId.orNull(this)
+fun String.asDocumentId(): Result<DocumentId, JsonErrors> = DocumentId.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = DocumentId.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = DocumentId.pattern))
 
-fun String.asRelatedProcessId(path: String): Result<RelatedProcessId, JsonErrors> = RelatedProcessId.orNull(this)
+fun String.asRelatedProcessId(): Result<RelatedProcessId, JsonErrors> = RelatedProcessId.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = RelatedProcessId.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = RelatedProcessId.pattern))
 
-fun String.asBidId(path: String): Result<BidId, JsonErrors> = BidId.orNull(this)
+fun String.asBidId(): Result<BidId, JsonErrors> = BidId.orNull(this)
     ?.asSuccess()
-    ?: failure(
-        JsonErrors.DataFormatMismatch(path = path, actualValue = this, expectedFormat = BidId.pattern)
-    )
+    ?: failure(JsonErrors.DataFormatMismatch(actualValue = this, expectedFormat = BidId.pattern))

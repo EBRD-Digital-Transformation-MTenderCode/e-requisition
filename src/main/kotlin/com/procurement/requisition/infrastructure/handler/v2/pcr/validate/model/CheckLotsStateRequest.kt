@@ -3,6 +3,7 @@ package com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.application.service.validate.model.CheckLotsStateCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.infrastructure.handler.converter.asCpid
@@ -71,26 +72,15 @@ private val allowedOperationType = OperationType.allowedElements
     .toSet()
 
 fun CheckLotsStateRequest.convert(): Result<CheckLotsStateCommand, JsonErrors> {
-    val cpid = cpid.asCpid(path = "#/params/cpid").onFailure { return it }
-    val ocid = ocid.asSingleStageOcid(path = "#/params/ocid").onFailure { return it }
-
+    val cpid = cpid.asCpid().onFailure { return it.repath(path = "/cpid") }
+    val ocid = ocid.asSingleStageOcid().onFailure { return it.repath(path = "/ocid") }
     val pmd = pmd
-        .asEnum(
-            target = ProcurementMethodDetails,
-            path = "#/params/pmd",
-            allowedElements = allowedProcurementMethodDetails
-        )
-        .onFailure { return it }
-
+        .asEnum(target = ProcurementMethodDetails, allowedElements = allowedProcurementMethodDetails)
+        .onFailure { return it.repath(path = "/pmd") }
     val operationType = operationType
-        .asEnum(
-            target = OperationType,
-            path = "#/params/operationType",
-            allowedElements = allowedOperationType
-        )
-        .onFailure { return it }
-
-    val tender = tender.convert(path = "#/params/tender").onFailure { return it }
+        .asEnum(target = OperationType, allowedElements = allowedOperationType)
+        .onFailure { return it.repath(path = "/operationType") }
+    val tender = tender.convert().onFailure { return it.repath(path = "/tender") }
     return CheckLotsStateCommand(
         cpid = cpid,
         ocid = ocid,
@@ -101,10 +91,10 @@ fun CheckLotsStateRequest.convert(): Result<CheckLotsStateCommand, JsonErrors> {
     ).asSuccess()
 }
 
-fun CheckLotsStateRequest.Tender.convert(path: String): Result<CheckLotsStateCommand.Tender, JsonErrors> {
-    val lots = lots.failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/lots")) }
+fun CheckLotsStateRequest.Tender.convert(): Result<CheckLotsStateCommand.Tender, JsonErrors> {
+    val lots = lots.failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "/lots")) }
         .mapIndexed { idx, lot ->
-            lot.convert(path = "$path/lots[$idx]").onFailure { return it }
+            lot.convert().onFailure { return it.repath(path = "/lots[$idx]") }
         }
 
     return CheckLotsStateCommand.Tender(
@@ -112,7 +102,7 @@ fun CheckLotsStateRequest.Tender.convert(path: String): Result<CheckLotsStateCom
     ).asSuccess()
 }
 
-fun CheckLotsStateRequest.Tender.Lot.convert(path: String): Result<CheckLotsStateCommand.Tender.Lot, JsonErrors> {
-    val id = id.asLotId(path = "$path/id").onFailure { return it }
+fun CheckLotsStateRequest.Tender.Lot.convert(): Result<CheckLotsStateCommand.Tender.Lot, JsonErrors> {
+    val id = id.asLotId().onFailure { return it.repath(path = "/id") }
     return CheckLotsStateCommand.Tender.Lot(id = id).asSuccess()
 }

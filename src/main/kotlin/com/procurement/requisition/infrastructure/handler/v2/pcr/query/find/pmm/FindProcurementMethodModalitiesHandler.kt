@@ -6,6 +6,7 @@ import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.find.pmm.FindProcurementMethodModalitiesService
 import com.procurement.requisition.domain.failure.error.RequestErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.AbstractHandler
 import com.procurement.requisition.infrastructure.handler.Action
@@ -47,6 +48,7 @@ class FindProcurementMethodModalitiesHandler(
             }
             .onFailure { failure -> return failure }
             .convert()
+            .repath(path = "/params")
             .mapFailure { failure ->
                 RequestErrors(
                     code = failure.code,
@@ -54,7 +56,7 @@ class FindProcurementMethodModalitiesHandler(
                     id = descriptor.id,
                     body = descriptor.body.asString,
                     underlying = failure.description,
-                    path = failure.path,
+                    path = failure.path.asString(),
                     reason = failure.reason
                 )
             }

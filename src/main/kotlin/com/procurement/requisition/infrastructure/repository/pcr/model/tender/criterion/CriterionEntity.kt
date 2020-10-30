@@ -3,6 +3,7 @@ package com.procurement.requisition.infrastructure.repository.pcr.model.tender.c
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.requirement.RequirementGroups
 import com.procurement.requisition.domain.model.tender.criterion.Criterion
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
@@ -41,16 +42,16 @@ fun Criterion.serialization() = CriterionEntity(
     requirementGroups = requirementGroups.map { it.serialization() },
 )
 
-fun CriterionEntity.deserialization(path: String): Result<Criterion, JsonErrors> {
-    val id = id.asCriterionId(path = "$path/id").onFailure { return it }
-    val source = source.asEnum(target = CriterionSource, path = "$path/source")
-        .onFailure { return it }
-    val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo, path = "$path/relatesTo")
-        ?.onFailure { return it }
+fun CriterionEntity.deserialization(): Result<Criterion, JsonErrors> {
+    val id = id.asCriterionId().onFailure { return it.repath(path = "/id") }
+    val source = source.asEnum(target = CriterionSource)
+        .onFailure { return it.repath(path = "/source") }
+    val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo)
+        ?.onFailure { return it.repath(path = "/relatesTo") }
     val requirementGroups = requirementGroups
-        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray(path = "$path/requirementGroups")) }
+        .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "/requirementGroups")) }
         .mapIndexedOrEmpty { idx, requirementGroup ->
-            requirementGroup.deserialization(path = "$path/requirementGroups[$idx]").onFailure { return it }
+            requirementGroup.deserialization().onFailure { return it.repath(path = "/requirementGroups[$idx]") }
         }
         .let { RequirementGroups(it) }
 

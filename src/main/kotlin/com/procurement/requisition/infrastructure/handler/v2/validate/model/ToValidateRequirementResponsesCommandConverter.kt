@@ -2,14 +2,15 @@ package com.procurement.requisition.infrastructure.handler.v2.validate.model
 
 import com.procurement.requisition.application.service.validate.model.ValidateRequirementResponsesCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality
-import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.RelatedLots
 import com.procurement.requisition.infrastructure.handler.converter.asBidId
 import com.procurement.requisition.infrastructure.handler.converter.asCpid
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asItemId
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
+import com.procurement.requisition.infrastructure.handler.converter.asLotId
 import com.procurement.requisition.infrastructure.handler.converter.asRequirementResponseId
 import com.procurement.requisition.infrastructure.handler.converter.asSingleStageOcid
 import com.procurement.requisition.lib.failureIfEmpty
@@ -19,10 +20,10 @@ import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.mapIndexedOrEmpty
 
 fun ValidateRequirementResponsesRequest.convert(): Result<ValidateRequirementResponsesCommand, JsonErrors> {
-    val cpid = cpid.asCpid(path = "#/params/cpid").onFailure { return it }
-    val ocid = ocid.asSingleStageOcid(path = "#/params/ocid").onFailure { return it }
-    val tender = tender?.convert("#/params/tender")?.onFailure { return it }
-    val bids = bids.convert("#/params/bids").onFailure { return it }
+    val cpid = cpid.asCpid().onFailure { return it.repath(path = "/cpid") }
+    val ocid = ocid.asSingleStageOcid().onFailure { return it.repath(path = "/ocid") }
+    val tender = tender?.convert()?.onFailure { return it.repath("/tender") }
+    val bids = bids.convert().onFailure { return it.repath(path = "/bids") }
 
     return ValidateRequirementResponsesCommand(
         cpid = cpid,
@@ -35,15 +36,12 @@ fun ValidateRequirementResponsesRequest.convert(): Result<ValidateRequirementRes
 /**
  * Tender
  */
-fun ValidateRequirementResponsesRequest.Tender.convert(path: String): Result<ValidateRequirementResponsesCommand.Tender, JsonErrors> {
+fun ValidateRequirementResponsesRequest.Tender.convert(): Result<ValidateRequirementResponsesCommand.Tender, JsonErrors> {
     val procurementMethodModalities = procurementMethodModalities
-        .failureIfEmpty { return failure(JsonErrors.EmptyArray(path = "$path/procurementMethodModalities")) }
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "procurementMethodModalities")) }
         .mapIndexedOrEmpty { idx, procurementMethodModality ->
-            procurementMethodModality.asEnum(
-                target = ProcurementMethodModality,
-                path = "$path/procurementMethodModalities[$idx]"
-            )
-                .onFailure { return it }
+            procurementMethodModality.asEnum(target = ProcurementMethodModality)
+                .onFailure { return it.repath(path = "/procurementMethodModalities[$idx]") }
         }
 
     return ValidateRequirementResponsesCommand.Tender(
@@ -54,12 +52,11 @@ fun ValidateRequirementResponsesRequest.Tender.convert(path: String): Result<Val
 /**
  * Bids
  */
-fun ValidateRequirementResponsesRequest.Bids.convert(path: String): Result<ValidateRequirementResponsesCommand.Bids, JsonErrors> {
+fun ValidateRequirementResponsesRequest.Bids.convert(): Result<ValidateRequirementResponsesCommand.Bids, JsonErrors> {
     val details = details
-        .failureIfEmpty { return failure(JsonErrors.EmptyArray(path = "$path/details")) }
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "details")) }
         .mapIndexedOrEmpty { idx, detail ->
-            detail.convert(path = "$path/details[$idx]")
-                .onFailure { return it }
+            detail.convert().onFailure { return it.repath(path = "/details[$idx]") }
         }
     return ValidateRequirementResponsesCommand.Bids(details = details).asSuccess()
 }
@@ -67,31 +64,23 @@ fun ValidateRequirementResponsesRequest.Bids.convert(path: String): Result<Valid
 /**
  * Detail
  */
-fun ValidateRequirementResponsesRequest.Bids.Detail.convert(path: String): Result<ValidateRequirementResponsesCommand.Bids.Detail, JsonErrors> {
-    val id = id.asBidId(path = "$path/id").onFailure { return it }
+fun ValidateRequirementResponsesRequest.Bids.Detail.convert(): Result<ValidateRequirementResponsesCommand.Bids.Detail, JsonErrors> {
+    val id = id.asBidId().onFailure { return it.repath(path = "/id") }
     val relatedLots = relatedLots
-        .failureIfEmpty { return failure(JsonErrors.EmptyArray(path = "$path/relatedLots")) }
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "relatedLots")) }
         .mapIndexedOrEmpty { idx, relatedLot ->
-            LotId.orNull(relatedLot)
-                ?: return failure(
-                    JsonErrors.DataFormatMismatch(
-                        path = "$path/relatedLots[$idx]",
-                        actualValue = relatedLot,
-                        expectedFormat = LotId.pattern
-                    )
-                )
+            relatedLot.asLotId().onFailure { return it.repath("/relatedLots[$idx]") }
         }
         .let { t -> RelatedLots(t) }
     val items = items
-        .failureIfEmpty { return failure(JsonErrors.EmptyArray(path = "$path/items")) }
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "items")) }
         .mapIndexedOrEmpty { idx, item ->
-            item.convert(path = "$path/items[$idx]").onFailure { return it }
+            item.convert().onFailure { return it.repath(path = "/items[$idx]") }
         }
     val requirementResponses = requirementResponses
-        .failureIfEmpty { return failure(JsonErrors.EmptyArray(path = "$path/lots")) }
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "lots")) }
         .mapIndexedOrEmpty { idx, requirementResponse ->
-            requirementResponse.convert(path = "$path/requirementResponses[$idx]")
-                .onFailure { return it }
+            requirementResponse.convert().onFailure { return it.repath(path = "/requirementResponses[$idx]") }
         }
 
     return ValidateRequirementResponsesCommand.Bids.Detail(
@@ -105,8 +94,8 @@ fun ValidateRequirementResponsesRequest.Bids.Detail.convert(path: String): Resul
 /**
  * Item
  */
-fun ValidateRequirementResponsesRequest.Bids.Detail.Item.convert(path: String): Result<ValidateRequirementResponsesCommand.Bids.Detail.Item, JsonErrors> {
-    val id = id.asItemId(path = "$path/id").onFailure { return it }
+fun ValidateRequirementResponsesRequest.Bids.Detail.Item.convert(): Result<ValidateRequirementResponsesCommand.Bids.Detail.Item, JsonErrors> {
+    val id = id.asItemId().onFailure { return it.repath(path = "/id") }
     return ValidateRequirementResponsesCommand.Bids.Detail.Item(
         id = id,
     ).asSuccess()
@@ -115,10 +104,10 @@ fun ValidateRequirementResponsesRequest.Bids.Detail.Item.convert(path: String): 
 /**
  * RequirementResponse
  */
-fun ValidateRequirementResponsesRequest.Bids.Detail.RequirementResponse.convert(path: String): Result<ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse, JsonErrors> {
-    val id = id.asRequirementResponseId(path = "$path/id").onFailure { return it }
-    val requirement = requirement.convert(path = "$path/requirement").onFailure { return it }
-    val period = period?.convert(path = "$path/period")?.onFailure { return it }
+fun ValidateRequirementResponsesRequest.Bids.Detail.RequirementResponse.convert(): Result<ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse, JsonErrors> {
+    val id = id.asRequirementResponseId().onFailure { return it.repath(path = "/id") }
+    val requirement = requirement.convert().onFailure { return it.repath(path = "/requirement") }
+    val period = period?.convert()?.onFailure { return it.repath(path = "/period") }
 
     return ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse(
         id = id,
@@ -131,22 +120,18 @@ fun ValidateRequirementResponsesRequest.Bids.Detail.RequirementResponse.convert(
 /**
  * Requirement
  */
-fun ValidateRequirementResponsesRequest.Bids.Detail.RequirementResponse.Requirement.convert(path: String): Result<ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse.Requirement, JsonErrors> =
+fun ValidateRequirementResponsesRequest.Bids.Detail.RequirementResponse.Requirement.convert(): Result<ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse.Requirement, JsonErrors> =
     ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse.Requirement(id = id)
         .asSuccess()
 
 /**
  * Period
  */
-fun ValidateRequirementResponsesRequest.Bids.Detail.RequirementResponse.Period.convert(path: String):
+fun ValidateRequirementResponsesRequest.Bids.Detail.RequirementResponse.Period.convert():
     Result<ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse.Period, JsonErrors> {
 
-    val startDate = endDate.asLocalDateTime(path = "$path/startDate")
-        .onFailure { return it }
-
-    val endDate = endDate.asLocalDateTime(path = "$path/endDate")
-        .onFailure { return it }
-
+    val startDate = endDate.asLocalDateTime().onFailure { return it.repath(path = "/startDate") }
+    val endDate = endDate.asLocalDateTime().onFailure { return it.repath(path = "/endDate") }
     return ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse.Period(
         startDate = startDate,
         endDate = endDate

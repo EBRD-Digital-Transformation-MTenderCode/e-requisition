@@ -6,6 +6,7 @@ import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.set.SetLotsStatusUnsuccessfulService
 import com.procurement.requisition.application.service.set.model.SetLotsStatusUnsuccessfulCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.AbstractHandler
 import com.procurement.requisition.infrastructure.handler.Action
@@ -48,7 +49,7 @@ class SetLotsStatusUnsuccessfulHandler(
         val startDate = context.startDate.onFailure { return it }
         val lots = data.lots
             .mapIndexed { idx, lot ->
-                lot.convert(path = "#/data/unsuccessfulLots[$idx]").onFailure { return it }
+                lot.convert().onFailure { return it.repath(path = "/data/unsuccessfulLots[$idx]") }
             }
 
         val command = SetLotsStatusUnsuccessfulCommand(

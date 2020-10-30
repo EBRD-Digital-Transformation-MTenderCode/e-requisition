@@ -32,11 +32,8 @@ class GetActiveLotsHandler(
         val context = CommandsV1.getContext(descriptor.body.asJsonNode)
             .onFailure { failure -> return failure }
 
-        val cpid = context.cpid
-            .onFailure { return it }
-
-        val ocid = context.ocid
-            .onFailure { return it }
+        val cpid = context.cpid.onFailure { return it }
+        val ocid = context.ocid.onFailure { return it }
 
         val command = GetActiveLotIdsCommand(cpid = cpid, ocid = ocid)
 

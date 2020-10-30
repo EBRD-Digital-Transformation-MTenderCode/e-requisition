@@ -2,6 +2,7 @@ package com.procurement.requisition.infrastructure.handler.v2.pcr.query.find.pmm
 
 import com.procurement.requisition.application.service.find.pmm.model.FindProcurementMethodModalitiesCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality
 import com.procurement.requisition.infrastructure.handler.converter.asCpid
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
@@ -22,26 +23,21 @@ private val allowedProcurementMethodModalities = ProcurementMethodModality.allow
     .toSet()
 
 fun FindProcurementMethodModalitiesRequest.convert(): Result<FindProcurementMethodModalitiesCommand, JsonErrors> {
-    val cpid = cpid.asCpid(path = "#/params/cpid").onFailure { return it }
-    val ocid = ocid.asSingleStageOcid(path = "#/params/ocid").onFailure { return it }
-
-    val tender = this.tender.convert("#tender")
-        .onFailure { return it }
+    val cpid = cpid.asCpid().onFailure { return it.repath(path = "/cpid") }
+    val ocid = ocid.asSingleStageOcid().onFailure { return it.repath(path = "/ocid") }
+    val tender = this.tender.convert()
+        .onFailure { return it.repath(path = "/tender") }
 
     return FindProcurementMethodModalitiesCommand(cpid = cpid, ocid = ocid, tender = tender)
         .asSuccess()
 }
 
-fun FindProcurementMethodModalitiesRequest.Tender.convert(path: String): Result<FindProcurementMethodModalitiesCommand.Tender, JsonErrors> {
+fun FindProcurementMethodModalitiesRequest.Tender.convert(): Result<FindProcurementMethodModalitiesCommand.Tender, JsonErrors> {
     val procurementMethodModalities = this.procurementMethodModalities
-        .failureIfEmpty { return failure(JsonErrors.EmptyArray(path = "$path/procurementMethodModalities")) }
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "/procurementMethodModalities")) }
         .mapIndexed { idx, pmm ->
-            pmm.asEnum(
-                target = ProcurementMethodModality,
-                path = "$pmm/procurementMethodModalities[$idx]",
-                allowedElements = allowedProcurementMethodModalities
-            )
-                .onFailure { fail -> return fail }
+            pmm.asEnum(target = ProcurementMethodModality, allowedElements = allowedProcurementMethodModalities)
+                .onFailure { fail -> return fail.repath(path = "$pmm/procurementMethodModalities[$idx]") }
         }
 
     return FindProcurementMethodModalitiesCommand.Tender(procurementMethodModalities = procurementMethodModalities)

@@ -3,6 +3,7 @@ package com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.application.service.validate.model.CheckTenderStateCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.infrastructure.handler.converter.asCpid
@@ -59,24 +60,14 @@ private val allowedOperationType = OperationType.allowedElements
     .toSet()
 
 fun CheckTenderStateRequest.convert(): Result<CheckTenderStateCommand, JsonErrors> {
-    val cpid = cpid.asCpid(path = "#/params/cpid").onFailure { return it }
-    val ocid = ocid.asSingleStageOcid(path = "#/params/ocid").onFailure { return it }
-
+    val cpid = cpid.asCpid().onFailure { return it.repath(path = "/cpid") }
+    val ocid = ocid.asSingleStageOcid().onFailure { return it.repath(path = "/ocid") }
     val pmd = pmd
-        .asEnum(
-            target = ProcurementMethodDetails,
-            path = "#/params/pmd",
-            allowedElements = allowedProcurementMethodDetails
-        )
-        .onFailure { return it }
-
+        .asEnum(target = ProcurementMethodDetails, allowedElements = allowedProcurementMethodDetails)
+        .onFailure { return it.repath(path = "/pmd") }
     val operationType = operationType
-        .asEnum(
-            target = OperationType,
-            path = "#/params/operationType",
-            allowedElements = allowedOperationType
-        )
-        .onFailure { return it }
+        .asEnum(target = OperationType, allowedElements = allowedOperationType)
+        .onFailure { return it.repath(path = "/operationType") }
 
     return CheckTenderStateCommand(
         cpid = cpid,

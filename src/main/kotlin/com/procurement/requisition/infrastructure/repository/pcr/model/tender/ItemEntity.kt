@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.tender.item.Item
 import com.procurement.requisition.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.requisition.infrastructure.bind.quantity.QuantitySerializer
@@ -47,11 +48,11 @@ fun Item.mappingToEntity() = ItemEntity(
     relatedLot = relatedLot.underlying,
 )
 
-fun ItemEntity.mappingToDomain(path: String): Result<Item, JsonErrors> {
-    val id = id.asItemId(path = "$path/id").onFailure { return it }
-    val classification = classification.mappingToDomain("$path/classification").onFailure { return it }
-    val unit = unit.mappingToDomain("$path/unit").onFailure { return it }
-    val relatedLot = relatedLot.asLotId(path = "$path/relatedLot").onFailure { return it }
+fun ItemEntity.mappingToDomain(): Result<Item, JsonErrors> {
+    val id = id.asItemId().onFailure { return it.repath(path = "/id") }
+    val classification = classification.mappingToDomain().onFailure { return it.repath(path = "/classification") }
+    val unit = unit.mappingToDomain().onFailure { return it.repath(path = "/unit") }
+    val relatedLot = relatedLot.asLotId().onFailure { return it.repath(path = "/relatedLot") }
 
     return Item(
         id = id,

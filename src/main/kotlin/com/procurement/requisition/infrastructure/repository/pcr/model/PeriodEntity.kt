@@ -2,6 +2,7 @@ package com.procurement.requisition.infrastructure.repository.pcr.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.Period
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
 import com.procurement.requisition.infrastructure.handler.converter.asString
@@ -18,13 +19,8 @@ fun Period.mappingToEntity() = PeriodEntity(
     endDate = endDate.asString()
 )
 
-fun PeriodEntity.mappingToDomain(path: String): Result<Period, JsonErrors> {
-
-    val startDate = endDate.asLocalDateTime(path = "$path/startDate")
-        .onFailure { return it }
-
-    val endDate = endDate.asLocalDateTime(path = "$path/endDate")
-        .onFailure { return it }
-
+fun PeriodEntity.mappingToDomain(): Result<Period, JsonErrors> {
+    val startDate = endDate.asLocalDateTime().onFailure { return it.repath(path = "/startDate") }
+    val endDate = endDate.asLocalDateTime().onFailure { return it.repath(path = "/endDate") }
     return Period(startDate = startDate, endDate = endDate).asSuccess()
 }
