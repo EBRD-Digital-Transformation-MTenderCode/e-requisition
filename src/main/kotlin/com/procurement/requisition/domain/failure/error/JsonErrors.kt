@@ -30,7 +30,7 @@ sealed class JsonErrors(override val code: String, val path: Path = Path()) : Fa
 
         fun asString(): String = buildString {
             this.append("#")
-            for (i in elements.size - 1..0) {
+            for (i in (0 until elements.size).reversed()) {
                 this.append(elements[i])
             }
         }
