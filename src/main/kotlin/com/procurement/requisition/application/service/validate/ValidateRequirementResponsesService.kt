@@ -43,12 +43,12 @@ class ValidateRequirementResponsesService(
 
         // VR.COM-17.9.2
         val receivedRequirementResponseIdsIsUnique = detail.requirementResponses.isUnique { it.id }
-        if (receivedRequirementResponseIdsIsUnique)
+        if (!receivedRequirementResponseIdsIsUnique)
             return Validated.error(ValidateRequirementResponsesErrors.RequirementResponse.DuplicateId)
 
         // VR.COM-17.9.7
         val receivedRequirementIdsIsUnique = detail.requirementResponses.isUnique { it.requirement.id }
-        if (receivedRequirementIdsIsUnique)
+        if (!receivedRequirementIdsIsUnique)
             return Validated.error(ValidateRequirementResponsesErrors.RequirementResponse.Requirement.DuplicateId)
 
         val requirementResponsesChecker =
