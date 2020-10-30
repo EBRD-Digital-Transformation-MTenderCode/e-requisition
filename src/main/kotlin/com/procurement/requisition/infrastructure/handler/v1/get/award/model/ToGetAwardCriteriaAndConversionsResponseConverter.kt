@@ -24,5 +24,4 @@ fun GetAwardCriteriaAndConversionsResult.convert() = GetAwardCriteriaAndConversi
                     }
             )
         }
-
 )
