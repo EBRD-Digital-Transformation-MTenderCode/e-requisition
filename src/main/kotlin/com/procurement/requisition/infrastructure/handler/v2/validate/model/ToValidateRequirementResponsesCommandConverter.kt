@@ -130,7 +130,7 @@ fun ValidateRequirementResponsesRequest.Bids.Detail.RequirementResponse.Requirem
 fun ValidateRequirementResponsesRequest.Bids.Detail.RequirementResponse.Period.convert():
     Result<ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse.Period, JsonErrors> {
 
-    val startDate = endDate.asLocalDateTime().onFailure { return it.repath(path = "/startDate") }
+    val startDate = startDate.asLocalDateTime().onFailure { return it.repath(path = "/startDate") }
     val endDate = endDate.asLocalDateTime().onFailure { return it.repath(path = "/endDate") }
     return ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse.Period(
         startDate = startDate,
