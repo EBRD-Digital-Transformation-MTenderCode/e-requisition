@@ -12,7 +12,7 @@ import com.procurement.requisition.lib.functional.Result
 abstract class AbstractHandlerV1 : AbstractHandler() {
 
     final override val version: ApiVersion
-        get() = ApiVersion(2, 0, 0)
+        get() = ApiVersion(1, 0, 0)
 
     override fun handle(descriptor: CommandDescriptor): Result<String?, Failure> = execute(descriptor)
 
