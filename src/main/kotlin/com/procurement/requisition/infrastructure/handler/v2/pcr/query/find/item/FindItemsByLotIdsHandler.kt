@@ -15,7 +15,7 @@ import com.procurement.requisition.infrastructure.handler.model.response.ApiResp
 import com.procurement.requisition.infrastructure.handler.v2.AbstractHandlerV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.find.item.model.FindItemsByLotIdsRequest
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.find.item.model.convert
-import com.procurement.requisition.infrastructure.web.v2.CommandsV2
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
@@ -26,7 +26,7 @@ class FindItemsByLotIdsHandler(
     private val findItemsByLotIdsService: FindItemsByLotIdsService
 ) : AbstractHandlerV2() {
 
-    override val action: Action = CommandsV2.CommandType.FIND_ITEMS_BY_LOT_IDS
+    override val action: Action = Actions.FIND_ITEMS_BY_LOT_IDS
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 

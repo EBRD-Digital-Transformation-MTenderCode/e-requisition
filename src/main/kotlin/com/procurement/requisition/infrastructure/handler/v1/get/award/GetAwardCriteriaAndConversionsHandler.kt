@@ -14,7 +14,7 @@ import com.procurement.requisition.infrastructure.handler.model.CommandDescripto
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.v1.AbstractHandlerV1
 import com.procurement.requisition.infrastructure.handler.v1.get.award.model.convert
-import com.procurement.requisition.infrastructure.web.v1.CommandsV1
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
@@ -25,7 +25,7 @@ class GetAwardCriteriaAndConversionsHandler(
     private val getAwardCriteriaAndConversionsService: GetAwardCriteriaAndConversionsService
 ) : AbstractHandlerV1() {
 
-    override val action: Action = CommandsV1.CommandType.GET_AWARD_CRITERIA_AND_CONVERSIONS
+    override val action: Action = Actions.GET_AWARD_CRITERIA_AND_CONVERSIONS
 
     companion object {
         val allowedPmd = ProcurementMethodDetails.allowedElements

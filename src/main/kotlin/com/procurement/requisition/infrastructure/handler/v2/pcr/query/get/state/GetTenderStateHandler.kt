@@ -15,7 +15,7 @@ import com.procurement.requisition.infrastructure.handler.model.response.ApiResp
 import com.procurement.requisition.infrastructure.handler.v2.AbstractHandlerV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.state.model.GetTenderStateRequest
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.state.model.convert
-import com.procurement.requisition.infrastructure.web.v2.CommandsV2
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
@@ -26,7 +26,7 @@ class GetTenderStateHandler(
     private val getTenderStateService: GetTenderStateService
 ) : AbstractHandlerV2() {
 
-    override val action: Action = CommandsV2.CommandType.GET_TENDER_STATE
+    override val action: Action = Actions.GET_TENDER_STATE
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 

@@ -7,12 +7,12 @@ import com.procurement.requisition.application.service.create.request.CreateRequ
 import com.procurement.requisition.application.service.create.request.model.CreateRequestsForEvPanelsCommand
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.infrastructure.handler.CommandHandler
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.v1.AbstractHandlerV1
 import com.procurement.requisition.infrastructure.handler.v1.create.request.model.convert
-import com.procurement.requisition.infrastructure.web.v1.CommandsV1
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
@@ -23,7 +23,7 @@ class CreateRequestsForEvPanelsHandler(
     val createRequestsForEvPanelsService: CreateRequestsForEvPanelsService
 ) : AbstractHandlerV1() {
 
-    override val action: Action = CommandsV1.CommandType.CREATE_REQUESTS_FOR_EV_PANELS
+    override val action: Action = Actions.CREATE_REQUESTS_FOR_EV_PANELS
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 

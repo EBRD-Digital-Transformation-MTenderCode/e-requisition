@@ -15,7 +15,7 @@ import com.procurement.requisition.infrastructure.handler.model.response.ApiResp
 import com.procurement.requisition.infrastructure.handler.v2.AbstractHandlerV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model.CheckLotsStateRequest
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model.convert
-import com.procurement.requisition.infrastructure.web.v2.CommandsV2
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
@@ -27,7 +27,7 @@ class CheckLotsStateHandler(
     val checkLotsStateService: CheckLotsStateService
 ) : AbstractHandlerV2() {
 
-    override val action: Action = CommandsV2.CommandType.CHECK_LOTS_STATE
+    override val action: Action = Actions.CHECK_LOTS_STATE
 
     override fun execute(descriptor: CommandDescriptor): Result<String?, Failure> {
 

@@ -15,7 +15,7 @@ import com.procurement.requisition.infrastructure.handler.model.response.ApiResp
 import com.procurement.requisition.infrastructure.handler.v1.AbstractHandlerV1
 import com.procurement.requisition.infrastructure.handler.v1.set.model.SetLotsStatusUnsuccessfulRequest
 import com.procurement.requisition.infrastructure.handler.v1.set.model.convert
-import com.procurement.requisition.infrastructure.web.v1.CommandsV1
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
@@ -26,7 +26,7 @@ class SetLotsStatusUnsuccessfulHandler(
     val setLotsStatusUnsuccessfulService: SetLotsStatusUnsuccessfulService
 ) : AbstractHandlerV1() {
 
-    override val action: Action = CommandsV1.CommandType.SET_LOTS_STATUS_UNSUCCESSFUL
+    override val action: Action = Actions.SET_LOTS_STATUS_UNSUCCESSFUL
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 

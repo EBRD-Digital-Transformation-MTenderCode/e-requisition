@@ -11,7 +11,7 @@ import com.procurement.requisition.infrastructure.handler.CommandHandler
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.v1.AbstractHandlerV1
-import com.procurement.requisition.infrastructure.web.v1.CommandsV1
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
@@ -22,7 +22,7 @@ class GetTenderOwnerHandler(
     private val getTenderOwnerService: GetTenderOwnerService
 ) : AbstractHandlerV1() {
 
-    override val action: Action = CommandsV1.CommandType.GET_TENDER_OWNER
+    override val action: Action = Actions.GET_TENDER_OWNER
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 

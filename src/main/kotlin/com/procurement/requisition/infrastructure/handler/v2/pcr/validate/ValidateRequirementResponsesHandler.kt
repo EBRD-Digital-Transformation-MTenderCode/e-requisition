@@ -15,7 +15,7 @@ import com.procurement.requisition.infrastructure.handler.model.response.ApiResp
 import com.procurement.requisition.infrastructure.handler.v2.AbstractHandlerV2
 import com.procurement.requisition.infrastructure.handler.v2.validate.model.ValidateRequirementResponsesRequest
 import com.procurement.requisition.infrastructure.handler.v2.validate.model.convert
-import com.procurement.requisition.infrastructure.web.v2.CommandsV2
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
@@ -27,7 +27,7 @@ class ValidateRequirementResponsesHandler(
     val validateRequirementResponsesService: ValidateRequirementResponsesService
 ) : AbstractHandlerV2() {
 
-    override val action: Action = CommandsV2.CommandType.VALIDATE_REQUIREMENT_RESPONSES
+    override val action: Action = Actions.VALIDATE_REQUIREMENT_RESPONSES
 
     override fun execute(descriptor: CommandDescriptor): Result<String?, Failure> {
 

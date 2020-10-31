@@ -9,6 +9,7 @@ import com.procurement.requisition.domain.failure.error.RequestErrors
 import com.procurement.requisition.infrastructure.configuration.GlobalProperties
 import com.procurement.requisition.infrastructure.extension.tryGetAttributeAsEnum
 import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.infrastructure.handler.Handlers
 import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandId
@@ -41,8 +42,7 @@ class CommandDispatcherV2(
     @PostMapping(produces = [MediaType.APPLICATION_JSON_UTF8_VALUE])
     fun command(@RequestBody body: String): ResponseEntity<Any> = dispatch(body)
 
-    override fun JsonNode.getAction(): Result<Action, JsonErrors> =
-        tryGetAttributeAsEnum("action", CommandsV2.CommandType)
+    override fun JsonNode.getAction(): Result<Action, JsonErrors> = tryGetAttributeAsEnum("action", Actions)
 
     override fun buildErrorResponse(id: CommandId, version: ApiVersion, failure: Failure): String {
         failure.logging(logger)

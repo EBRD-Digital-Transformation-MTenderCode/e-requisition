@@ -14,7 +14,7 @@ import com.procurement.requisition.infrastructure.handler.model.response.ApiResp
 import com.procurement.requisition.infrastructure.handler.v2.AbstractHandlerV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model.ValidatePCRDataRequest
 import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model.convert
-import com.procurement.requisition.infrastructure.web.v2.CommandsV2
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
@@ -26,7 +26,7 @@ class ValidatePCRDataHandler(
     val validatePCRService: ValidatePCRService
 ) : AbstractHandlerV2() {
 
-    override val action: Action = CommandsV2.CommandType.VALIDATE_PCR_DATA
+    override val action: Action = Actions.VALIDATE_PCR_DATA
 
     override fun execute(descriptor: CommandDescriptor): Result<String?, Failure> {
 

@@ -12,7 +12,7 @@ import com.procurement.requisition.infrastructure.handler.model.CommandDescripto
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.v1.AbstractHandlerV1
 import com.procurement.requisition.infrastructure.handler.v1.get.lot.model.convert
-import com.procurement.requisition.infrastructure.web.v1.CommandsV1
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
@@ -23,7 +23,7 @@ class GetActiveLotsHandler(
     private val getActiveLotsService: GetActiveLotsService
 ) : AbstractHandlerV1() {
 
-    override val action: Action = CommandsV1.CommandType.GET_ACTIVE_LOTS
+    override val action: Action = Actions.GET_ACTIVE_LOTS
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 

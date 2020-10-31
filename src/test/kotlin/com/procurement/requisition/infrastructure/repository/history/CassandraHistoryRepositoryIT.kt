@@ -14,7 +14,7 @@ import com.procurement.requisition.infrastructure.repository.CassandraTestContai
 import com.procurement.requisition.infrastructure.repository.DatabaseTestConfiguration
 import com.procurement.requisition.infrastructure.service.HistoryEntity
 import com.procurement.requisition.infrastructure.service.HistoryRepository
-import com.procurement.requisition.infrastructure.web.v2.CommandsV2
+import com.procurement.requisition.infrastructure.handler.Actions
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -41,7 +41,7 @@ class CassandraHistoryRepositoryIT {
         private const val JSON_DATA_COLUMN = "json_data"
 
         private val COMMAND_ID: CommandId = UUID.randomUUID().toString()
-        private val COMMAND_NAME: Action = CommandsV2.CommandType.VALIDATE_PCR_DATA
+        private val COMMAND_NAME: Action = Actions.VALIDATE_PCR_DATA
         private val COMMAND_DATE = LocalDateTime.now().asString().parseLocalDateTime()
         private const val JSON_DATA: String = """{"tender": {"title" : "Tender-Title"}}"""
 
