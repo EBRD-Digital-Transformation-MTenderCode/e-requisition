@@ -6,12 +6,11 @@ import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.set.SetTenderStatusUnsuccessfulService
 import com.procurement.requisition.application.service.set.model.SetTenderStatusUnsuccessfulCommand
 import com.procurement.requisition.domain.failure.incident.InternalServerError
-import com.procurement.requisition.infrastructure.handler.AbstractHandler
 import com.procurement.requisition.infrastructure.handler.Action
 import com.procurement.requisition.infrastructure.handler.CommandHandler
-import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
+import com.procurement.requisition.infrastructure.handler.v1.AbstractHandlerV1
 import com.procurement.requisition.infrastructure.handler.v1.set.model.convert
 import com.procurement.requisition.infrastructure.web.v1.CommandsV1
 import com.procurement.requisition.lib.fail.Failure
@@ -22,14 +21,13 @@ class SetTenderStatusUnsuccessfulHandler(
     override val logger: Logger,
     override val transform: Transform,
     val setTenderStatusUnsuccessfulService: SetTenderStatusUnsuccessfulService
-) : AbstractHandler() {
+) : AbstractHandlerV1() {
 
-    override val version: ApiVersion = CommandsV1.apiVersion
     override val action: Action = CommandsV1.CommandType.SET_TENDER_STATUS_UNSUCCESSFUL
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 
-        val context = CommandsV1.getContext(descriptor.body.asJsonNode)
+        val context = getContext(descriptor.body.asJsonNode)
             .onFailure { failure -> return failure }
 
         val command = SetTenderStatusUnsuccessfulCommand(

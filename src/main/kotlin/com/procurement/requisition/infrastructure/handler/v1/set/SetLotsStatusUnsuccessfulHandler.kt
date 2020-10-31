@@ -8,12 +8,11 @@ import com.procurement.requisition.application.service.set.model.SetLotsStatusUn
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InternalServerError
-import com.procurement.requisition.infrastructure.handler.AbstractHandler
 import com.procurement.requisition.infrastructure.handler.Action
 import com.procurement.requisition.infrastructure.handler.CommandHandler
-import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
+import com.procurement.requisition.infrastructure.handler.v1.AbstractHandlerV1
 import com.procurement.requisition.infrastructure.handler.v1.set.model.SetLotsStatusUnsuccessfulRequest
 import com.procurement.requisition.infrastructure.handler.v1.set.model.convert
 import com.procurement.requisition.infrastructure.web.v1.CommandsV1
@@ -25,17 +24,16 @@ class SetLotsStatusUnsuccessfulHandler(
     override val logger: Logger,
     override val transform: Transform,
     val setLotsStatusUnsuccessfulService: SetLotsStatusUnsuccessfulService
-) : AbstractHandler() {
+) : AbstractHandlerV1() {
 
-    override val version: ApiVersion = CommandsV1.apiVersion
     override val action: Action = CommandsV1.CommandType.SET_LOTS_STATUS_UNSUCCESSFUL
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 
-        val context = CommandsV1.getContext(descriptor.body.asJsonNode)
+        val context = getContext(descriptor.body.asJsonNode)
             .onFailure { failure -> return failure }
 
-        val data = CommandsV1.getData(descriptor.body.asJsonNode)
+        val data = getData(descriptor.body.asJsonNode)
             .flatMap { node ->
                 transform.tryMapping(node, SetLotsStatusUnsuccessfulRequest::class.java)
                     .mapFailure { failure ->

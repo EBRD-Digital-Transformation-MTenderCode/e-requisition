@@ -8,12 +8,11 @@ import com.procurement.requisition.application.service.find.pmm.FindProcurementM
 import com.procurement.requisition.domain.failure.error.RequestErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InternalServerError
-import com.procurement.requisition.infrastructure.handler.AbstractHandler
 import com.procurement.requisition.infrastructure.handler.Action
 import com.procurement.requisition.infrastructure.handler.CommandHandler
-import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV2
+import com.procurement.requisition.infrastructure.handler.v2.AbstractHandlerV2
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.find.pmm.model.FindProcurementMethodModalitiesRequest
 import com.procurement.requisition.infrastructure.handler.v2.pcr.query.find.pmm.model.convert
 import com.procurement.requisition.infrastructure.web.v2.CommandsV2
@@ -25,14 +24,13 @@ class FindProcurementMethodModalitiesHandler(
     override val logger: Logger,
     override val transform: Transform,
     private val findProcurementMethodModalities: FindProcurementMethodModalitiesService
-) : AbstractHandler() {
+) : AbstractHandlerV2() {
 
-    override val version: ApiVersion = CommandsV2.apiVersion
     override val action: Action = CommandsV2.CommandType.FIND_PROCUREMENT_METHOD_MODALITIES
 
     override fun execute(descriptor: CommandDescriptor): Result<String, Failure> {
 
-        val command = CommandsV2.getParams(descriptor.body.asJsonNode)
+        val command = getParams(descriptor.body.asJsonNode)
             .onFailure { failure -> return failure }
             .tryMapping<FindProcurementMethodModalitiesRequest>(transform)
             .mapFailure { failure ->

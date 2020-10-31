@@ -1,17 +1,9 @@
 package com.procurement.requisition.infrastructure.web.v2
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.procurement.requisition.domain.failure.error.JsonErrors
-import com.procurement.requisition.infrastructure.extension.tryGetAttribute
 import com.procurement.requisition.infrastructure.handler.Action
-import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.lib.enumerator.EnumElementProvider
-import com.procurement.requisition.lib.functional.Result
 
 object CommandsV2 {
-
-    val apiVersion: ApiVersion
-        get() = ApiVersion(2, 0, 0)
 
     enum class CommandType(override val key: String, override val kind: Action.Kind) :
         EnumElementProvider.Element, Action {
@@ -32,6 +24,4 @@ object CommandsV2 {
 
         companion object : EnumElementProvider<CommandType>(info = info())
     }
-
-    fun getParams(node: JsonNode): Result<JsonNode, JsonErrors> = node.tryGetAttribute("params")
 }
