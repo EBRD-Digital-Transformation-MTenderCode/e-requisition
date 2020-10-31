@@ -1,0 +1,154 @@
+{
+  "cpid": "ocds-t1s2t3-MD-1543525135421",
+  "date": "2020-10-19T10:22:42Z",
+  "stateFE": "evaluation",
+  "owner": "d0da4c24-1a2a-4b39-a1fd-034cb887c93b",
+  "tender": {
+    "title": "string",
+    "description": "string",
+    "classification": {
+      "id": "string",
+      "scheme": "CPV",
+      "description": "string"
+    },
+    "lots": [
+      {
+        "id": "string",
+        "internalId": "string",
+        "title": "string",
+        "description": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "CPV",
+          "description": "string"
+        },
+        "variants": [
+          {
+            "hasVariants": true,
+            "variantsDetails": "string"
+          }
+        ]
+      }
+    ],
+    "items": [
+      {
+        "id": "string",
+        "internalId": "string",
+        "description": "string",
+        "quantity": 0.001,
+        "classification": {
+          "id": "string",
+          "scheme": "CPV",
+          "description": "string"
+        },
+        "unit": {
+          "id": "string",
+          "name": "string"
+        },
+        "relatedLot": "string"
+      }
+    ],
+    "targets": [
+      {
+        "id": "string",
+        "title": "string",
+        "relatesTo": "lot",
+        "relatedItem": "string",
+        "observations": [
+          {
+            "id": "string",
+            "period": {
+              "startDate": "2020-10-19T10:22:42Z",
+              "endDate": "2020-10-19T10:22:42Z"
+            },
+            "measure": "number",
+            "unit": {
+              "id": "string",
+              "name": "string"
+            },
+            "dimensions": {
+              "requirementClassIdPR": "string"
+            },
+            "notes": "string",
+            "relatedRequirementId": "string"
+          }
+        ]
+      }
+    ],
+    "criteria": [
+      {
+        "id": "string",
+        "title": "string",
+        "description": "string",
+        "relatedItem": "string",
+        "relatesTo": "lot",
+        "requirementGroups": [
+          {
+            "id": "string",
+            "description": "string",
+            "requirements": [
+              {
+                "id": "string",
+                "title": "string",
+                "description": "string",
+                "period": {
+                  "startDate": "2020-10-19T10:22:42Z",
+                  "endDate": "2020-10-19T10:22:42Z"
+                },
+                "dataType": "integer",
+                "expectedValue": 10
+              },
+              {
+                "id": "string",
+                "title": "string",
+                "description": "string",
+                "period": {
+                  "startDate": "2020-10-19T10:22:42Z",
+                  "endDate": "2020-10-19T10:22:42Z"
+                },
+                "dataType": "integer",
+                "minValue": 1,
+                "maxValue": 5
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "conversions": [
+      {
+        "id": "string",
+        "relatedItem": "string",
+        "relatesTo": "requirement",
+        "description": "string",
+        "rationale": "string",
+        "coefficients": [
+          {
+            "value": 3,
+            "id": "string",
+            "coefficient": 0.5
+          }
+        ]
+      }
+    ],
+    "procurementMethodModalities": [
+      "requiresElectronicCatalogue"
+    ],
+    "documents": [
+      {
+        "id": "string",
+        "title": "string",
+        "documentType": "tenderNotice",
+        "description": "string",
+        "relatedLots": [
+          "string"
+        ]
+      }
+    ],
+    "awardCriteria": "priceOnly",
+    "awardCriteriaDetails": "automated",
+    "value": {
+      "currency": "MDL"
+    }
+  }
+}

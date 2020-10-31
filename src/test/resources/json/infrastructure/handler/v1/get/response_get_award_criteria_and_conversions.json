@@ -1,0 +1,20 @@
+{
+  "awardCriteria": "ratedCriteria",
+  "awardCriteriaDetails": "automated",
+  "conversions": [
+    {
+      "id": "89882396-9860-4a0e-b80c-a6086a835aad",
+      "relatesTo": "requirement",
+      "relatedItem": "65c39230-d41f-4d3a-bd02-9ba6b79ed94f",
+      "rationale": "Number of years for product guarantee",
+      "description": "996644SD",
+      "coefficients": [
+        {
+          "id": "da388893-fb01-471f-abd3-076e90f82a61",
+          "value": 1.010,
+          "coefficient": 0.05
+        }
+      ]
+    }
+  ]
+}

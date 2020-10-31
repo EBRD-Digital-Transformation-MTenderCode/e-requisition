@@ -1,0 +1,27 @@
+{
+  "tender": {
+    "title": "string",
+    "description": "string",
+    "classification": {
+      "id": "string",
+      "scheme": "CPV"
+    },
+    "lots": [
+      {
+        "id": "string",
+        "title": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "CPV"
+        },
+        "variants": [
+          {
+            "hasVariants": true
+          }
+        ]
+      }
+    ],
+    "awardCriteria": "priceOnly",
+    "awardCriteriaDetails": "automated"
+  }
+}
