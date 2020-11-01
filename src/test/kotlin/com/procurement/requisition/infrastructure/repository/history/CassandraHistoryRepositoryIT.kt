@@ -8,13 +8,13 @@ import com.datastax.driver.core.Session
 import com.nhaarman.mockito_kotlin.spy
 import com.procurement.requisition.domain.extension.parseLocalDateTime
 import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.handler.model.CommandId
 import com.procurement.requisition.infrastructure.repository.CassandraTestContainer
 import com.procurement.requisition.infrastructure.repository.DatabaseTestConfiguration
 import com.procurement.requisition.infrastructure.service.HistoryEntity
 import com.procurement.requisition.infrastructure.service.HistoryRepository
-import com.procurement.requisition.infrastructure.handler.Actions
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -40,7 +40,7 @@ class CassandraHistoryRepositoryIT {
         private const val COMMAND_DATE_COLUMN = "command_date"
         private const val JSON_DATA_COLUMN = "json_data"
 
-        private val COMMAND_ID: CommandId = UUID.randomUUID().toString()
+        private val COMMAND_ID: CommandId = CommandId(UUID.randomUUID().toString())
         private val COMMAND_NAME: Action = Actions.VALIDATE_PCR_DATA
         private val COMMAND_DATE = LocalDateTime.now().asString().parseLocalDateTime()
         private const val JSON_DATA: String = """{"tender": {"title" : "Tender-Title"}}"""

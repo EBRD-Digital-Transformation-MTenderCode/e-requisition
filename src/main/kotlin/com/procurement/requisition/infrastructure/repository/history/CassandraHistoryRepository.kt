@@ -45,7 +45,7 @@ class CassandraHistoryRepository(private val session: Session) : HistoryReposito
 
     override fun getHistory(commandId: CommandId): Result<String?, DatabaseIncident> =
         preparedFindHistoryCQL.bind()
-            .apply { setString(COMMAND_ID, commandId) }
+            .apply { setString(COMMAND_ID, commandId.underlying) }
             .tryExecute(session)
             .onFailure { return it }
             .one()?.getString(JSON_DATA)
@@ -55,7 +55,7 @@ class CassandraHistoryRepository(private val session: Session) : HistoryReposito
 
         preparedSaveHistoryCQL.bind()
             .apply {
-                setString(COMMAND_ID, entity.commandId)
+                setString(COMMAND_ID, entity.commandId.underlying)
                 setString(COMMAND_NAME, entity.action.key)
                 setTimestamp(COMMAND_DATE, entity.date.toCassandraTimestamp())
                 setString(JSON_DATA, entity.data)

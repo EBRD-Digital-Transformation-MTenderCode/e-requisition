@@ -92,7 +92,7 @@ abstract class AbstractCommandDispatcher(
                 )
         }
 
-    fun JsonNode.getId(): Result<CommandId, JsonErrors> = tryGetTextAttribute("id")
+    fun JsonNode.getId(): Result<CommandId, JsonErrors> = tryGetTextAttribute("id").map { CommandId(it) }
 
     fun Handler.handling(descriptor: CommandDescriptor): Result<String?, Failure> {
         if (descriptor.action.kind == Action.Kind.COMMAND) {
