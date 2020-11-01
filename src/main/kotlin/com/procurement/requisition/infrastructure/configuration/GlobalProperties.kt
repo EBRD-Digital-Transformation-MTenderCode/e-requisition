@@ -1,16 +1,11 @@
 package com.procurement.requisition.infrastructure.configuration
 
-import com.procurement.requisition.infrastructure.handler.model.ApiVersion
 import com.procurement.requisition.infrastructure.io.orThrow
 import java.util.*
 
 object GlobalProperties {
 
     val service = Service()
-
-    object App {
-        val apiVersion = ApiVersion(2, 0, 0)
-    }
 
     class Service(
         val id: String = "22",
