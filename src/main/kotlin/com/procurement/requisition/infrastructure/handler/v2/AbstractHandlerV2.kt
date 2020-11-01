@@ -29,10 +29,8 @@ abstract class AbstractHandlerV2 : AbstractHandler() {
             .mapFailure { failure ->
                 RequestErrors(
                     code = "RQ-1",
-                    version = version,
-                    id = id,
                     body = body.asString,
-                    underlying = failure.description,
+                    description = failure.description,
                     path = "/$PARAMS_ATTRIBUTE_NAME",
                     reason = failure.reason
                 )
@@ -42,10 +40,8 @@ abstract class AbstractHandlerV2 : AbstractHandler() {
             .mapFailure { failure ->
                 RequestErrors(
                     code = failure.code,
-                    version = version,
-                    id = id,
                     body = body.asString,
-                    underlying = failure.description,
+                    description = failure.description,
                     path = failure.path.asString(),
                     reason = failure.reason
                 )

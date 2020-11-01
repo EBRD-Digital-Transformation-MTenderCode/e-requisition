@@ -42,14 +42,14 @@ abstract class AbstractCommandDispatcher(
             .mapFailure { failure ->
                 RequestErrors(
                     code = failure.code,
-                    underlying = failure.description,
+                    description = failure.description,
                     body = body,
                     path = failure.path.asString(),
                     reason = failure.reason
                 )
             }
             .onFailure { failure ->
-                val response = buildErrorResponse(failure.reason.id, failure.reason.version, failure.reason)
+                val response = buildErrorResponse(id = CommandId.NaN, version = apiVersion, failure = failure.reason)
                 return ResponseEntity(response, HttpStatus.OK)
             }
 
