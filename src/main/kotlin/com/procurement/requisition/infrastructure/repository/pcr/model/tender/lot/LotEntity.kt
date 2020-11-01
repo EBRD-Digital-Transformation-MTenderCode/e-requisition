@@ -55,8 +55,7 @@ fun LotEntity.deserialization(): Result<Lot, JsonErrors> {
         .onFailure { return it.repath(path = "/classification") }
     val variants = variants
         .map { variant ->
-            variant.deserialization(path = "/variants")
-                .onFailure { return it }
+            variant.deserialization().onFailure { return it.repath(path = "/variants") }
         }
         .let { Variants(it) }
 
