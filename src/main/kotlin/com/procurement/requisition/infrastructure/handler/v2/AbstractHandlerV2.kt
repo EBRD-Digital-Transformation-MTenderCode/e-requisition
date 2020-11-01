@@ -22,8 +22,17 @@ abstract class AbstractHandlerV2 : AbstractHandler() {
 
     override fun handle(descriptor: CommandDescriptor): Result<String?, Failure> = execute(descriptor)
 
-    inline fun <reified T, C> CommandDescriptor.getCommand(converter: (T) -> Result<C, JsonErrors>): Result<C, Failure> =
+    inline fun <reified T, C> CommandDescriptor.getCommand(converter: (T) -> Result<C, JsonErrors>): Result<C, RequestErrors> =
         body.asJsonNode.tryGetAttribute(PARAMS_ATTRIBUTE_NAME)
+            .mapFailure { failure ->
+                RequestErrors(
+                    code = failure.code,
+                    body = body.asString,
+                    description = failure.description,
+                    path = failure.path.asString(),
+                    reason = failure.reason
+                )
+            }
             .onFailure { failure -> return failure }
             .tryMapping<T>(transform)
             .mapFailure { failure ->
