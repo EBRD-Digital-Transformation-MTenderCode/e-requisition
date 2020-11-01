@@ -7,7 +7,7 @@ class RequestErrors(
     override val code: String,
     description: String,
     val path: String = "",
-    body: String,
+    val body: String,
     override val reason: Exception?
 ) : Failure.Error() {
 

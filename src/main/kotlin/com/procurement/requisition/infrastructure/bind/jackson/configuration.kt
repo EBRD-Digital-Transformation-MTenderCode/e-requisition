@@ -14,13 +14,19 @@ import com.procurement.requisition.infrastructure.bind.coefficient.CoefficientRa
 import com.procurement.requisition.infrastructure.bind.coefficient.CoefficientRateSerializer
 import com.procurement.requisition.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
 import com.procurement.requisition.infrastructure.bind.coefficient.value.CoefficientValueSerializer
+import com.procurement.requisition.infrastructure.bind.command.CommandIdDeserializer
+import com.procurement.requisition.infrastructure.bind.command.CommandIdSerializer
 import com.procurement.requisition.infrastructure.bind.observation.measure.ObservationMeasureDeserializer
 import com.procurement.requisition.infrastructure.bind.observation.measure.ObservationMeasureSerializer
 import com.procurement.requisition.infrastructure.bind.requirement.RequirementValueDeserializer
 import com.procurement.requisition.infrastructure.bind.requirement.RequirementValueSerializer
+import com.procurement.requisition.infrastructure.handler.model.CommandId
 
 fun ObjectMapper.configuration() {
     val module = SimpleModule().apply {
+        addSerializer(CommandId::class.java, CommandIdSerializer())
+        addDeserializer(CommandId::class.java, CommandIdDeserializer())
+
         addSerializer(RequirementRsValue::class.java, RequirementValueSerializer())
         addDeserializer(RequirementRsValue::class.java, RequirementValueDeserializer())
 
