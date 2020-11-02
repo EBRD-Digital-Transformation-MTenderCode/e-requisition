@@ -12,6 +12,7 @@ import com.procurement.requisition.domain.model.tender.conversion.coefficient.Co
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.lib.functional.Validated
 import com.procurement.requisition.lib.functional.asValidatedError
+import com.procurement.requisition.lib.isUnique
 import com.procurement.requisition.lib.toSet
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -128,6 +129,11 @@ class ValidatePCRService {
 
         command.tender.criteria
             .forEach { criterion ->
+
+                //VR.COM-17.1.31
+                if (criterion.relatesTo != null && criterion.relatedItem == null)
+                    return Validated.error(ValidatePCRErrors.Criterion.MissingRelatedItem("#/tender/criteria[id=${criterion.id}]"))
+
                 // VR.COM-17.1.15
                 if (criterion.relatesTo == null && criterion.relatedItem != null)
                     return Validated.error(ValidatePCRErrors.Criterion.UnknownAttributeRelatedItem())
@@ -214,6 +220,14 @@ class ValidatePCRService {
                 if (conversion.coefficients.isNotUniqueIds())
                     return Validated.error(
                         ValidatePCRErrors.Conversion.Coefficient.DuplicateId(
+                            path = "#/tender/conversions[id={${conversion.id}}]/coefficients"
+                        )
+                    )
+
+                //VR.COM-17.1.30
+                if (conversion.coefficients.isUnique { it.value })
+                    return Validated.error(
+                        ValidatePCRErrors.Conversion.Coefficient.DuplicateValue(
                             path = "#/tender/conversions[id={${conversion.id}}]/coefficients"
                         )
                     )
