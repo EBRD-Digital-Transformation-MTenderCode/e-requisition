@@ -327,7 +327,7 @@ fun validationRequirementGroupIds(criteria: List<ValidatePCRDataCommand.Tender.C
     criteria.forEachIndexed { criterionIdx, criterion ->
         criterion.requirementGroups
             .forEachIndexed { groupIdx, requirementGroup ->
-                if (uniqueRequirementGroups.add(requirementGroup.id))
+                if (!uniqueRequirementGroups.add(requirementGroup.id))
                     return Validated.error(
                         ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId(
                             path = "#/tender/criteria[$criterionIdx]/requirementGroups[$groupIdx]"
@@ -351,7 +351,7 @@ fun validationRequirementIds(criteria: List<ValidatePCRDataCommand.Tender.Criter
             .forEachIndexed { groupIdx, requirementGroup ->
                 requirementGroup.requirements
                     .forEachIndexed { requirementIdx, requirement ->
-                        if (uniqueRequirements.add(requirement.id))
+                        if (!uniqueRequirements.add(requirement.id))
                             return Validated.error(
                                 ValidatePCRErrors.Criterion.RequirementGroup.Requirement.DuplicateId(
                                     path = "#/tender/criteria[$criterionIdx]/requirementGroups[$groupIdx]/requirements[$requirementIdx]"
