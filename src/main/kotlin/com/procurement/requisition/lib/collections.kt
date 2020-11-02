@@ -12,6 +12,16 @@ inline fun <T, V> Collection<T>.isUnique(selector: (T) -> V): Boolean {
     return true
 }
 
+fun <T> Sequence<T>.isUnique(): Boolean {
+    val unique = HashSet<T>()
+    forEach { item ->
+        if (!unique.add(item)) return false
+    }
+    return true
+}
+
+fun <T> Sequence<T>.isNotUnique(): Boolean = !isUnique()
+
 inline fun <T, V> Collection<T>.toSet(selector: (T) -> V): Set<V> {
     val collections = LinkedHashSet<V>()
     forEach {
