@@ -109,11 +109,6 @@ fun ValidatePCRDataRequest.Unit.convert(): Result<ValidatePCRDataCommand.Unit, J
  * Lot
  */
 fun ValidatePCRDataRequest.Tender.Lot.convert(): Result<ValidatePCRDataCommand.Tender.Lot, JsonErrors> {
-    if (!LotId.validate(id))
-        return failure(
-            JsonErrors.DataFormatMismatch(actualValue = id, expectedFormat = LotId.pattern)
-                .repath(path = "/id")
-        )
     val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
     val variants = variants.map { variant ->
         variant.convert().onFailure { return it.repath(path = "/variants") }
@@ -136,18 +131,8 @@ fun ValidatePCRDataRequest.Tender.Lot.Variant.convert(): Result<ValidatePCRDataC
  * Item
  */
 fun ValidatePCRDataRequest.Tender.Item.convert(): Result<ValidatePCRDataCommand.Tender.Item, JsonErrors> {
-    if (!ItemId.validate(id))
-        return failure(
-            JsonErrors.DataFormatMismatch(actualValue = id, expectedFormat = ItemId.pattern).repath(path = "/id")
-        )
     val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
     val unit = unit.convert().onFailure { return it.repath(path = "/unit") }
-    if (!LotId.validate(relatedLot))
-        return failure(
-            JsonErrors.DataFormatMismatch(actualValue = relatedLot, expectedFormat = LotId.pattern)
-                .repath(path = "/relatedLot")
-        )
-
     return ValidatePCRDataCommand.Tender.Item(
         id = id,
         internalId = internalId,
@@ -274,15 +259,7 @@ fun ValidatePCRDataRequest.Tender.Document.convert(): Result<ValidatePCRDataComm
         .onFailure { return it.repath(path = "/documentType") }
     val relatedLots = relatedLots
         .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "relatedLots")) }
-        .mapIndexedOrEmpty { idx, relatedLot ->
-            if (LotId.validate(relatedLot))
-                relatedLot
-            else
-                return failure(
-                    JsonErrors.DataFormatMismatch(actualValue = relatedLot, expectedFormat = LotId.pattern)
-                        .repath(path = "/relatedLots[$idx]")
-                )
-        }
+        .orEmpty()
 
     return ValidatePCRDataCommand.Tender.Document(
         id = id,
