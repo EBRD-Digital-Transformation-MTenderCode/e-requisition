@@ -5,17 +5,16 @@ import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.set.SetLotsStatusUnsuccessfulService
 import com.procurement.requisition.application.service.set.model.SetLotsStatusUnsuccessfulCommand
-import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.infrastructure.handler.CommandHandler
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.v1.AbstractHandlerV1
 import com.procurement.requisition.infrastructure.handler.v1.set.model.SetLotsStatusUnsuccessfulRequest
 import com.procurement.requisition.infrastructure.handler.v1.set.model.convert
-import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 
@@ -33,13 +32,7 @@ class SetLotsStatusUnsuccessfulHandler(
         val context = getContext(descriptor.body.asJsonNode)
             .onFailure { failure -> return failure }
 
-        val data = getData(descriptor.body.asJsonNode)
-            .flatMap { node ->
-                transform.tryMapping(node, SetLotsStatusUnsuccessfulRequest::class.java)
-                    .mapFailure { failure ->
-                        JsonErrors.Parsing(failure.reason)
-                    }
-            }
+        val data = getData<SetLotsStatusUnsuccessfulRequest>(descriptor.body.asJsonNode)
             .onFailure { failure -> return failure }
 
         val cpid = context.cpid.onFailure { return it }

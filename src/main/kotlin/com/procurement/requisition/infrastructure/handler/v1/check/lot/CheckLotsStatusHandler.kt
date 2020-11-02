@@ -5,7 +5,6 @@ import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.check.CheckLotsStatusService
 import com.procurement.requisition.application.service.check.model.CheckLotsStatusCommand
-import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.handler.Action
@@ -51,13 +50,7 @@ class CheckLotsStatusHandler(
         val cpid = context.cpid.onFailure { return it }
         val ocid = context.ocid.onFailure { return it }
 
-        val data = getData(descriptor.body.asJsonNode)
-            .flatMap { data ->
-                transform.tryMapping(data, CheckLotsStatusRequest::class.java)
-                    .mapFailure { failure ->
-                        JsonErrors.Parsing(failure.reason)
-                    }
-            }
+        val data = getData<CheckLotsStatusRequest>(descriptor.body.asJsonNode)
             .onFailure { failure -> return failure }
 
         val relatedLot = data.relatedLot.asLotId().onFailure { return it.repath(path = "/relatedLot") }

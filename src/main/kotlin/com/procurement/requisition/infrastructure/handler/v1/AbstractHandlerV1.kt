@@ -15,5 +15,11 @@ abstract class AbstractHandlerV1 : AbstractHandler() {
     fun getContext(node: JsonNode): Result<CommandContext, JsonErrors> = node.tryGetAttribute("context")
         .map { CommandContext(it) }
 
-    fun getData(node: JsonNode): Result<JsonNode, JsonErrors> = node.tryGetAttribute("data")
+    inline fun <reified T> getData(node: JsonNode): Result<T, JsonErrors> = node.tryGetAttribute("data")
+        .flatMap { data ->
+            transform.tryMapping(data, T::class.java)
+                .mapFailure { failure ->
+                    JsonErrors.Parsing(failure.reason)
+                }
+        }
 }
