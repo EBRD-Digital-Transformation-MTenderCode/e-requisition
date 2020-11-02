@@ -155,7 +155,7 @@ class ValidatePCRService {
                     // VR.COM-17.1.17
                     if (requirementGroup.requirements.isNotUniqueIds())
                         return Validated.error(
-                            ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId(
+                            ValidatePCRErrors.Criterion.RequirementGroup.Requirement.DuplicateId(
                                 path = "#/tender/requirementGroups[id=${requirementGroup.id}]/requirements"
                             )
                         )
