@@ -62,6 +62,11 @@ sealed class ValidatePCRErrors(
 
         class UnknownAttributeRelatedItem : Criterion(code = "VR.COM-17.1.15", description = "")
 
+        class MissingRelatedItem(path: String) : Criterion(
+            code = "VR.COM-17.1.31",
+            description = "Missing required relatedItem. Path: '$path'."
+        )
+
         sealed class RequirementGroup(code: String, description: String) :
             Criterion(code = code, description = description) {
 
@@ -106,6 +111,9 @@ sealed class ValidatePCRErrors(
                 code = "VR.COM-17.1.25",
                 description = "Invalid data-type. Path: '$path'."
             )
+
+            class DuplicateValue(path: String) :
+                Conversion(code = "VR.COM-17.1.30", description = "Duplicate value. Path: '$path'.")
         }
     }
 
