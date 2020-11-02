@@ -112,7 +112,10 @@ data class ValidatePCRDataRequest(
 
                 @param:JsonProperty("measure") @field:JsonProperty("measure") val measure: ObservationMeasure,
                 @param:JsonProperty("unit") @field:JsonProperty("unit") val unit: Unit,
-                @param:JsonProperty("dimensions") @field:JsonProperty("dimensions") val dimensions: Dimensions,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @param:JsonProperty("dimensions") @field:JsonProperty("dimensions") val dimensions: Dimensions?,
+
                 @param:JsonProperty("notes") @field:JsonProperty("notes") val notes: String,
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -120,8 +123,11 @@ data class ValidatePCRDataRequest(
             ) {
 
                 data class Period(
-                    @param:JsonProperty("endDate") @field:JsonProperty("endDate") val endDate: String,
-                    @param:JsonProperty("startDate") @field:JsonProperty("startDate") val startDate: String
+                    @JsonInclude(JsonInclude.Include.NON_NULL)
+                    @param:JsonProperty("endDate") @field:JsonProperty("endDate") val endDate: String?,
+
+                    @JsonInclude(JsonInclude.Include.NON_NULL)
+                    @param:JsonProperty("startDate") @field:JsonProperty("startDate") val startDate: String?
                 )
 
                 data class Dimensions(

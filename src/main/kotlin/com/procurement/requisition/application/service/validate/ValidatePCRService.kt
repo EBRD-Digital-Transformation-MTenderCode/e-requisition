@@ -101,14 +101,16 @@ class ValidatePCRService {
                         // VR.COM-17.1.11
                         observation.period
                             ?.apply {
-                                if (startDate.isEqual(endDate) || startDate.isAfter(endDate))
-                                    return Validated.error(
-                                        ValidatePCRErrors.Target.Observation.InvalidPeriod(
-                                            path = "#/tender/targets[id=${target.id}]/observations[id=${observation.id}]",
-                                            startDate = startDate,
-                                            endDate = endDate
+                                if(startDate != null && endDate != null) {
+                                    if (!startDate.isBefore(endDate))
+                                        return Validated.error(
+                                            ValidatePCRErrors.Target.Observation.InvalidPeriod(
+                                                path = "#/tender/targets[id=${target.id}]/observations[id=${observation.id}]",
+                                                startDate = startDate,
+                                                endDate = endDate
+                                            )
                                         )
-                                    )
+                                }
                             }
                     }
             }
