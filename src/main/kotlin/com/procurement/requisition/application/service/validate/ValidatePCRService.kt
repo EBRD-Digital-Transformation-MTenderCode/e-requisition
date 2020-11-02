@@ -225,7 +225,7 @@ class ValidatePCRService {
                     )
 
                 //VR.COM-17.1.30
-                if (conversion.coefficients.isUnique { it.value })
+                if (!conversion.coefficients.isUnique { it.value })
                     return Validated.error(
                         ValidatePCRErrors.Conversion.Coefficient.DuplicateValue(
                             path = "#/tender/conversions[id={${conversion.id}}]/coefficients"
