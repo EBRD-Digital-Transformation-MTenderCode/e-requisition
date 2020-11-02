@@ -2,6 +2,7 @@ package com.procurement.requisition.application.service.validate
 
 import com.procurement.requisition.application.service.validate.error.ValidatePCRErrors
 import com.procurement.requisition.application.service.validate.model.ValidatePCRDataCommand
+import com.procurement.requisition.domain.failure.incident.InvalidArgumentValueIncident
 import com.procurement.requisition.domain.model.isNotUniqueIds
 import com.procurement.requisition.domain.model.requirement.RangeValue
 import com.procurement.requisition.domain.model.requirement.RequirementDataType
@@ -10,6 +11,7 @@ import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.lib.functional.Validated
+import com.procurement.requisition.lib.functional.asValidatedError
 import com.procurement.requisition.lib.toSet
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -101,7 +103,7 @@ class ValidatePCRService {
                         // VR.COM-17.1.11
                         observation.period
                             ?.apply {
-                                if(startDate != null && endDate != null) {
+                                if (startDate != null && endDate != null) {
                                     if (!startDate.isBefore(endDate))
                                         return Validated.error(
                                             ValidatePCRErrors.Target.Observation.InvalidPeriod(
@@ -117,6 +119,12 @@ class ValidatePCRService {
 
         if (command.tender.criteria.isNotUniqueIds())
             return Validated.error(ValidatePCRErrors.Criterion.DuplicateId(path = "#/tender/criteria"))
+
+        // VR.COM-17.1.16
+        validationRequirementGroupIds(command.tender.criteria).onFailure { return it }
+
+        // VR.COM-17.1.17
+        validationRequirementIds(command.tender.criteria).onFailure { return it }
 
         command.tender.criteria
             .forEach { criterion ->
@@ -142,24 +150,18 @@ class ValidatePCRService {
                                     relatedItem = criterion.relatedItem
                                 )
                             )
+
+                        CriterionRelatesTo.TENDER,
+                        CriterionRelatesTo.TENDERER,
+                        CriterionRelatesTo.AWARD -> InvalidArgumentValueIncident(
+                            name = "relatesTo",
+                            value = criterion.relatesTo,
+                            expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT)
+                        ).asValidatedError()
                     }
                 }
 
-                // VR.COM-17.1.16
-                if (criterion.requirementGroups.isNotUniqueIds())
-                    return Validated.error(
-                        ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId(path = "#/tender/requirementGroups")
-                    )
-
                 criterion.requirementGroups.forEach { requirementGroup ->
-                    // VR.COM-17.1.17
-                    if (requirementGroup.requirements.isNotUniqueIds())
-                        return Validated.error(
-                            ValidatePCRErrors.Criterion.RequirementGroup.Requirement.DuplicateId(
-                                path = "#/tender/requirementGroups[id=${requirementGroup.id}]/requirements"
-                            )
-                        )
-
                     requirementGroup.requirements
                         .forEach { requirement ->
                             // VR.COM-17.1.18
@@ -313,4 +315,51 @@ fun ValidatePCRDataCommand.Classification.equalsId(other: ValidatePCRDataCommand
     if (scheme != other.scheme) return false
     if (id.length != other.id.length) return false
     return id.startsWith(prefix = other.id.substring(0, n), ignoreCase = true)
+}
+
+/**
+ * VR.COM-17.1.16
+ */
+fun validationRequirementGroupIds(criteria: List<ValidatePCRDataCommand.Tender.Criterion>):
+    Validated<ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId> {
+
+    val uniqueRequirementGroups = HashSet<String>()
+    criteria.forEachIndexed { criterionIdx, criterion ->
+        criterion.requirementGroups
+            .forEachIndexed { groupIdx, requirementGroup ->
+                if (uniqueRequirementGroups.add(requirementGroup.id))
+                    return Validated.error(
+                        ValidatePCRErrors.Criterion.RequirementGroup.DuplicateId(
+                            path = "#/tender/criteria[$criterionIdx]/requirementGroups[$groupIdx]"
+                        )
+                    )
+            }
+    }
+
+    return Validated.ok()
+}
+
+/**
+ * VR.COM-17.1.17
+ */
+fun validationRequirementIds(criteria: List<ValidatePCRDataCommand.Tender.Criterion>):
+    Validated<ValidatePCRErrors.Criterion.RequirementGroup.Requirement.DuplicateId> {
+
+    val uniqueRequirements = HashSet<String>()
+    criteria.forEachIndexed { criterionIdx, criterion ->
+        criterion.requirementGroups
+            .forEachIndexed { groupIdx, requirementGroup ->
+                requirementGroup.requirements
+                    .forEachIndexed { requirementIdx, requirement ->
+                        if (uniqueRequirements.add(requirement.id))
+                            return Validated.error(
+                                ValidatePCRErrors.Criterion.RequirementGroup.Requirement.DuplicateId(
+                                    path = "#/tender/criteria[$criterionIdx]/requirementGroups[$groupIdx]/requirements[$requirementIdx]"
+                                )
+                            )
+                    }
+            }
+    }
+
+    return Validated.ok()
 }
