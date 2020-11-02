@@ -94,14 +94,14 @@ fun CreatePCRResult.Tender.Target.Observation.convert() = CreatedPCRResponse.Ten
     period = period?.convert(),
     measure = measure,
     unit = unit.convert(),
-    dimensions = dimensions.convert(),
+    dimensions = dimensions?.convert(),
     notes = notes,
     relatedRequirementId = relatedRequirementId,
 )
 
 fun CreatePCRResult.Tender.Target.Observation.Period.convert() = CreatedPCRResponse.Tender.Target.Observation.Period(
-    startDate = startDate.asString(),
-    endDate = endDate.asString()
+    startDate = startDate?.asString(),
+    endDate = endDate?.asString()
 )
 
 fun CreatePCRResult.Tender.Target.Observation.Dimensions.convert() =

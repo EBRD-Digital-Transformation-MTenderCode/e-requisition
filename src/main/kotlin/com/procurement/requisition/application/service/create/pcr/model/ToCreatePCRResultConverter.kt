@@ -108,7 +108,7 @@ fun Observation.convert() = CreatePCRResult.Tender.Target.Observation(
     period = period?.convert(),
     measure = measure,
     unit = unit.convert(),
-    dimensions = dimensions.convert(),
+    dimensions = dimensions?.convert(),
     notes = notes,
     relatedRequirementId = relatedRequirementId,
 )

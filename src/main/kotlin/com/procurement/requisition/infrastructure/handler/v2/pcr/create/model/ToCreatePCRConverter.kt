@@ -191,7 +191,7 @@ fun CreatePCRRequest.Tender.Target.Observation.convert():
 
     val period = period?.convert()?.onFailure { return it.repath(path = "/period") }
     val unit = unit.convert().onFailure { return it.repath(path = "/unit") }
-    val dimensions = dimensions.convert().onFailure { return it.repath(path = "/dimensions") }
+    val dimensions = dimensions?.convert()?.onFailure { return it.repath(path = "/dimensions") }
 
     return CreatePCRCommand.Tender.Target.Observation(
         id = id,
@@ -207,12 +207,8 @@ fun CreatePCRRequest.Tender.Target.Observation.convert():
 fun CreatePCRRequest.Tender.Target.Observation.Period.convert():
     Result<CreatePCRCommand.Tender.Target.Observation.Period, JsonErrors> {
 
-    val startDate = endDate.asLocalDateTime()
-        .onFailure { return it.repath(path = "/startDate") }
-
-    val endDate = endDate.asLocalDateTime()
-        .onFailure { return it.repath(path = "/endDate") }
-
+    val startDate = startDate?.asLocalDateTime()?.onFailure { return it.repath(path = "/startDate") }
+    val endDate = endDate?.asLocalDateTime()?.onFailure { return it.repath(path = "/endDate") }
     return CreatePCRCommand.Tender.Target.Observation.Period(startDate = startDate, endDate = endDate).asSuccess()
 }
 

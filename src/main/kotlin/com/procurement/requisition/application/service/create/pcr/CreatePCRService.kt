@@ -347,7 +347,7 @@ fun targets(
                                 Unit(id = unit.id, name = unit.name)
                             },
                         dimensions = observation.dimensions
-                            .let { dimension ->
+                            ?.let { dimension ->
                                 Dimensions(requirementClassIdPR = dimension.requirementClassIdPR)
                             },
                         notes = observation.notes,

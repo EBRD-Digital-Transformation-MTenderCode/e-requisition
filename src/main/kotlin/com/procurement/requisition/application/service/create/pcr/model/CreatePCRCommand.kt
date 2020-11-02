@@ -82,14 +82,14 @@ data class CreatePCRCommand(
                 val period: Period?,
                 val measure: ObservationMeasure,
                 val unit: Unit,
-                val dimensions: Dimensions,
+                val dimensions: Dimensions?,
                 val notes: String,
                 val relatedRequirementId: String?
             ) : EntityBase<String>() {
 
                 data class Period(
-                    val endDate: LocalDateTime,
-                    val startDate: LocalDateTime
+                    val endDate: LocalDateTime?,
+                    val startDate: LocalDateTime?
                 )
 
                 data class Dimensions(
