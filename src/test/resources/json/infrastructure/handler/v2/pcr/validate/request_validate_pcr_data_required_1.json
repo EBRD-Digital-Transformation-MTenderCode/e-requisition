@@ -45,12 +45,39 @@
         "observations": [
           {
             "id": "string",
-            "measure": "number",
+            "period": {
+              "startDate": "2020-10-19T10:22:42Z"
+            },
+            "measure": "string",
             "unit": {
               "id": "string"
             },
-            "dimensions": {
-              "requirementClassIdPR": "string"
+            "notes": "string"
+          },
+          {
+            "id": "string",
+            "period": {
+              "endDate": "2020-10-19T10:22:42Z"
+            },
+            "measure": 12.111,
+            "unit": {
+              "id": "string"
+            },
+            "notes": "string"
+          },
+          {
+            "id": "string",
+            "measure": 15,
+            "unit": {
+              "id": "string"
+            },
+            "notes": "string"
+          },
+          {
+            "id": "string",
+            "measure": true,
+            "unit": {
+              "id": "string"
             },
             "notes": "string"
           }
@@ -68,12 +95,22 @@
               {
                 "id": "string",
                 "title": "string",
+                "description": "string",
+                "period": {
+                  "startDate": "2020-10-19T10:22:42Z",
+                  "endDate": "2020-10-19T10:22:42Z"
+                },
                 "dataType": "integer",
                 "expectedValue": 10
               },
               {
                 "id": "string",
                 "title": "string",
+                "description": "string",
+                "period": {
+                  "startDate": "2020-10-19T10:22:42Z",
+                  "endDate": "2020-10-19T10:22:42Z"
+                },
                 "dataType": "integer",
                 "minValue": 1,
                 "maxValue": 5
