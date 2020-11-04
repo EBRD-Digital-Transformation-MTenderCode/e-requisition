@@ -61,13 +61,6 @@ class ValidateRequirementResponsesService(
                 checker.check().onFailure { return it }
             }
 
-        criteria.ofTenderer()
-            .forEach { criterion ->
-                val checker = criterion.toChecker()
-                requirementResponsesChecker.submitting(checker)
-                checker.check().onFailure { return it }
-            }
-
         criteria.ofLots(ids = detail.relatedLots)
             .forEach { criterion ->
                 val checker = criterion.toChecker()
@@ -112,8 +105,6 @@ class ValidateRequirementResponsesService(
         get() = tender != null && ProcurementMethodModality.REQUIRES_ELECTRONIC_CATALOGUE in tender.procurementMethodModalities
 
     fun Criteria.ofTender() = filter { it.relatesTo == null || it.relatesTo == CriterionRelatesTo.TENDER }
-
-    fun Criteria.ofTenderer() = filter { it.relatesTo == CriterionRelatesTo.TENDERER }
 
     fun Criteria.ofLots(ids: List<LotId>): List<Criterion> {
         val lotIds = ids.toSet { it.underlying }
