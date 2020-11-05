@@ -38,7 +38,7 @@ class CheckLotAwardedService(
         return Validated.ok()
     }
 
-    fun stateValidator(id: LotId): (LotStatus, LotStatusDetails) -> Validated<CheckLotAwardedErrors.Lot.InvalidState> =
+    fun stateValidator(id: LotId): (LotStatus, LotStatusDetails?) -> Validated<CheckLotAwardedErrors.Lot.InvalidState> =
         { status, statusDetails ->
             if (status == LotStatus.ACTIVE && statusDetails != LotStatusDetails.AWARDED)
                 Validated.ok()

@@ -23,7 +23,7 @@ enum class Actions(override val key: String, override val kind: Action.Kind) : E
     VALIDATE_PCR_DATA(key = "validatePcrData", kind = Action.Kind.QUERY),
     VALIDATE_REQUIREMENT_RESPONSES(key = "validateRequirementResponses", kind = Action.Kind.QUERY),
     CHECK_LOTS_STATUS(key = "checkLotsStatus", kind = Action.Kind.QUERY),
-    ;
+    CHECK_LOT_AWARDED(key = "checkLotAwarded", kind = Action.Kind.QUERY);
 
     override fun toString(): String = key
 

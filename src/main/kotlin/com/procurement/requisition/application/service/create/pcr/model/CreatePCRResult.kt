@@ -4,6 +4,8 @@ import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.Token
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
+import com.procurement.requisition.domain.model.classification.ClassificationId
+import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.document.DocumentId
 import com.procurement.requisition.domain.model.document.DocumentType
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessId
@@ -34,8 +36,6 @@ import com.procurement.requisition.domain.model.tender.target.TargetRelatedItem
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationId
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
 import com.procurement.requisition.domain.model.tender.unit.UnitId
-import com.procurement.requisition.domain.model.classification.ClassificationId
-import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -72,7 +72,7 @@ data class CreatePCRResult(
             val title: String,
             val description: String?,
             val status: LotStatus,
-            val statusDetails: LotStatusDetails,
+            val statusDetails: LotStatusDetails?,
             val classification: Classification,
             val variants: List<Variant>
         ) {

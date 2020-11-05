@@ -29,7 +29,10 @@ data class LotEntity(
     @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
     @field:JsonProperty("status") @param:JsonProperty("status") val status: String,
-    @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: String,
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: String?,
+
     @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: ClassificationEntity,
     @field:JsonProperty("variants") @param:JsonProperty("variants") val variants: List<VariantEntity>
 )
@@ -40,7 +43,7 @@ fun Lot.serialization() = LotEntity(
     title = title,
     description = description,
     status = status.asString(),
-    statusDetails = statusDetails.asString(),
+    statusDetails = statusDetails?.asString(),
     classification = classification.mappingToEntity(),
     variants = variants.map { it.serialization() },
 )
@@ -49,8 +52,8 @@ fun LotEntity.deserialization(): Result<Lot, JsonErrors> {
     val id = id.asLotId().onFailure { return it.repath(path = "/id") }
     val status = status.asEnum(target = LotStatus)
         .onFailure { return it.repath(path = "/status") }
-    val statusDetails = statusDetails.asEnum(target = LotStatusDetails)
-        .onFailure { return it.repath(path = "/statusDetails") }
+    val statusDetails = statusDetails?.asEnum(target = LotStatusDetails)
+        ?.onFailure { return it.repath(path = "/statusDetails") }
     val classification = classification.mappingToDomain()
         .onFailure { return it.repath(path = "/classification") }
     val variants = variants
