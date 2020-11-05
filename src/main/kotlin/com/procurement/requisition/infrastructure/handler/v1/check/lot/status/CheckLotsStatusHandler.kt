@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.v1.check.lot
+package com.procurement.requisition.infrastructure.handler.v1.check.lot.status
 
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
@@ -14,7 +14,7 @@ import com.procurement.requisition.infrastructure.handler.converter.asLotId
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.v1.AbstractHandlerV1
-import com.procurement.requisition.infrastructure.handler.v1.check.lot.model.CheckLotsStatusRequest
+import com.procurement.requisition.infrastructure.handler.v1.check.lot.status.model.CheckLotsStatusRequest
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asFailure

@@ -1,4 +1,4 @@
-package com.procurement.requisition.infrastructure.handler.v1.check.lot.model
+package com.procurement.requisition.infrastructure.handler.v1.check.lot.status.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
