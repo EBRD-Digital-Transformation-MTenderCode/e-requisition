@@ -29,9 +29,9 @@ sealed class CheckLotAwardedErrors(
             description = "Lot by id '${id.underlying}' is not found."
         )
 
-        class InvalidState(id: LotId, status: LotStatus, statusDetails: LotStatusDetails?) : CheckLotAwardedErrors.Lot(
+        class InvalidState(status: LotStatus, statusDetails: LotStatusDetails?) : CheckLotAwardedErrors.Lot(
             code = "400.${GlobalProperties.service.id}.10.19",
-            description = "Invalid state: (status='$status', statusDetails='$statusDetails') of lot '${id.underlying}'."
+            description = "Invalid state: (status='$status', statusDetails='$statusDetails') of specified lot."
         )
     }
 }

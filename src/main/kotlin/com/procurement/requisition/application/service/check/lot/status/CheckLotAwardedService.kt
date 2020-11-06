@@ -4,7 +4,6 @@ import com.procurement.requisition.application.repository.pcr.PCRDeserializer
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.service.check.lot.status.error.CheckLotAwardedErrors
 import com.procurement.requisition.application.service.check.lot.status.model.CheckLotAwardedCommand
-import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.LotStatus
 import com.procurement.requisition.domain.model.tender.lot.LotStatusDetails
 import com.procurement.requisition.lib.fail.Failure
@@ -30,22 +29,17 @@ class CheckLotAwardedService(
                 val foundedLot = lots.find { lot -> lot.id == command.lotId }
                     ?: return CheckLotAwardedErrors.Lot.NotFound(id = command.lotId).asValidatedError()
 
-                val validate = stateValidator(foundedLot.id)
-                validate(foundedLot.status, foundedLot.statusDetails)
+                validateState(foundedLot.status, foundedLot.statusDetails)
             }
             .onFailure { return it.reason.asValidatedError() }
 
         return Validated.ok()
     }
 
-    val stateValidator: (id: LotId) -> ((LotStatus, LotStatusDetails?) -> Validated<CheckLotAwardedErrors.Lot.InvalidState>) =
-        { id ->
-            { status, statusDetails ->
-                if (status == LotStatus.ACTIVE && statusDetails != LotStatusDetails.AWARDED)
-                    Validated.ok()
-                else
-                    CheckLotAwardedErrors.Lot.InvalidState(id = id, status = status, statusDetails = statusDetails)
-                        .asValidatedError()
-            }
-        }
+    fun validateState(status: LotStatus, statusDetails: LotStatusDetails): Validated<CheckLotAwardedErrors.Lot.InvalidState> =
+        if (status == LotStatus.ACTIVE && statusDetails != LotStatusDetails.AWARDED)
+            Validated.ok()
+        else
+            CheckLotAwardedErrors.Lot.InvalidState(status = status, statusDetails = statusDetails)
+                .asValidatedError()
 }
