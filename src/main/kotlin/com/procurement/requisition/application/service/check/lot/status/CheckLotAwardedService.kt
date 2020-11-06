@@ -38,12 +38,14 @@ class CheckLotAwardedService(
         return Validated.ok()
     }
 
-    fun stateValidator(id: LotId): (LotStatus, LotStatusDetails?) -> Validated<CheckLotAwardedErrors.Lot.InvalidState> =
-        { status, statusDetails ->
-            if (status == LotStatus.ACTIVE && statusDetails != LotStatusDetails.AWARDED)
-                Validated.ok()
-            else
-                CheckLotAwardedErrors.Lot.InvalidState(id = id, status = status, statusDetails = statusDetails)
-                    .asValidatedError()
+    val stateValidator: (id: LotId) -> ((LotStatus, LotStatusDetails?) -> Validated<CheckLotAwardedErrors.Lot.InvalidState>) =
+        { id ->
+            { status, statusDetails ->
+                if (status == LotStatus.ACTIVE && statusDetails != LotStatusDetails.AWARDED)
+                    Validated.ok()
+                else
+                    CheckLotAwardedErrors.Lot.InvalidState(id = id, status = status, statusDetails = statusDetails)
+                        .asValidatedError()
+            }
         }
 }
