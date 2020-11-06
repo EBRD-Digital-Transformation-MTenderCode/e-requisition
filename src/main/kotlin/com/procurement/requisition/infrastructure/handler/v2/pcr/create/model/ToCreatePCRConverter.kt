@@ -4,10 +4,14 @@ import com.procurement.requisition.application.service.create.pcr.model.CreatePC
 import com.procurement.requisition.application.service.create.pcr.model.StateFE
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
+import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
 import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.document.DocumentType
+import com.procurement.requisition.domain.model.requirement.ExpectedValue
+import com.procurement.requisition.domain.model.requirement.MaxValue
+import com.procurement.requisition.domain.model.requirement.MinValue
 import com.procurement.requisition.domain.model.tender.Classification
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
@@ -256,12 +260,49 @@ fun CreatePCRRequest.Tender.Criterion.convert(): Result<CreatePCRCommand.Tender.
 fun CreatePCRRequest.Tender.Criterion.RequirementGroup.convert(): Result<CreatePCRCommand.Tender.Criterion.RequirementGroup, JsonErrors> {
     val requirements = requirements
         .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "requirements")) }
-        .toList()
+        .mapIndexed { idx, requirement ->
+            requirement.convert().onFailure { return it.repath(path = "/requirements[$idx]") }
+        }
 
     return CreatePCRCommand.Tender.Criterion.RequirementGroup(
         id = id,
         description = description,
         requirements = requirements,
+    ).asSuccess()
+}
+
+/**
+ * Requirement
+ */
+fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.convert():
+    Result<CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement, JsonErrors> {
+
+    val period = period?.convert()?.onFailure { return it.repath(path = "/period") }
+    val dataType = dataType.asEnum(target = DynamicValue.DataType)
+        .onFailure { return it.repath(path = "/dataType") }
+
+    return CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement(
+        id = id,
+        title = title,
+        description = description,
+        period = period,
+        dataType = dataType,
+        expectedValue = expectedValue?.let { ExpectedValue(it) },
+        minValue = minValue?.let { MinValue(it) },
+        maxValue = maxValue?.let { MaxValue(it) },
+    ).asSuccess()
+}
+
+/**
+ * Requirement.Period
+ */
+fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.Period.convert():
+    Result<CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement.Period, JsonErrors> {
+    val startDate = startDate.asLocalDateTime().onFailure { return it.repath(path = "/startDate") }
+    val endDate = endDate.asLocalDateTime().onFailure { return it.repath(path = "/endDate") }
+    return CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement.Period(
+        startDate = startDate,
+        endDate = endDate
     ).asSuccess()
 }
 

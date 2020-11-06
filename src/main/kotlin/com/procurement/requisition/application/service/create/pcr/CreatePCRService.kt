@@ -269,7 +269,9 @@ fun criteria(
                                             )
                                         },
                                     dataType = requirement.dataType,
-                                    value = requirement.value,
+                                    expectedValue = requirement.expectedValue,
+                                    minValue = requirement.minValue,
+                                    maxValue = requirement.maxValue,
                                 )
                             }
                             .let { Requirements(it) },
