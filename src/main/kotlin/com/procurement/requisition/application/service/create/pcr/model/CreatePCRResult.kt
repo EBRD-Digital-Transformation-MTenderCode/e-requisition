@@ -1,5 +1,6 @@
 package com.procurement.requisition.application.service.create.pcr.model
 
+import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.Token
 import com.procurement.requisition.domain.model.award.AwardCriteria
@@ -21,7 +22,6 @@ import com.procurement.requisition.domain.model.tender.conversion.ConversionId
 import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientId
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientRate
-import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.domain.model.tender.criterion.CriterionId
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.domain.model.tender.criterion.CriterionSource
@@ -150,7 +150,7 @@ data class CreatePCRResult(
 
             data class Coefficient(
                 val id: CoefficientId,
-                val value: CoefficientValue,
+                val value: DynamicValue,
                 val coefficient: CoefficientRate
             )
         }

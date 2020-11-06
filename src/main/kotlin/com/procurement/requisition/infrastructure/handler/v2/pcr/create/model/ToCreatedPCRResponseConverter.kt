@@ -3,6 +3,7 @@ package com.procurement.requisition.infrastructure.handler.v2.pcr.create.model
 import com.procurement.requisition.application.service.create.pcr.model.CreatePCRResult
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.handler.converter.asStringOrNull
+import com.procurement.requisition.infrastructure.repository.pcr.model.tender.criterion.serialization
 
 fun CreatePCRResult.convert() = CreatedPCRResponse(
     ocid = ocid.underlying,
@@ -123,7 +124,7 @@ fun CreatePCRResult.Tender.Criterion.convert() = CreatedPCRResponse.Tender.Crite
 fun CreatePCRResult.Tender.Criterion.RequirementGroup.convert() = CreatedPCRResponse.Tender.Criterion.RequirementGroup(
     id = id.underlying,
     description = description,
-    requirements = requirements.toList(),
+    requirements = requirements.map { it.serialization() },
 )
 
 /**

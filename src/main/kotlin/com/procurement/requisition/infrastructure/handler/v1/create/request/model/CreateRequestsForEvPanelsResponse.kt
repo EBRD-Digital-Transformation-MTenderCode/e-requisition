@@ -2,11 +2,7 @@ package com.procurement.requisition.infrastructure.handler.v1.create.request.mod
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.procurement.requisition.domain.model.requirement.Requirement
-import com.procurement.requisition.infrastructure.bind.requirement.RequirementsDeserializer
-import com.procurement.requisition.infrastructure.bind.requirement.RequirementsSerializer
+import com.procurement.requisition.infrastructure.repository.pcr.model.tender.criterion.RequirementEntity
 
 data class CreateRequestsForEvPanelsResponse(
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -23,9 +19,7 @@ data class CreateRequestsForEvPanelsResponse(
         data class RequirementGroup(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 
-            @JsonDeserialize(using = RequirementsDeserializer::class)
-            @JsonSerialize(using = RequirementsSerializer::class)
-            @field:JsonProperty("requirements") @param:JsonProperty("requirements") val requirements: List<Requirement>
+            @field:JsonProperty("requirements") @param:JsonProperty("requirements") val requirements: List<RequirementEntity>
         )
     }
 }

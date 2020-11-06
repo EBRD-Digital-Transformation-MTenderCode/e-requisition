@@ -1,6 +1,7 @@
 package com.procurement.requisition.application.service.validate.error
 
 import com.procurement.requisition.domain.extension.format
+import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.lib.fail.Failure
 import java.time.LocalDateTime
 
@@ -85,9 +86,46 @@ sealed class ValidatePCRErrors(
                         description = "Start-date '${startDate.format()} equals or more than end-date '${endDate.format()}'. Path: '$path'."
                     )
 
-                class UnknownAttributeRange : RequirementGroup(code = "VR.COM-17.1.19", description = "")
-                class UnknownAttributeExpectedValue : RequirementGroup(code = "VR.COM-17.1.20", description = "")
-                class InvalidRange : RequirementGroup(code = "VR.COM-17.1.21", description = "")
+                class WrongValueAttributesCombination(id: String) :
+                    RequirementGroup(code = "VR.COM-17.1.19", description = "Requirement id '$id'.")
+
+                class InvalidTypeExpectedValue(dataType: DynamicValue.DataType) :
+                    RequirementGroup(
+                        code = "VR.COM-17.1.20",
+                        description = "Expected value is invalid type '${dataType.key}'."
+                    )
+
+                class InvalidTypeMinValue(dataType: DynamicValue.DataType) :
+                    RequirementGroup(
+                        code = "VR.COM-17.1.21",
+                        description = "Min value is invalid type '${dataType.key}'."
+                    )
+
+                class InvalidTypeMaxValue(dataType: DynamicValue.DataType) :
+                    RequirementGroup(
+                        code = "VR.COM-17.1.32",
+                        description = "Max value is invalid type '${dataType.key}'."
+                    )
+
+                class ExpectedValueDataTypeMismatch :
+                    RequirementGroup(
+                        code = "VR.COM-17.1.33",
+                        description = "The data type of the 'expectedValue' attribute does not match the value of the 'dataType' attribute"
+                    )
+
+                class MinValueDataTypeMismatch :
+                    RequirementGroup(
+                        code = "VR.COM-17.1.34",
+                        description = "The data type of the 'minValue' attribute does not match the value of the 'dataType' attribute"
+                    )
+
+                class MaxValueDataTypeMismatch :
+                    RequirementGroup(
+                        code = "VR.COM-17.1.35",
+                        description = "The data type of the 'maxValue' attribute does not match the value of the 'dataType' attribute"
+                    )
+
+                class InvalidRange : RequirementGroup(code = "VR.COM-17.1.36", description = "")
             }
         }
     }
