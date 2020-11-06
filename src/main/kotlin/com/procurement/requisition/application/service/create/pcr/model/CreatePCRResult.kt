@@ -30,7 +30,6 @@ import com.procurement.requisition.domain.model.tender.criterion.CriterionSource
 import com.procurement.requisition.domain.model.tender.item.ItemId
 import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.LotStatus
-import com.procurement.requisition.domain.model.tender.lot.LotStatusDetails
 import com.procurement.requisition.domain.model.tender.target.TargetId
 import com.procurement.requisition.domain.model.tender.target.TargetRelatedItem
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationId
@@ -72,7 +71,6 @@ data class CreatePCRResult(
             val title: String,
             val description: String?,
             val status: LotStatus,
-            val statusDetails: LotStatusDetails?,
             val classification: Classification,
             val variants: List<Variant>
         ) {
