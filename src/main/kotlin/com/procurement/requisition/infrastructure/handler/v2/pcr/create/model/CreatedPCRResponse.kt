@@ -74,10 +74,6 @@ data class CreatedPCRResponse(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
             @field:JsonProperty("status") @param:JsonProperty("status") val status: String,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: String?,
-
             @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)

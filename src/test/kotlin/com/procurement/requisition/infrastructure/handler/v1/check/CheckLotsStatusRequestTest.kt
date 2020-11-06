@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v1.check
 
-import com.procurement.requisition.infrastructure.handler.v1.check.lot.model.CheckLotsStatusRequest
+import com.procurement.requisition.infrastructure.handler.v1.check.lot.status.model.CheckLotsStatusRequest
 import com.procurement.requisition.json.testingBindingAndMapping
 import org.junit.jupiter.api.Test
 

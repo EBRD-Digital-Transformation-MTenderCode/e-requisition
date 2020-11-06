@@ -1,9 +1,9 @@
-package com.procurement.requisition.application.service.check
+package com.procurement.requisition.application.service.check.lot.status
 
 import com.procurement.requisition.application.repository.pcr.PCRDeserializer
 import com.procurement.requisition.application.repository.pcr.PCRRepository
-import com.procurement.requisition.application.service.check.error.CheckLotsStatusErrors
-import com.procurement.requisition.application.service.check.model.CheckLotsStatusCommand
+import com.procurement.requisition.application.service.check.lot.status.error.CheckLotsStatusErrors
+import com.procurement.requisition.application.service.check.lot.status.model.CheckLotsStatusCommand
 import com.procurement.requisition.domain.model.tender.Tender
 import com.procurement.requisition.domain.model.tender.lot.Lot
 import com.procurement.requisition.domain.model.tender.lot.LotId

@@ -58,7 +58,6 @@ fun CreatePCRResult.Tender.Lot.convert() = CreatedPCRResponse.Tender.Lot(
     title = title,
     description = description,
     status = status.asString(),
-    statusDetails = statusDetails.asStringOrNull(),
     classification = classification.convert(),
     variants = variants.map { it.convert() },
 )

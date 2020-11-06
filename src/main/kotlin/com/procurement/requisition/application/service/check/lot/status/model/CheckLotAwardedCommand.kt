@@ -1,11 +1,11 @@
-package com.procurement.requisition.application.service.check.model
+package com.procurement.requisition.application.service.check.lot.status.model
 
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.tender.lot.LotId
 
-class CheckLotsStatusCommand(
+class CheckLotAwardedCommand(
     val cpid: Cpid,
     val ocid: Ocid,
-    val relatedLot: LotId
+    val lotId: LotId
 )
