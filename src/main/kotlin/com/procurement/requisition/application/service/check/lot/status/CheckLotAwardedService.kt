@@ -31,7 +31,7 @@ class CheckLotAwardedService(
 
                 validateState(foundedLot.status, foundedLot.statusDetails)
             }
-            .onFailure { return it.reason.asValidatedError() }
+            .onFailure { return it }
 
         return Validated.ok()
     }
