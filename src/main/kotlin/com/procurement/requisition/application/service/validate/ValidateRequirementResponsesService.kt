@@ -4,10 +4,9 @@ import com.procurement.requisition.application.repository.pcr.PCRDeserializer
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.service.validate.error.ValidateRequirementResponsesErrors
 import com.procurement.requisition.application.service.validate.model.ValidateRequirementResponsesCommand
+import com.procurement.requisition.domain.model.dataType
 import com.procurement.requisition.domain.model.requirement.Requirement
-import com.procurement.requisition.domain.model.requirement.RequirementDataType
 import com.procurement.requisition.domain.model.requirement.RequirementId
-import com.procurement.requisition.domain.model.requirement.RequirementRsValue
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality
 import com.procurement.requisition.domain.model.tender.criterion.Criteria
 import com.procurement.requisition.domain.model.tender.criterion.Criterion
@@ -159,28 +158,23 @@ class ValidateRequirementResponsesService(
             .toMap()
 
         requirementResponses
-            .forEachIndexed { idx, requirementResponse ->
+            .forEachIndexed { idx, requirementResponse: ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse ->
                 val requirement = allRequirementByIds.getValue(requirementResponse.requirement.id)
-                requirementResponse.value
-                    .validateDataType(path = "#/params/tender/requirementResponses[$idx]", requirement.dataType)
+                requirementResponse
+                    .validateDataType(path = "#/params/tender/requirementResponses[$idx]", requirement)
                     .onFailure { return it }
             }
         return Validated.ok()
     }
 
-    fun RequirementRsValue.validateDataType(path: String, requirementDataType: RequirementDataType):
-        Validated<ValidateRequirementResponsesErrors.RequirementResponse.Requirement.InvalidDataType> {
-        val isInvalidType = when (this) {
-            is RequirementRsValue.AsBoolean -> requirementDataType != RequirementDataType.BOOLEAN
-            is RequirementRsValue.AsString -> requirementDataType != RequirementDataType.STRING
-            is RequirementRsValue.AsNumber -> requirementDataType != RequirementDataType.NUMBER
-            is RequirementRsValue.AsInteger -> requirementDataType != RequirementDataType.INTEGER
-        }
-        return if (isInvalidType)
-            Validated.error(ValidateRequirementResponsesErrors.RequirementResponse.Requirement.InvalidDataType(path = path))
-        else
+    fun ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse.validateDataType(
+        path: String,
+        requirement: Requirement
+    ): Validated<ValidateRequirementResponsesErrors.RequirementResponse.Requirement.InvalidDataType> =
+        if (value.dataType == requirement.dataType)
             Validated.ok()
-    }
+        else
+            Validated.error(ValidateRequirementResponsesErrors.RequirementResponse.Requirement.InvalidDataType(path = path))
 
     fun ValidateRequirementResponsesCommand.Bids.Detail.RequirementResponse.Period.isInvalid(): Boolean =
         !startDate.isBefore(endDate)

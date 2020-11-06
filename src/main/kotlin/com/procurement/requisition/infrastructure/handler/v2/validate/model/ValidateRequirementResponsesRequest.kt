@@ -2,7 +2,7 @@ package com.procurement.requisition.infrastructure.handler.v2.validate.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.procurement.requisition.domain.model.requirement.RequirementRsValue
+import com.procurement.requisition.domain.model.DynamicValue
 
 data class ValidateRequirementResponsesRequest(
     @field:JsonProperty("cpid") @param:JsonProperty("cpid") val cpid: String,
@@ -39,7 +39,7 @@ data class ValidateRequirementResponsesRequest(
 
             data class RequirementResponse(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-                @field:JsonProperty("value") @param:JsonProperty("value") val value: RequirementRsValue,
+                @field:JsonProperty("value") @param:JsonProperty("value") val value: DynamicValue,
                 @field:JsonProperty("requirement") @param:JsonProperty("requirement") val requirement: Requirement,
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
