@@ -186,7 +186,8 @@ class ValidatePCRService {
                                     }
 
                                 // VR.COM-17.1.19-VR.COM-17.1.21, VR.COM-17.1.32-VR.COM-17.1.36
-                                requirement.validateValueAttributes().onFailure { return it }
+                                requirement.validateValueAttributes()
+                                    .onFailure { return it }
                             }
                     }
             }
@@ -295,7 +296,7 @@ class ValidatePCRService {
                 Requirement.valueNotBounded(expectedValue, minValue, maxValue) -> Unit
 
                 else ->
-                    ValidatePCRErrors.Criterion.RequirementGroup.Requirement.WrongValueAttributesCombination(id = this.id)
+                    return ValidatePCRErrors.Criterion.RequirementGroup.Requirement.WrongValueAttributesCombination(id = this.id)
                         .asValidatedError()
             }
             return Validated.ok()
