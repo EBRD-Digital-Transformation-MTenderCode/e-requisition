@@ -5,18 +5,16 @@ import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.application.service.check.lot.status.CheckLotAwardedService
 import com.procurement.requisition.application.service.check.lot.status.model.CheckLotAwardedCommand
-import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.incident.InternalServerError
-import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.infrastructure.handler.Action
 import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.infrastructure.handler.CommandHandler
+import com.procurement.requisition.infrastructure.handler.converter.asLotId
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.v1.AbstractHandlerV1
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
-import com.procurement.requisition.lib.functional.Result.Companion.failure
 import com.procurement.requisition.lib.functional.asFailure
 import com.procurement.requisition.lib.functional.asSuccess
 
@@ -50,11 +48,8 @@ class CheckLotAwardedHandler(
         val cpid = context.cpid.onFailure { return it }
         val ocid = context.ocid.onFailure { return it }
         val lotId = context.id
+            .flatMap { it.asLotId() }
             .onFailure { return it }
-            .let { id ->
-                LotId.orNull(id)
-                    ?: return failure(JsonErrors.DataFormatMismatch(expectedFormat = LotId.pattern, actualValue = id))
-            }
 
         return CheckLotAwardedCommand(cpid = cpid, ocid = ocid, lotId = lotId).asSuccess()
     }
