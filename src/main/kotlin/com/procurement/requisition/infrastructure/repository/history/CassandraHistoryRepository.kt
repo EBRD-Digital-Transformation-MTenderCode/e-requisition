@@ -37,7 +37,8 @@ class CassandraHistoryRepository(private val session: Session) : HistoryReposito
         private const val FIND_HISTORY_ENTRY_CQL = """
                SELECT $JSON_DATA
                  FROM $KEYSPACE.$HISTORY_TABLE
-                WHERE $COMMAND_ID=? AND $COMMAND_NAME=?
+                WHERE $COMMAND_ID=? 
+                AND $COMMAND_NAME=?
             """
     }
 

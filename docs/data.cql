@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS requisition.requisitions
 );
 
 
-DROP TABLE IF EXISTS ocds.access_rules;
+DROP TABLE IF EXISTS requisition.history;
 
 CREATE TABLE IF NOT EXISTS requisition.history
 (
