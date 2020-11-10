@@ -109,7 +109,7 @@ class CassandraHistoryRepositoryIT {
             assertEquals(HISTORY_ENTITY.data, it.data)
         }
 
-        val loadedResult = repository.getHistory(commandId = HISTORY_ENTITY.commandId)
+        val loadedResult = repository.getHistory(commandId = HISTORY_ENTITY.commandId, HISTORY_ENTITY.action)
         assertTrue(loadedResult.isSuccess)
         loadedResult.forEach {
             assertNotNull(it)

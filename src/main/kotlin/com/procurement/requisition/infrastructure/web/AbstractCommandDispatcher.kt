@@ -110,7 +110,7 @@ abstract class AbstractCommandDispatcher(
         return result.asSuccess()
     }
 
-    fun load(command: CommandDescriptor): Result<String?, Failure> = historyRepository.getHistory(command.id)
+    fun load(command: CommandDescriptor): Result<String?, Failure> = historyRepository.getHistory(command.id, command.action)
         .onFailure { return it }
         .asSuccess()
 
