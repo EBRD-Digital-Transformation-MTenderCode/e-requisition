@@ -34,3 +34,15 @@ CREATE TABLE IF NOT EXISTS requisition.requisitions
     json_data      TEXT,
     PRIMARY KEY (cpid, ocid)
 );
+
+
+DROP TABLE IF EXISTS requisition.history;
+
+CREATE TABLE IF NOT EXISTS requisition.history
+(
+    command_id   TEXT,
+    command_name TEXT,
+    command_date TIMESTAMP,
+    json_data    TEXT,
+    PRIMARY KEY (command_id, command_name)
+);
