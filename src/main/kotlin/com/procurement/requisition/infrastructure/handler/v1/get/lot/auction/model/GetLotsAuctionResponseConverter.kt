@@ -4,12 +4,12 @@ import com.procurement.requisition.application.service.get.lot.auction.model.Get
 
 fun GetLotsAuctionResult.convert() = GetLotsAuctionResponse(
     tender = GetLotsAuctionResponse.Tender(
-        id = this.tender.id,
+        id = this.tender.id.underlying,
         title = this.tender.title,
         description = this.tender.description,
         lots = this.tender.lots.map { lot ->
             GetLotsAuctionResponse.Tender.Lot(
-                id = lot.id,
+                id = lot.id.underlying,
                 title = lot.title,
                 description = lot.description
             )
