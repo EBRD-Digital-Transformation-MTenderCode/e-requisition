@@ -13,6 +13,7 @@ import com.procurement.requisition.infrastructure.handler.converter.asLotId
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.v1.AbstractHandlerV1
+import com.procurement.requisition.infrastructure.handler.v1.check.lot.status.model.CheckLotAwardedResponse
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asFailure
@@ -34,7 +35,7 @@ class CheckLotAwardedHandler(
         checkLotAwardedService.check(command)
             .onFailure { return it.reason.asFailure() }
 
-        return ApiResponseV1.Success(version = descriptor.version, id = descriptor.id, result = null)
+        return ApiResponseV1.Success(version = descriptor.version, id = descriptor.id, result = CheckLotAwardedResponse)
             .trySerialization(transform)
             .mapFailure { failure ->
                 InternalServerError(description = failure.description, reason = failure.reason)
