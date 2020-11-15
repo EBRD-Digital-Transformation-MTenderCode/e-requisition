@@ -225,10 +225,7 @@ class ValidatePCRService(
             val matrix = buildRequirementsMatrix(criteria)
             val allRequirementsCombinations = getAllRequirementsCombinations(matrix)
             val minCoefficientForRequirements = getMinCoefficients(command.tender.conversions)
-            val specificWeightPrices = calculateSpecificWeightPrice(
-                allRequirementsCombinations,
-                minCoefficientForRequirements
-            )
+            val specificWeightPrices = calculateSpecificWeightPrice(allRequirementsCombinations, minCoefficientForRequirements)
             val tooSmallSpecificWeightPrices = specificWeightPrices.filter { it < minSpecificWeightPrice }
             if (tooSmallSpecificWeightPrices.isNotEmpty())
                 return ValidatePCRErrors.Criterion.TooSmallSpecificWeightPrice(lotId).asValidatedError()
