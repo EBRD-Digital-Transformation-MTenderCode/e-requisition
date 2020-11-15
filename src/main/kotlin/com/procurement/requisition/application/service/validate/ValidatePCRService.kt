@@ -1,9 +1,20 @@
 package com.procurement.requisition.application.service.validate
 
+import com.procurement.requisition.application.repository.rule.RulesRepository
+import com.procurement.requisition.application.repository.rule.deserializer.MinSpecificWeightPriceRuleDeserializer
+import com.procurement.requisition.application.repository.rule.model.MinSpecificWeightPriceRule
+import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Model.CriteriaMatrix
+import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Model.Criterion
+import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Model.RequirementGroup
+import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Model.Requirements
+import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Operations.Combination
+import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Operations.buildRequirementsMatrix
+import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Operations.getAllRequirementsCombinations
 import com.procurement.requisition.application.service.validate.error.ValidatePCRErrors
 import com.procurement.requisition.application.service.validate.model.ValidatePCRDataCommand
 import com.procurement.requisition.domain.failure.incident.InvalidArgumentValueIncident
 import com.procurement.requisition.domain.model.DynamicValue
+import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.dataType
 import com.procurement.requisition.domain.model.isNotUniqueIds
 import com.procurement.requisition.domain.model.requirement.ExpectedValue
@@ -13,8 +24,10 @@ import com.procurement.requisition.domain.model.requirement.Requirement
 import com.procurement.requisition.domain.model.requirement.isDataTypeMatched
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality.REQUIRES_ELECTRONIC_CATALOGUE
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
+import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.lib.fail.Failure
+import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Validated
 import com.procurement.requisition.lib.functional.asValidatedError
 import com.procurement.requisition.lib.isUnique
@@ -23,7 +36,10 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 
 @Service
-class ValidatePCRService {
+class ValidatePCRService(
+    private val rulesRepository: RulesRepository,
+    private val minSpecificWeightPriceRuleDeserializer: MinSpecificWeightPriceRuleDeserializer,
+) {
 
     fun validate(command: ValidatePCRDataCommand): Validated<Failure> {
         // VR.COM-17.1.1
@@ -131,6 +147,10 @@ class ValidatePCRService {
         // VR.COM-17.1.17
         validationRequirementIds(command.tender.criteria).onFailure { return it }
 
+        // VR.COM-17.1.37
+        val isCriteriaNeed = isCriteriaNeed(command.tender.awardCriteria);
+        if (isCriteriaNeed) validateCriteriaExistence(command.tender.criteria).onFailure { return it }
+
         command.tender.criteria
             .forEachIndexed { criterionIdx, criterion ->
 
@@ -192,6 +212,28 @@ class ValidatePCRService {
                     }
             }
 
+        // VR.COM-17.1.39
+        val minSpecificWeightPrice = getMinSpecificWeightPrice(command)
+            .map { it.getFor(command.tender.mainProcurementCategory) }
+            .onFailure { return it.reason.asValidatedError() }
+
+        val itemsWithRelatedLot = command.tender.items.map { it.id to it.relatedLot }
+        val lotsIds = command.tender.lots.map { it.id }
+        val criteriaPackageByLot = getCriteriaPackageByLot(lotsIds, itemsWithRelatedLot, command.tender.criteria);
+
+        criteriaPackageByLot.forEach { (lotId, criteria) ->
+            val matrix = buildRequirementsMatrix(criteria)
+            val allRequirementsCombinations = getAllRequirementsCombinations(matrix)
+            val minCoefficientForRequirements = getMinCoefficients(command.tender.conversions)
+            val specificWeightPrices = calculateSpecificWeightPrice(
+                allRequirementsCombinations,
+                minCoefficientForRequirements
+            )
+            val tooSmallSpecificWeightPrices = specificWeightPrices.filter { it < minSpecificWeightPrice }
+            if (tooSmallSpecificWeightPrices.isNotEmpty())
+                return ValidatePCRErrors.Criterion.TooSmallSpecificWeightPrice(lotId).asValidatedError()
+        }
+
         // VR.COM-17.1.22
         if (command.tender.conversions.isNotUniqueIds())
             return ValidatePCRErrors.Conversion.DuplicateId(path = "#/tender/conversions").asValidatedError()
@@ -201,6 +243,10 @@ class ValidatePCRService {
             .flatMap { requirementGroup -> requirementGroup.requirements.asSequence() }
             .map { requirement -> requirement.id to requirement }
             .toMap()
+
+        // VR.COM-17.1.38
+        val isConversionsNeed = isConversionsNeed(command.tender.awardCriteria)
+        if (!isConversionsNeed) validateConversionsNotExists(command.tender.conversions).onFailure { return it }
 
         command.tender.conversions
             .forEachIndexed { conversionIdx, conversion ->
@@ -273,6 +319,11 @@ class ValidatePCRService {
 
         return Validated.ok()
     }
+
+    fun getMinSpecificWeightPrice(command: ValidatePCRDataCommand): Result<MinSpecificWeightPriceRule, Failure> =
+        rulesRepository
+            .get(command.country, command.pmd, command.operationType, RulesRepository.minSpecificWeightPrice)
+            .flatMap { rule -> minSpecificWeightPriceRuleDeserializer.deserialize(rule) }
 
     companion object {
 
@@ -499,6 +550,166 @@ class ValidatePCRService {
                     }
             }
             return Validated.ok()
+        }
+
+        fun isCriteriaNeed(awardCriteria: AwardCriteria): Boolean =
+            when (awardCriteria) {
+                AwardCriteria.COST_ONLY,
+                AwardCriteria.QUALITY_ONLY,
+                AwardCriteria.RATED_CRITERIA -> true
+
+                AwardCriteria.PRICE_ONLY -> false
+            }
+
+        fun validateCriteriaExistence(criteria: List<ValidatePCRDataCommand.Tender.Criterion>): Validated<Failure> =
+            if (criteria.isEmpty())
+                ValidatePCRErrors.Criterion.MissingCriteria().asValidatedError()
+            else
+                Validated.ok()
+
+        fun isConversionsNeed(awardCriteria: AwardCriteria): Boolean =
+            when (awardCriteria) {
+                AwardCriteria.COST_ONLY,
+                AwardCriteria.QUALITY_ONLY,
+                AwardCriteria.RATED_CRITERIA -> true
+
+                AwardCriteria.PRICE_ONLY -> false
+            }
+
+        fun validateConversionsNotExists(conversions: List<ValidatePCRDataCommand.Tender.Conversion>): Validated<Failure> =
+            if (conversions.isNotEmpty())
+                ValidatePCRErrors.Conversion.RedundantConversionsList(path = "$/tender/conversions[*]")
+                    .asValidatedError()
+            else
+                Validated.ok()
+
+        fun calculateSpecificWeightPrice(
+            requirementsCombinations: List<Combination<Requirements>>,
+            minCoefficientForRequirements: Map<String, BigDecimal>
+        ): List<BigDecimal> {
+
+            val multiplyOnMinCoefficient: (BigDecimal, String) -> BigDecimal = { acc, requirementId ->
+                acc * (minCoefficientForRequirements[requirementId] ?: BigDecimal.ONE)
+            }
+
+            return requirementsCombinations.map { combination ->
+                combination.product
+                    .flatten()
+                    .fold(BigDecimal.ONE, multiplyOnMinCoefficient)
+            }
+        }
+
+        fun getMinCoefficients(conversions: List<ValidatePCRDataCommand.Tender.Conversion>): Map<String, BigDecimal> {
+            return conversions.filter { it.relatesTo == ConversionRelatesTo.REQUIREMENT }
+                .associate { conversion ->
+                    val minCoefficient = conversion.coefficients
+                        .minByOrNull { it.coefficient.rate }
+                        ?.coefficient?.rate
+                        ?: BigDecimal.ONE
+
+                    conversion.relatedItem to minCoefficient
+                }
+        }
+
+        fun getCriteriaPackageByLot(
+            lots: List<String>,
+            items: List<Pair<String, String>>,
+            criteria: List<ValidatePCRDataCommand.Tender.Criterion>
+        ): Map<String, List<ValidatePCRDataCommand.Tender.Criterion>> {
+
+            val tenderCriteria = criteria.filter { it.relatesTo == CriterionRelatesTo.TENDER }
+
+            return lots.associate { lotId ->
+                val lotCriteria = criteria.filter { it.relatedItem == lotId }
+                val itemsForLot = items.asSequence()
+                    .filter { (_, relatedLot) -> relatedLot == lotId }
+                    .map { (id, _) -> id }
+                    .toSet()
+
+                val itemsCriteriaForLot = criteria.filter { it.relatedItem in itemsForLot }
+
+                lotId to (tenderCriteria + lotCriteria + itemsCriteriaForLot)
+            }
+        }
+    }
+}
+
+object SpecificWeightedPrice {
+
+    object Model {
+        class CriteriaMatrix(values: List<Criterion>) : List<Criterion> by values
+        class Criterion(values: List<RequirementGroup>) : List<RequirementGroup> by values
+        data class RequirementGroup(val requirements: Requirements)
+
+        data class Requirements(private val ids: List<String>) : List<String> by ids {
+
+            override fun toString(): String {
+                return ids.joinToString(prefix = "{", separator = "-", postfix = "}")
+            }
+        }
+    }
+
+    object Operations {
+
+        data class Combination<T>(val product: Product<T>)
+        class Product<T>(args: List<T>) : List<T> by args
+
+        fun buildRequirementsMatrix(criteria: List<ValidatePCRDataCommand.Tender.Criterion>): CriteriaMatrix {
+
+            val toRequirementGroup: (ValidatePCRDataCommand.Tender.Criterion.RequirementGroup) -> RequirementGroup = { requirementGroup ->
+                requirementGroup.requirements
+                    .map { it.id }
+                    .let { RequirementGroup(Requirements(it)) }
+            }
+
+            val toCriterion: (ValidatePCRDataCommand.Tender.Criterion) -> Criterion = { criterion ->
+                criterion.requirementGroups
+                    .map { toRequirementGroup(it) }
+                    .let { Criterion(it) }
+            }
+
+            return criteria
+                .map { toCriterion(it) }
+                .let { CriteriaMatrix(it) }
+        }
+
+        fun <T> product(arg1: Collection<Product<T>>, arg2: Collection<T>): Collection<Product<T>> {
+            if (arg1.isEmpty()) return arg2.map { Product(listOf(it)) }
+            if (arg2.isEmpty()) return arg1
+
+            val pairSet = mutableListOf<Product<T>>()
+            arg1.forEach { x ->
+                arg2.forEach { y ->
+                    val a = Product(x + listOf(y))
+                    pairSet.add(Product(a.toMutableList()))
+                }
+            }
+            return pairSet
+        }
+
+        fun getAllRequirementsCombinations(matrix: CriteriaMatrix): List<Combination<Requirements>> {
+
+            val combinations = mutableListOf<Combination<Requirements>>()
+            // Ex: for iteration 2: ({a1, b1},{a2, b2} ... {an, bn})
+
+            for (rowIndex in 0 until matrix.size) {
+                val row = matrix[rowIndex].map { it.requirements }
+
+                val products = combinations.asSequence()
+                    .map { it.product }
+                    .toList()
+
+                // ({a1, b1, c1},{a2, b2, c2} ...)
+                val combinationsForIteration = product(products, row).map { Combination(it) }
+
+                // remove combinations aren't already needed
+                // ({a1, b1},{a2, b2} ... {an, bn}) -> ()
+                combinations.clear()
+
+                combinations.addAll(combinationsForIteration)
+            }
+
+            return combinations
         }
     }
 }

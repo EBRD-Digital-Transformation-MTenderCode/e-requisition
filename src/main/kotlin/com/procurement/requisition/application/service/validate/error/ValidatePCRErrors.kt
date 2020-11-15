@@ -68,6 +68,13 @@ sealed class ValidatePCRErrors(
             description = "Missing required relatedItem. Path: '$path'."
         )
 
+        class MissingCriteria : Criterion(code = "VR.COM-17.1.39", description = "Missing required criteria.")
+
+        class TooSmallSpecificWeightPrice(lotId: String) : Criterion(
+            code = "VR.COM-17.1.37",
+            description = "Too small specific weight price in lot '$lotId'."
+        )
+
         sealed class RequirementGroup(code: String, description: String) :
             Criterion(code = code, description = description) {
 
@@ -138,6 +145,9 @@ sealed class ValidatePCRErrors(
 
         class InvalidRelatedItem(path: String, relatedItem: String) :
             Conversion(code = "VR.COM-17.1.23", description = "Invalid related item '$relatedItem'. Path: '$path'.")
+
+        class RedundantConversionsList(path: String) :
+            Conversion(code = "VR.COM-17.1.38", description = "Redundant conversions list. Path: $path")
 
         sealed class Coefficient(code: String, description: String) :
             Conversion(code = code, description = description) {

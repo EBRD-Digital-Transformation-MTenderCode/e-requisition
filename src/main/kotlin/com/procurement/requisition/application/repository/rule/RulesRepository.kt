@@ -11,6 +11,7 @@ interface RulesRepository {
     companion object {
         const val validTenderStates = "validStates"
         const val validLotStates = "validLotStates"
+        const val minSpecificWeightPrice = "minSpecificWeightPrice"
     }
 
     fun find(
