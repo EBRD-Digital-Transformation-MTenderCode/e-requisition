@@ -658,7 +658,6 @@ object SpecificWeightedPrice {
                     .map { it.id }
                     .let { RequirementGroup(Requirements(it)) }
 
-
             fun toCriterion (criterion: ValidatePCRDataCommand.Tender.Criterion): Criterion =
                 criterion.requirementGroups
                     .map { toRequirementGroup(it) }
