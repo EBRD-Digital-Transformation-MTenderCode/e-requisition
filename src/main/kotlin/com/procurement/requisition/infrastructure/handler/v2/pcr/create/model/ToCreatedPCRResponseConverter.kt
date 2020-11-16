@@ -3,6 +3,7 @@ package com.procurement.requisition.infrastructure.handler.v2.pcr.create.model
 import com.procurement.requisition.application.service.create.pcr.model.CreatePCRResult
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.handler.converter.asStringOrNull
+import com.procurement.requisition.infrastructure.repository.pcr.model.tender.criterion.serialization
 
 fun CreatePCRResult.convert() = CreatedPCRResponse(
     ocid = ocid.underlying,
@@ -57,7 +58,6 @@ fun CreatePCRResult.Tender.Lot.convert() = CreatedPCRResponse.Tender.Lot(
     title = title,
     description = description,
     status = status.asString(),
-    statusDetails = statusDetails.asStringOrNull(),
     classification = classification.convert(),
     variants = variants.map { it.convert() },
 )
@@ -94,14 +94,14 @@ fun CreatePCRResult.Tender.Target.Observation.convert() = CreatedPCRResponse.Ten
     period = period?.convert(),
     measure = measure,
     unit = unit.convert(),
-    dimensions = dimensions.convert(),
+    dimensions = dimensions?.convert(),
     notes = notes,
     relatedRequirementId = relatedRequirementId,
 )
 
 fun CreatePCRResult.Tender.Target.Observation.Period.convert() = CreatedPCRResponse.Tender.Target.Observation.Period(
-    startDate = startDate.asString(),
-    endDate = endDate.asString()
+    startDate = startDate?.asString(),
+    endDate = endDate?.asString()
 )
 
 fun CreatePCRResult.Tender.Target.Observation.Dimensions.convert() =
@@ -123,7 +123,7 @@ fun CreatePCRResult.Tender.Criterion.convert() = CreatedPCRResponse.Tender.Crite
 fun CreatePCRResult.Tender.Criterion.RequirementGroup.convert() = CreatedPCRResponse.Tender.Criterion.RequirementGroup(
     id = id.underlying,
     description = description,
-    requirements = requirements.toList(),
+    requirements = requirements.map { it.serialization() },
 )
 
 /**

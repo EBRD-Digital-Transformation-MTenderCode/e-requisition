@@ -22,7 +22,10 @@ data class ObservationEntity(
 
     @param:JsonProperty("measure") @field:JsonProperty("measure") val measure: ObservationMeasure,
     @param:JsonProperty("unit") @field:JsonProperty("unit") val unit: UnitEntity,
-    @param:JsonProperty("dimensions") @field:JsonProperty("dimensions") val dimensions: DimensionsEntity,
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @param:JsonProperty("dimensions") @field:JsonProperty("dimensions") val dimensions: DimensionsEntity?,
+
     @param:JsonProperty("notes") @field:JsonProperty("notes") val notes: String,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -34,7 +37,7 @@ fun Observation.serialization() = ObservationEntity(
     period = period?.mappingToEntity(),
     measure = measure,
     unit = unit.mappingToEntity(),
-    dimensions = dimensions.serialization(),
+    dimensions = dimensions?.serialization(),
     notes = notes,
     relatedRequirementId = relatedRequirementId,
 )
@@ -43,7 +46,7 @@ fun ObservationEntity.deserialization(): Result<Observation, JsonErrors> {
     val id = id.asObservationId().onFailure { return it.repath(path = "/id") }
     val period = period?.mappingToDomain()?.onFailure { return it.repath(path = "/period") }
     val unit = unit.mappingToDomain().onFailure { return it.repath(path = "/unit") }
-    val dimensions = dimensions.deserialization().onFailure { return it.repath(path = "/dimensions") }
+    val dimensions = dimensions?.deserialization()?.onFailure { return it.repath(path = "/dimensions") }
 
     return Observation(
         id = id,

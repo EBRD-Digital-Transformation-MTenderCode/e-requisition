@@ -65,7 +65,7 @@ class SetTenderStatusUnsuccessfulService(
         if (lot.id in activeLotIds)
             lot.copy(
                 status = LotStatus.UNSUCCESSFUL,
-                statusDetails = LotStatusDetails.EMPTY
+                statusDetails = LotStatusDetails.NONE
             )
         else
             lot

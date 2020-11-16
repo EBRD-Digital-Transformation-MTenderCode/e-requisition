@@ -10,7 +10,7 @@ data class Observation(
     val period: Period?,
     val measure: ObservationMeasure,
     val unit: Unit,
-    val dimensions: Dimensions,
+    val dimensions: Dimensions?,
     val notes: String,
     val relatedRequirementId: RequirementId?
 ) : EntityBase<ObservationId>()

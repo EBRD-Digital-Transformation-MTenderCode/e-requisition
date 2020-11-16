@@ -7,7 +7,7 @@ enum class LotStatusDetails(override val key: String) : EnumElementProvider.Elem
     UNSUCCESSFUL("unsuccessful"),
     AWARDED("awarded"),
     CANCELLED("cancelled"),
-    EMPTY("empty") {
+    NONE("") {
         override val isNeutralElement: Boolean = true
     };
 

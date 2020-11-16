@@ -1,18 +1,20 @@
 package com.procurement.requisition.application.service.create.pcr.model
 
 import com.procurement.requisition.domain.model.Cpid
+import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.EntityBase
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
 import com.procurement.requisition.domain.model.document.DocumentId
 import com.procurement.requisition.domain.model.document.DocumentType
-import com.procurement.requisition.domain.model.requirement.Requirement
+import com.procurement.requisition.domain.model.requirement.ExpectedValue
+import com.procurement.requisition.domain.model.requirement.MaxValue
+import com.procurement.requisition.domain.model.requirement.MinValue
 import com.procurement.requisition.domain.model.tender.Classification
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientRate
-import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatedItem
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.domain.model.tender.target.TargetRelatedItem
@@ -82,14 +84,14 @@ data class CreatePCRCommand(
                 val period: Period?,
                 val measure: ObservationMeasure,
                 val unit: Unit,
-                val dimensions: Dimensions,
+                val dimensions: Dimensions?,
                 val notes: String,
                 val relatedRequirementId: String?
             ) : EntityBase<String>() {
 
                 data class Period(
-                    val endDate: LocalDateTime,
-                    val startDate: LocalDateTime
+                    val endDate: LocalDateTime?,
+                    val startDate: LocalDateTime?
                 )
 
                 data class Dimensions(
@@ -111,7 +113,25 @@ data class CreatePCRCommand(
                 override val id: String,
                 val description: String?,
                 val requirements: List<Requirement>
-            ) : EntityBase<String>()
+            ) : EntityBase<String>() {
+
+                data class Requirement(
+                    override val id: String,
+                    val title: String,
+                    val description: String? = null,
+                    val period: Period? = null,
+                    val dataType: DynamicValue.DataType,
+                    val expectedValue: ExpectedValue? = null,
+                    val minValue: MinValue? = null,
+                    val maxValue: MaxValue? = null,
+                ) : EntityBase<String>() {
+
+                    data class Period(
+                        val startDate: LocalDateTime,
+                        val endDate: LocalDateTime
+                    )
+                }
+            }
         }
 
         data class Conversion(
@@ -125,7 +145,7 @@ data class CreatePCRCommand(
 
             data class Coefficient(
                 override val id: String,
-                val value: CoefficientValue,
+                val value: DynamicValue,
                 val coefficient: CoefficientRate
             ) : EntityBase<String>()
         }

@@ -6,32 +6,32 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.procurement.requisition.domain.model.requirement.RequirementRsValue
+import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientRate
-import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
+import com.procurement.requisition.infrastructure.bind.dynamic.DynamicValueDeserializer
+import com.procurement.requisition.infrastructure.bind.dynamic.DynamicValueSerializer
 import com.procurement.requisition.infrastructure.bind.coefficient.CoefficientRateDeserializer
 import com.procurement.requisition.infrastructure.bind.coefficient.CoefficientRateSerializer
-import com.procurement.requisition.infrastructure.bind.coefficient.value.CoefficientValueDeserializer
-import com.procurement.requisition.infrastructure.bind.coefficient.value.CoefficientValueSerializer
+import com.procurement.requisition.infrastructure.bind.command.CommandIdDeserializer
+import com.procurement.requisition.infrastructure.bind.command.CommandIdSerializer
 import com.procurement.requisition.infrastructure.bind.observation.measure.ObservationMeasureDeserializer
 import com.procurement.requisition.infrastructure.bind.observation.measure.ObservationMeasureSerializer
-import com.procurement.requisition.infrastructure.bind.requirement.RequirementValueDeserializer
-import com.procurement.requisition.infrastructure.bind.requirement.RequirementValueSerializer
+import com.procurement.requisition.infrastructure.handler.model.CommandId
 
 fun ObjectMapper.configuration() {
     val module = SimpleModule().apply {
-        addSerializer(RequirementRsValue::class.java, RequirementValueSerializer())
-        addDeserializer(RequirementRsValue::class.java, RequirementValueDeserializer())
-
-        addSerializer(CoefficientValue::class.java, CoefficientValueSerializer())
-        addDeserializer(CoefficientValue::class.java, CoefficientValueDeserializer())
+        addSerializer(CommandId::class.java, CommandIdSerializer())
+        addDeserializer(CommandId::class.java, CommandIdDeserializer())
 
         addSerializer(CoefficientRate::class.java, CoefficientRateSerializer())
         addDeserializer(CoefficientRate::class.java, CoefficientRateDeserializer())
 
         addSerializer(ObservationMeasure::class.java, ObservationMeasureSerializer())
         addDeserializer(ObservationMeasure::class.java, ObservationMeasureDeserializer())
+
+        addSerializer(DynamicValue::class.java, DynamicValueSerializer())
+        addDeserializer(DynamicValue::class.java, DynamicValueDeserializer())
     }
 
     this.registerModule(module)
