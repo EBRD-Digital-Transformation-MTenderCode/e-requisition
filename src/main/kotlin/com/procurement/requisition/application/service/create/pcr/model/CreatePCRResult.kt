@@ -61,6 +61,7 @@ data class CreatePCRResult(
         val procurementMethodModalities: List<ProcurementMethodModality>,
         val awardCriteria: AwardCriteria,
         val awardCriteriaDetails: AwardCriteriaDetails,
+        val electronicAuctions: ElectronicAuctions?,
         val documents: List<Document>,
         val value: Value
     ) {
@@ -164,6 +165,15 @@ data class CreatePCRResult(
         data class Value(
             val currency: String
         )
+
+        data class ElectronicAuctions(
+            val details: List<Detail>
+        ) {
+            data class Detail(
+                val id: String,
+                val relatedLot: LotId,
+            )
+        }
     }
 
     data class Classification(

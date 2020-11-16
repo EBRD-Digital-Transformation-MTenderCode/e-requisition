@@ -18,17 +18,17 @@ import com.procurement.requisition.domain.model.tender.target.Target
 import com.procurement.requisition.domain.model.tender.target.observation.Dimensions
 import com.procurement.requisition.domain.model.tender.target.observation.Observation
 
-fun PCR.convertToCreatedPCR() = CreatePCRResult(
+fun PCR.convertToCreatedPCR(electronicAuctions: CreatePCRResult.Tender.ElectronicAuctions?) = CreatePCRResult(
     ocid = ocid,
     token = token,
-    tender = tender.convert(),
+    tender = tender.convert(electronicAuctions),
     relatedProcesses = relatedProcesses.map { it.convert() }
 )
 
 /**
  * Tender
  */
-fun Tender.convert() = CreatePCRResult.Tender(
+fun Tender.convert(electronicAuctions: CreatePCRResult.Tender.ElectronicAuctions?) = CreatePCRResult.Tender(
     id = id,
     title = title,
     status = status,
@@ -44,6 +44,7 @@ fun Tender.convert() = CreatePCRResult.Tender(
     procurementMethodModalities = procurementMethodModalities.map { it },
     awardCriteria = awardCriteria,
     awardCriteriaDetails = awardCriteriaDetails,
+    electronicAuctions = electronicAuctions,
     documents = documents.map { it.convert() },
     value = value.convert()
 )

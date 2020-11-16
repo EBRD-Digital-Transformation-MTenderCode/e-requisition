@@ -2,7 +2,6 @@ package com.procurement.requisition.infrastructure.handler.v2.pcr.create.model
 
 import com.procurement.requisition.application.service.create.pcr.model.CreatePCRResult
 import com.procurement.requisition.infrastructure.handler.converter.asString
-import com.procurement.requisition.infrastructure.handler.converter.asStringOrNull
 import com.procurement.requisition.infrastructure.repository.pcr.model.tender.criterion.serialization
 
 fun CreatePCRResult.convert() = CreatedPCRResponse(
@@ -31,6 +30,7 @@ fun CreatePCRResult.Tender.convert() = CreatedPCRResponse.Tender(
     procurementMethodModalities = procurementMethodModalities.map { it.asString() },
     awardCriteria = awardCriteria.asString(),
     awardCriteriaDetails = awardCriteriaDetails.asString(),
+    electronicAuctions = electronicAuctions?.convert(),
     documents = documents.map { it.convert() },
     value = value.convert()
 )
@@ -43,6 +43,17 @@ fun CreatePCRResult.Classification.convert() = CreatedPCRResponse.Classification
     scheme = scheme.asString(),
     description = description
 )
+
+/**
+ * ElectronicAutcions
+ */
+fun CreatePCRResult.Tender.ElectronicAuctions.convert() =
+    this.details
+        .map { detail -> detail.convert() }
+        .let { CreatedPCRResponse.Tender.ElectronicAuctions(details = it) }
+
+fun CreatePCRResult.Tender.ElectronicAuctions.Detail.convert(): CreatedPCRResponse.Tender.ElectronicAuctions.Detail =
+    CreatedPCRResponse.Tender.ElectronicAuctions.Detail(id = id, relatedLot = relatedLot.underlying)
 
 /**
  * Unit

@@ -89,6 +89,11 @@ fun CreatePCRRequest.Tender.convert(): Result<CreatePCRCommand.Tender, JsonError
     val awardCriteriaDetails = awardCriteriaDetails.asEnum(target = AwardCriteriaDetails)
         .onFailure { return it.repath(path = "/awardCriteriaDetails") }
 
+    val electronicAuctions = electronicAuctions?.details
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "electronicAuctions.details")) }
+        ?.map { details -> details.convert() }
+        ?.let { details -> CreatePCRCommand.Tender.ElectronicAuctions(details) }
+
     val documents = documents
         .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "documents")) }
         .mapIndexedOrEmpty { idx, document ->
@@ -107,6 +112,7 @@ fun CreatePCRRequest.Tender.convert(): Result<CreatePCRCommand.Tender, JsonError
         procurementMethodModalities = procurementMethodModalities,
         awardCriteria = awardCriteria,
         awardCriteriaDetails = awardCriteriaDetails,
+        electronicAuctions = electronicAuctions,
         documents = documents,
         value = value.let { CreatePCRCommand.Tender.Value(currency = it.currency) }
     ).asSuccess()
@@ -352,3 +358,9 @@ fun CreatePCRRequest.Tender.Document.convert(): Result<CreatePCRCommand.Tender.D
         relatedLots = relatedLots
     ).asSuccess()
 }
+
+/**
+ * ElectronicAuction
+ */
+fun CreatePCRRequest.Tender.ElectronicAuctions.Detail.convert(): CreatePCRCommand.Tender.ElectronicAuctions.Detail =
+    CreatePCRCommand.Tender.ElectronicAuctions.Detail(id = id, relatedLot = relatedLot)
