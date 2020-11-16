@@ -5,16 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.procurement.requisition.domain.model.requirement.Requirement
+import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientRate
-import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
 import com.procurement.requisition.infrastructure.bind.coefficient.CoefficientRateDeserializer
 import com.procurement.requisition.infrastructure.bind.coefficient.CoefficientRateSerializer
 import com.procurement.requisition.infrastructure.bind.quantity.QuantityDeserializer
 import com.procurement.requisition.infrastructure.bind.quantity.QuantitySerializer
-import com.procurement.requisition.infrastructure.bind.requirement.RequirementsDeserializer
-import com.procurement.requisition.infrastructure.bind.requirement.RequirementsSerializer
+import com.procurement.requisition.infrastructure.repository.pcr.model.tender.criterion.RequirementEntity
 import java.math.BigDecimal
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -76,10 +74,6 @@ data class CreatedPCRResponse(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
             @field:JsonProperty("status") @param:JsonProperty("status") val status: String,
-
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: String?,
-
             @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -129,7 +123,10 @@ data class CreatedPCRResponse(
 
                 @param:JsonProperty("measure") @field:JsonProperty("measure") val measure: ObservationMeasure,
                 @param:JsonProperty("unit") @field:JsonProperty("unit") val unit: Unit,
-                @param:JsonProperty("dimensions") @field:JsonProperty("dimensions") val dimensions: Dimensions,
+
+                @JsonInclude(JsonInclude.Include.NON_NULL)
+                @param:JsonProperty("dimensions") @field:JsonProperty("dimensions") val dimensions: Dimensions?,
+
                 @param:JsonProperty("notes") @field:JsonProperty("notes") val notes: String,
 
                 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -137,8 +134,11 @@ data class CreatedPCRResponse(
             ) {
 
                 data class Period(
-                    @param:JsonProperty("endDate") @field:JsonProperty("endDate") val endDate: String,
-                    @param:JsonProperty("startDate") @field:JsonProperty("startDate") val startDate: String
+                    @JsonInclude(JsonInclude.Include.NON_NULL)
+                    @param:JsonProperty("endDate") @field:JsonProperty("endDate") val endDate: String?,
+
+                    @JsonInclude(JsonInclude.Include.NON_NULL)
+                    @param:JsonProperty("startDate") @field:JsonProperty("startDate") val startDate: String?
                 )
 
                 data class Dimensions(
@@ -170,9 +170,7 @@ data class CreatedPCRResponse(
                 @JsonInclude(JsonInclude.Include.NON_NULL)
                 @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
-                @JsonDeserialize(using = RequirementsDeserializer::class)
-                @JsonSerialize(using = RequirementsSerializer::class)
-                @field:JsonProperty("requirements") @param:JsonProperty("requirements") val requirements: List<Requirement>
+                @field:JsonProperty("requirements") @param:JsonProperty("requirements") val requirements: List<RequirementEntity>
             )
         }
 
@@ -188,7 +186,7 @@ data class CreatedPCRResponse(
         ) {
             data class Coefficient(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-                @field:JsonProperty("value") @param:JsonProperty("value") val value: CoefficientValue,
+                @field:JsonProperty("value") @param:JsonProperty("value") val value: DynamicValue,
 
                 @JsonDeserialize(using = CoefficientRateDeserializer::class)
                 @JsonSerialize(using = CoefficientRateSerializer::class)

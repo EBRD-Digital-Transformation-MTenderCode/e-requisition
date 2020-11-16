@@ -206,7 +206,7 @@ fun lots(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>) = createP
             title = lot.title,
             description = lot.description,
             status = LotStatus.ACTIVE,
-            statusDetails = LotStatusDetails.EMPTY,
+            statusDetails = LotStatusDetails.NONE,
             classification = lot.classification,
             variants = lot.variants
                 .map { variant ->
@@ -269,7 +269,9 @@ fun criteria(
                                             )
                                         },
                                     dataType = requirement.dataType,
-                                    value = requirement.value,
+                                    expectedValue = requirement.expectedValue,
+                                    minValue = requirement.minValue,
+                                    maxValue = requirement.maxValue,
                                 )
                             }
                             .let { Requirements(it) },
@@ -347,7 +349,7 @@ fun targets(
                                 Unit(id = unit.id, name = unit.name)
                             },
                         dimensions = observation.dimensions
-                            .let { dimension ->
+                            ?.let { dimension ->
                                 Dimensions(requirementClassIdPR = dimension.requirementClassIdPR)
                             },
                         notes = observation.notes,

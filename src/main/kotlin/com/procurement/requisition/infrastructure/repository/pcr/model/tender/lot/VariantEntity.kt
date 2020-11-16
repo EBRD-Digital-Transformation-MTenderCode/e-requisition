@@ -17,5 +17,5 @@ data class VariantEntity(
 fun Variant.serialization() =
     VariantEntity(hasVariants = hasVariants, variantsDetails = variantsDetails)
 
-fun VariantEntity.deserialization(path: String): Result<Variant, JsonErrors> =
+fun VariantEntity.deserialization(): Result<Variant, JsonErrors> =
     Variant(hasVariants = hasVariants, variantsDetails = variantsDetails).asSuccess()

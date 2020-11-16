@@ -71,7 +71,6 @@ fun Lot.convert() = CreatePCRResult.Tender.Lot(
     title = title,
     description = description,
     status = status,
-    statusDetails = statusDetails,
     classification = classification.convert(),
     variants = variants.map { it.convert() },
 )
@@ -108,7 +107,7 @@ fun Observation.convert() = CreatePCRResult.Tender.Target.Observation(
     period = period?.convert(),
     measure = measure,
     unit = unit.convert(),
-    dimensions = dimensions.convert(),
+    dimensions = dimensions?.convert(),
     notes = notes,
     relatedRequirementId = relatedRequirementId,
 )

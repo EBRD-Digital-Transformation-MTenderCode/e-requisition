@@ -38,7 +38,7 @@ fun RelatedProcessEntity.mappingToDomain(): Result<RelatedProcess, JsonErrors> {
     val relationship = relationship
         .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "relationship")) }
         .mapIndexedOrEmpty { idx, relationship ->
-            relationship.asEnum(target = Relationship).onFailure { return it.repath(path = "/relationship[idx]") }
+            relationship.asEnum(target = Relationship).onFailure { return it.repath(path = "/relationship[$idx]") }
         }
         .let { t -> Relationships(t) }
 

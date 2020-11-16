@@ -42,14 +42,14 @@ abstract class AbstractCommandDispatcher(
             .mapFailure { failure ->
                 RequestErrors(
                     code = failure.code,
-                    underlying = failure.description,
+                    description = failure.description,
                     body = body,
                     path = failure.path.asString(),
                     reason = failure.reason
                 )
             }
             .onFailure { failure ->
-                val response = buildErrorResponse(failure.reason.id, failure.reason.version, failure.reason)
+                val response = buildErrorResponse(id = CommandId.NaN, version = apiVersion, failure = failure.reason)
                 return ResponseEntity(response, HttpStatus.OK)
             }
 
@@ -92,7 +92,7 @@ abstract class AbstractCommandDispatcher(
                 )
         }
 
-    fun JsonNode.getId(): Result<CommandId, JsonErrors> = tryGetTextAttribute("id")
+    fun JsonNode.getId(): Result<CommandId, JsonErrors> = tryGetTextAttribute("id").map { CommandId(it) }
 
     fun Handler.handling(descriptor: CommandDescriptor): Result<String?, Failure> {
         if (descriptor.action.kind == Action.Kind.COMMAND) {
@@ -110,7 +110,7 @@ abstract class AbstractCommandDispatcher(
         return result.asSuccess()
     }
 
-    fun load(command: CommandDescriptor): Result<String?, Failure> = historyRepository.getHistory(command.id)
+    fun load(command: CommandDescriptor): Result<String?, Failure> = historyRepository.getHistory(command.id, command.action)
         .onFailure { return it }
         .asSuccess()
 

@@ -40,4 +40,8 @@ class CommandContext(private val node: JsonNode) {
     val pmd: Result<String, JsonErrors>
         get() = node.tryGetTextAttribute("pmd")
             .repath(path = "/context")
+
+    val id: Result<String, JsonErrors>
+        get() = node.tryGetTextAttribute("id")
+            .repath(path = "/context")
 }

@@ -2,6 +2,7 @@ package com.procurement.requisition.infrastructure.handler.v1.create.request.mod
 
 import com.procurement.requisition.application.service.create.request.model.CreatedRequestsForEvPanels
 import com.procurement.requisition.infrastructure.handler.converter.asString
+import com.procurement.requisition.infrastructure.repository.pcr.model.tender.criterion.serialization
 
 fun CreatedRequestsForEvPanels.convert() = CreateRequestsForEvPanelsResponse(
     criteria = criteria.convert()
@@ -20,5 +21,5 @@ fun CreatedRequestsForEvPanels.Criterion.convert() = CreateRequestsForEvPanelsRe
 fun CreatedRequestsForEvPanels.Criterion.RequirementGroup.convert() =
     CreateRequestsForEvPanelsResponse.Criterion.RequirementGroup(
         id = id.underlying,
-        requirements = requirements.toList()
+        requirements = requirements.map { it.serialization() }
     )

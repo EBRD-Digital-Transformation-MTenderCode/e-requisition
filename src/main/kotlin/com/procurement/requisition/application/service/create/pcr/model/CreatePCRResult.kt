@@ -1,9 +1,12 @@
 package com.procurement.requisition.application.service.create.pcr.model
 
+import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.Token
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
+import com.procurement.requisition.domain.model.classification.ClassificationId
+import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.document.DocumentId
 import com.procurement.requisition.domain.model.document.DocumentType
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessId
@@ -21,21 +24,17 @@ import com.procurement.requisition.domain.model.tender.conversion.ConversionId
 import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientId
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientRate
-import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 import com.procurement.requisition.domain.model.tender.criterion.CriterionId
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.domain.model.tender.criterion.CriterionSource
 import com.procurement.requisition.domain.model.tender.item.ItemId
 import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.LotStatus
-import com.procurement.requisition.domain.model.tender.lot.LotStatusDetails
 import com.procurement.requisition.domain.model.tender.target.TargetId
 import com.procurement.requisition.domain.model.tender.target.TargetRelatedItem
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationId
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationMeasure
 import com.procurement.requisition.domain.model.tender.unit.UnitId
-import com.procurement.requisition.domain.model.classification.ClassificationId
-import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -72,7 +71,6 @@ data class CreatePCRResult(
             val title: String,
             val description: String?,
             val status: LotStatus,
-            val statusDetails: LotStatusDetails,
             val classification: Classification,
             val variants: List<Variant>
         ) {
@@ -106,14 +104,14 @@ data class CreatePCRResult(
                 val period: Period?,
                 val measure: ObservationMeasure,
                 val unit: Unit,
-                val dimensions: Dimensions,
+                val dimensions: Dimensions?,
                 val notes: String,
                 val relatedRequirementId: RequirementId?
             ) {
 
                 data class Period(
-                    val endDate: LocalDateTime,
-                    val startDate: LocalDateTime
+                    val endDate: LocalDateTime?,
+                    val startDate: LocalDateTime?
                 )
 
                 data class Dimensions(
@@ -150,7 +148,7 @@ data class CreatePCRResult(
 
             data class Coefficient(
                 val id: CoefficientId,
-                val value: CoefficientValue,
+                val value: DynamicValue,
                 val coefficient: CoefficientRate
             )
         }

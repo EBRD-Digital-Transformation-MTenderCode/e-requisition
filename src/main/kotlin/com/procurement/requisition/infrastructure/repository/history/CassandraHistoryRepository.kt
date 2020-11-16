@@ -4,6 +4,7 @@ import com.datastax.driver.core.Session
 import com.procurement.requisition.domain.failure.incident.DatabaseIncident
 import com.procurement.requisition.infrastructure.extension.cassandra.toCassandraTimestamp
 import com.procurement.requisition.infrastructure.extension.cassandra.tryExecute
+import com.procurement.requisition.infrastructure.handler.Action
 import com.procurement.requisition.infrastructure.handler.model.CommandId
 import com.procurement.requisition.infrastructure.service.HistoryEntity
 import com.procurement.requisition.infrastructure.service.HistoryRepository
@@ -36,16 +37,20 @@ class CassandraHistoryRepository(private val session: Session) : HistoryReposito
         private const val FIND_HISTORY_ENTRY_CQL = """
                SELECT $JSON_DATA
                  FROM $KEYSPACE.$HISTORY_TABLE
-                WHERE $COMMAND_ID=?
+                WHERE $COMMAND_ID=? 
+                AND $COMMAND_NAME=?
             """
     }
 
     private val preparedSaveHistoryCQL = session.prepare(SAVE_HISTORY_CQL)
     private val preparedFindHistoryCQL = session.prepare(FIND_HISTORY_ENTRY_CQL)
 
-    override fun getHistory(commandId: CommandId): Result<String?, DatabaseIncident> =
+    override fun getHistory(commandId: CommandId, commandName: Action): Result<String?, DatabaseIncident> =
         preparedFindHistoryCQL.bind()
-            .apply { setString(COMMAND_ID, commandId) }
+            .apply {
+                setString(COMMAND_ID, commandId.underlying)
+                setString(COMMAND_NAME, commandId.underlying)
+            }
             .tryExecute(session)
             .onFailure { return it }
             .one()?.getString(JSON_DATA)
@@ -55,7 +60,7 @@ class CassandraHistoryRepository(private val session: Session) : HistoryReposito
 
         preparedSaveHistoryCQL.bind()
             .apply {
-                setString(COMMAND_ID, entity.commandId)
+                setString(COMMAND_ID, entity.commandId.underlying)
                 setString(COMMAND_NAME, entity.action.key)
                 setTimestamp(COMMAND_DATE, entity.date.toCassandraTimestamp())
                 setString(JSON_DATA, entity.data)

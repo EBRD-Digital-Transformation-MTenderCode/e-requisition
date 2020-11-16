@@ -1,10 +1,10 @@
 package com.procurement.requisition.application.service.validate.model
 
 import com.procurement.requisition.domain.model.Cpid
+import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.bid.BidId
 import com.procurement.requisition.domain.model.requirement.RequirementId
-import com.procurement.requisition.domain.model.requirement.RequirementRsValue
 import com.procurement.requisition.domain.model.requirement.response.RequirementResponseId
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality
 import com.procurement.requisition.domain.model.tender.item.ItemId
@@ -40,7 +40,7 @@ data class ValidateRequirementResponsesCommand(
 
             data class RequirementResponse(
                 val id: RequirementResponseId,
-                val value: RequirementRsValue,
+                val value: DynamicValue,
                 val requirement: Requirement,
                 val period: Period?,
             ) {

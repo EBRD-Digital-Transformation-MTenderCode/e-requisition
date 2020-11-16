@@ -6,9 +6,8 @@ import com.procurement.requisition.application.repository.pcr.PCRSerializer
 import com.procurement.requisition.application.service.create.request.model.CreateRequestsForEvPanelsCommand
 import com.procurement.requisition.application.service.create.request.model.CreatedRequestsForEvPanels
 import com.procurement.requisition.application.service.get.lot.error.GetActiveLotIdsErrors
-import com.procurement.requisition.domain.model.requirement.NoneValue
+import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.requirement.Requirement
-import com.procurement.requisition.domain.model.requirement.RequirementDataType
 import com.procurement.requisition.domain.model.requirement.RequirementGroup
 import com.procurement.requisition.domain.model.requirement.RequirementGroupId
 import com.procurement.requisition.domain.model.requirement.RequirementGroups
@@ -76,8 +75,7 @@ class CreateRequestsForEvPanelsService(
                     Requirement(
                         id = generateRequirementId(),
                         title = "",
-                        dataType = RequirementDataType.BOOLEAN,
-                        value = NoneValue,
+                        dataType = DynamicValue.DataType.BOOLEAN,
                         period = null,
                         description = null
                     )
@@ -97,17 +95,7 @@ class CreateRequestsForEvPanelsService(
                 .map { requirementGroup ->
                     CreatedRequestsForEvPanels.Criterion.RequirementGroup(
                         id = requirementGroup.id,
-                        requirements = requirementGroup.requirements
-                            .map { requirement ->
-                                Requirement(
-                                    id = requirement.id,
-                                    title = requirement.title,
-                                    dataType = requirement.dataType,
-                                    value = requirement.value,
-                                    period = requirement.period,
-                                    description = requirement.description
-                                )
-                            }
+                        requirements = requirementGroup.requirements.toList()
                     )
                 }
         )

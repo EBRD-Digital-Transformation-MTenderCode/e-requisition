@@ -2,8 +2,8 @@ package com.procurement.requisition.infrastructure.handler.v1.get.award.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientRate
-import com.procurement.requisition.domain.model.tender.conversion.coefficient.CoefficientValue
 
 data class GetAwardCriteriaAndConversionsResponse(
     @field:JsonProperty("awardCriteria") @param:JsonProperty("awardCriteria") val awardCriteria: String,
@@ -27,7 +27,7 @@ data class GetAwardCriteriaAndConversionsResponse(
     ) {
         data class Coefficient(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("value") @param:JsonProperty("value") val value: CoefficientValue,
+            @field:JsonProperty("value") @param:JsonProperty("value") val value: DynamicValue,
             @field:JsonProperty("coefficient") @param:JsonProperty("coefficient") val coefficient: CoefficientRate
         )
     }
