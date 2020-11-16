@@ -91,7 +91,7 @@ fun CreatePCRRequest.Tender.convert(): Result<CreatePCRCommand.Tender, JsonError
 
     val electronicAuctions = electronicAuctions?.details
         .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "electronicAuctions.details")) }
-        ?.map { details -> details.convert() }
+        ?.map { detail -> detail.convert() }
         ?.let { details -> CreatePCRCommand.Tender.ElectronicAuctions(details) }
 
     val documents = documents
