@@ -653,17 +653,16 @@ object SpecificWeightedPrice {
 
         fun buildRequirementsMatrix(criteria: List<ValidatePCRDataCommand.Tender.Criterion>): CriteriaMatrix {
 
-            val toRequirementGroup: (ValidatePCRDataCommand.Tender.Criterion.RequirementGroup) -> RequirementGroup = { requirementGroup ->
+            fun toRequirementGroup(requirementGroup: ValidatePCRDataCommand.Tender.Criterion.RequirementGroup): RequirementGroup =
                 requirementGroup.requirements
                     .map { it.id }
                     .let { RequirementGroup(Requirements(it)) }
-            }
 
-            val toCriterion: (ValidatePCRDataCommand.Tender.Criterion) -> Criterion = { criterion ->
+
+            fun toCriterion (criterion: ValidatePCRDataCommand.Tender.Criterion): Criterion =
                 criterion.requirementGroups
                     .map { toRequirementGroup(it) }
                     .let { Criterion(it) }
-            }
 
             return criteria
                 .map { toCriterion(it) }
