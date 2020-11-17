@@ -49,6 +49,9 @@ data class CreatePCRRequest(
         @field:JsonProperty("awardCriteria") @param:JsonProperty("awardCriteria") val awardCriteria: String,
         @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: String,
 
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("electronicAuctions") @param:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?,
+
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>?,
 
@@ -228,6 +231,15 @@ data class CreatePCRRequest(
         data class Value(
             @field:JsonProperty("currency") @param:JsonProperty("currency") val currency: String
         )
+
+        data class ElectronicAuctions(
+            @field:JsonProperty("details") @param:JsonProperty("details") val details: List<Detail>
+        ) {
+            data class Detail(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String,
+            )
+        }
     }
 
     data class Classification(
