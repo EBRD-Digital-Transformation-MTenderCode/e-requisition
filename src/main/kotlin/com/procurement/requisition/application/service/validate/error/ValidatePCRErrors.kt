@@ -1,5 +1,6 @@
 package com.procurement.requisition.application.service.validate.error
 
+import com.procurement.requisition.application.service.validate.SpecificWeightedPrice
 import com.procurement.requisition.domain.extension.format
 import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.lib.fail.Failure
@@ -70,9 +71,11 @@ sealed class ValidatePCRErrors(
 
         class MissingCriteria : Criterion(code = "VR.COM-17.1.39", description = "Missing required criteria.")
 
-        class TooSmallSpecificWeightPrice(lotId: String) : Criterion(
+        class TooSmallSpecificWeightPrice(
+            combination: SpecificWeightedPrice.Operations.Combination<SpecificWeightedPrice.Model.Requirements>
+        ) : Criterion(
             code = "VR.COM-17.1.37",
-            description = "Too small specific weight price in lot '$lotId'."
+            description = "Too small specific weight price. Combination: ${combination.product.joinToString()}"
         )
 
         sealed class RequirementGroup(code: String, description: String) :

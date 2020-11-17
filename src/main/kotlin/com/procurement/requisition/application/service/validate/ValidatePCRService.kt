@@ -213,26 +213,7 @@ class ValidatePCRService(
             }
 
         // VR.COM-17.1.39
-        val minSpecificWeightPrice = getMinSpecificWeightPrice(command)
-            .map { it.getFor(command.tender.mainProcurementCategory) }
-            .onFailure { return it.reason.asValidatedError() }
-
-        val itemsWithRelatedLot = command.tender.items.map { it.id to it.relatedLot }
-        val lotsIds = command.tender.lots.map { it.id }
-        val criteriaPackageByLot = getCriteriaPackageByLot(lotsIds, itemsWithRelatedLot, command.tender.criteria);
-
-        criteriaPackageByLot.forEach { (lotId, criteria) ->
-            val matrix = buildRequirementsMatrix(criteria)
-            val allRequirementsCombinations = getAllRequirementsCombinations(matrix)
-            val minCoefficientForRequirements = getMinCoefficients(command.tender.conversions)
-
-            allRequirementsCombinations
-                .map { combination ->
-                    val specificWeightPrice = calculateSpecificWeightPrice(combination, minCoefficientForRequirements)
-                    if (specificWeightPrice < minSpecificWeightPrice)
-                        return ValidatePCRErrors.Criterion.TooSmallSpecificWeightPrice(lotId).asValidatedError()
-                }
-        }
+        checkMinSpecificWeightedPrice(command).onFailure { return it }
 
         // VR.COM-17.1.22
         if (command.tender.conversions.isNotUniqueIds())
@@ -316,6 +297,31 @@ class ValidatePCRService(
         // VR.COM-17.1.28
         if (command.tender.procurementMethodModalities.size > 1)
             return ValidatePCRErrors.ProcurementMethodModality.MultiValue().asValidatedError()
+
+        return Validated.ok()
+    }
+
+    fun checkMinSpecificWeightedPrice(command: ValidatePCRDataCommand): Validated<Failure> {
+        val minSpecificWeightPrice = getMinSpecificWeightPrice(command)
+            .map { it.getFor(command.tender.mainProcurementCategory) }
+            .onFailure { return it.reason.asValidatedError() }
+
+        val itemsWithRelatedLot = command.tender.items.map { it.id to it.relatedLot }
+        val lotsIds = command.tender.lots.map { it.id }
+        val criteriaPackageByLot = getCriteriaPackageByLot(lotsIds, itemsWithRelatedLot, command.tender.criteria);
+
+        criteriaPackageByLot.forEach {  criteria ->
+            val matrix = buildRequirementsMatrix(criteria)
+            val allRequirementsCombinations = getAllRequirementsCombinations(matrix)
+            val minCoefficientForRequirements = getMinCoefficients(command.tender.conversions)
+
+            allRequirementsCombinations
+                .forEach { combination ->
+                    val specificWeightPrice = calculateSpecificWeightPrice(combination, minCoefficientForRequirements)
+                    if (specificWeightPrice < minSpecificWeightPrice)
+                        return ValidatePCRErrors.Criterion.TooSmallSpecificWeightPrice(combination).asValidatedError()
+                }
+        }
 
         return Validated.ok()
     }
@@ -613,11 +619,11 @@ class ValidatePCRService(
             lots: List<String>,
             items: List<Pair<String, String>>,
             criteria: List<ValidatePCRDataCommand.Tender.Criterion>
-        ): Map<String, List<ValidatePCRDataCommand.Tender.Criterion>> {
+        ): List<List<ValidatePCRDataCommand.Tender.Criterion>> {
 
             val tenderCriteria = criteria.filter { it.relatesTo == null || it.relatesTo == CriterionRelatesTo.TENDER }
 
-            return lots.associate { lotId ->
+            return lots.map { lotId ->
                 val lotCriteria = criteria.filter { it.relatedItem == lotId }
                 val itemsForLot = items.asSequence()
                     .filter { (_, relatedLot) -> relatedLot == lotId }
@@ -626,7 +632,7 @@ class ValidatePCRService(
 
                 val itemsCriteriaForLot = criteria.filter { it.relatedItem in itemsForLot }
 
-                lotId to (tenderCriteria + lotCriteria + itemsCriteriaForLot)
+                (tenderCriteria + lotCriteria + itemsCriteriaForLot)
             }
         }
     }
