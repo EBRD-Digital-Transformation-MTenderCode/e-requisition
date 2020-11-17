@@ -689,9 +689,7 @@ object SpecificWeightedPrice {
             for (rowIndex in 0 until matrix.size) {
                 val row = matrix[rowIndex].map { it.requirements }
 
-                val products = combinations.asSequence()
-                    .map { it.product }
-                    .toList()
+                val products = combinations.map { it.product }
 
                 // ({a1, b1, c1},{a2, b2, c2} ...)
                 val combinationsForIteration = product(products, row).map { Combination(it) }
