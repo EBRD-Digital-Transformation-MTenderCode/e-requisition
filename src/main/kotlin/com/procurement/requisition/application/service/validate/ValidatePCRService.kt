@@ -614,7 +614,7 @@ class ValidatePCRService(
             criteria: List<ValidatePCRDataCommand.Tender.Criterion>
         ): Map<String, List<ValidatePCRDataCommand.Tender.Criterion>> {
 
-            val tenderCriteria = criteria.filter { it.relatesTo == CriterionRelatesTo.TENDER }
+            val tenderCriteria = criteria.filter { it.relatesTo == null || it.relatesTo == CriterionRelatesTo.TENDER }
 
             return lots.associate { lotId ->
                 val lotCriteria = criteria.filter { it.relatedItem == lotId }
