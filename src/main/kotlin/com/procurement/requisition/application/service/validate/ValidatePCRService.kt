@@ -672,14 +672,13 @@ object SpecificWeightedPrice {
             if (arg1.isEmpty()) return arg2.map { Product(listOf(it)) }
             if (arg2.isEmpty()) return arg1
 
-            val pairSet = mutableListOf<Product<T>>()
+            val productSet = mutableListOf<Product<T>>()
             arg1.forEach { x ->
                 arg2.forEach { y ->
-                    val a = Product(x + listOf(y))
-                    pairSet.add(Product(a.toMutableList()))
+                    productSet.add(Product(x + listOf(y)))
                 }
             }
-            return pairSet
+            return productSet
         }
 
         fun getAllRequirementsCombinations(matrix: CriteriaMatrix): List<Combination<Requirements>> {
