@@ -73,10 +73,10 @@ internal class ValidatePCRServiceKtTest {
                 "2.2"   to BigDecimal("0.520"),
             )
 
-            val specificWeightPrices = ValidatePCRService.calculateSpecificWeightPrice(
-                actualCombinations,
-                minCoefficients
-            )
+            val specificWeightPrices = actualCombinations.map { combination ->
+                ValidatePCRService.calculateSpecificWeightPrice(combination, minCoefficients)
+            }
+
             println("Automated calculated prices: $specificWeightPrices")
 
             val c1 = minCoefficients["1.1.1"]!! * minCoefficients["1.1.2"]!! * minCoefficients["2.1"]!!

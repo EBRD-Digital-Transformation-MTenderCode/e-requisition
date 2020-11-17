@@ -225,10 +225,13 @@ class ValidatePCRService(
             val matrix = buildRequirementsMatrix(criteria)
             val allRequirementsCombinations = getAllRequirementsCombinations(matrix)
             val minCoefficientForRequirements = getMinCoefficients(command.tender.conversions)
-            val specificWeightPrices = calculateSpecificWeightPrice(allRequirementsCombinations, minCoefficientForRequirements)
-            val tooSmallSpecificWeightPrices = specificWeightPrices.filter { it < minSpecificWeightPrice }
-            if (tooSmallSpecificWeightPrices.isNotEmpty())
-                return ValidatePCRErrors.Criterion.TooSmallSpecificWeightPrice(lotId).asValidatedError()
+
+            allRequirementsCombinations
+                .map { combination ->
+                    val specificWeightPrice = calculateSpecificWeightPrice(combination, minCoefficientForRequirements)
+                    if (specificWeightPrice < minSpecificWeightPrice)
+                        return ValidatePCRErrors.Criterion.TooSmallSpecificWeightPrice(lotId).asValidatedError()
+                }
         }
 
         // VR.COM-17.1.22
@@ -581,19 +584,17 @@ class ValidatePCRService(
                 Validated.ok()
 
         fun calculateSpecificWeightPrice(
-            requirementsCombinations: List<Combination<Requirements>>,
+            requirementsCombination: Combination<Requirements>,
             minCoefficientForRequirements: Map<String, BigDecimal>
-        ): List<BigDecimal> {
+        ): BigDecimal {
 
             val multiplyOnMinCoefficient: (BigDecimal, String) -> BigDecimal = { acc, requirementId ->
                 acc * (minCoefficientForRequirements[requirementId] ?: BigDecimal.ONE)
             }
 
-            return requirementsCombinations.map { combination ->
-                combination.product
-                    .flatten()
-                    .fold(BigDecimal.ONE, multiplyOnMinCoefficient)
-            }
+            return requirementsCombination.product
+                .flatten()
+                .fold(BigDecimal.ONE, multiplyOnMinCoefficient)
         }
 
         fun getMinCoefficients(conversions: List<ValidatePCRDataCommand.Tender.Conversion>): Map<String, BigDecimal> {
