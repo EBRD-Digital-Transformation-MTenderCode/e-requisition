@@ -15,7 +15,10 @@ import com.procurement.requisition.infrastructure.bind.quantity.QuantitySerializ
 import java.math.BigDecimal
 
 data class ValidatePCRDataRequest(
-    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender
+    @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
+    @field:JsonProperty("pmd") @param:JsonProperty("pmd") val pmd: String,
+    @field:JsonProperty("country") @param:JsonProperty("country") val country: String,
+    @field:JsonProperty("operationType") @param:JsonProperty("operationType") val operationType: String
 ) {
 
     data class Tender(
@@ -41,6 +44,8 @@ data class ValidatePCRDataRequest(
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("procurementMethodModalities") @param:JsonProperty("procurementMethodModalities") val procurementMethodModalities: List<String>?,
+
+        @field:JsonProperty("mainProcurementCategory") @param:JsonProperty("mainProcurementCategory") var mainProcurementCategory: String,
 
         @field:JsonProperty("awardCriteria") @param:JsonProperty("awardCriteria") val awardCriteria: String,
         @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: String,
