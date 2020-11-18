@@ -1,8 +1,6 @@
 package com.procurement.requisition.application.service.validate
 
-import com.procurement.requisition.application.repository.rule.RulesRepository
-import com.procurement.requisition.application.repository.rule.deserializer.MinSpecificWeightPriceRuleDeserializer
-import com.procurement.requisition.application.repository.rule.model.MinSpecificWeightPriceRule
+import com.procurement.requisition.application.service.rule.RulesService
 import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Model.CriteriaMatrix
 import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Model.Criterion
 import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Model.RequirementGroup
@@ -27,7 +25,6 @@ import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.lib.fail.Failure
-import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Validated
 import com.procurement.requisition.lib.functional.asValidatedError
 import com.procurement.requisition.lib.isUnique
@@ -37,8 +34,7 @@ import java.math.BigDecimal
 
 @Service
 class ValidatePCRService(
-    private val rulesRepository: RulesRepository,
-    private val minSpecificWeightPriceRuleDeserializer: MinSpecificWeightPriceRuleDeserializer,
+    private val rulesService: RulesService,
 ) {
 
     fun validate(command: ValidatePCRDataCommand): Validated<Failure> {
@@ -302,8 +298,9 @@ class ValidatePCRService(
     }
 
     fun checkMinSpecificWeightedPrice(command: ValidatePCRDataCommand): Validated<Failure> {
-        val minSpecificWeightPrice = getMinSpecificWeightPrice(command)
-            .map { it.getFor(command.tender.mainProcurementCategory) }
+        val minSpecificWeightPrice = rulesService
+            .getMinSpecificWeightPrice(country = command.country, pmd = command.pmd)
+            .map { it.valueOf(command.tender.mainProcurementCategory) }
             .onFailure { return it.reason.asValidatedError() }
 
         val itemsWithRelatedLot = command.tender.items.map { it.id to it.relatedLot }
@@ -325,11 +322,6 @@ class ValidatePCRService(
 
         return Validated.ok()
     }
-
-    fun getMinSpecificWeightPrice(command: ValidatePCRDataCommand): Result<MinSpecificWeightPriceRule, Failure> =
-        rulesRepository
-            .get(command.country, command.pmd, command.operationType, RulesRepository.minSpecificWeightPrice)
-            .flatMap { rule -> minSpecificWeightPriceRuleDeserializer.deserialize(rule) }
 
     companion object {
 
