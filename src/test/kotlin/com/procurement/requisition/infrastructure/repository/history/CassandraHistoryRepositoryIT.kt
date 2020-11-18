@@ -137,7 +137,7 @@ class CassandraHistoryRepositoryIT {
                         $COMMAND_NAME_COLUMN TEXT,
                         $COMMAND_DATE_COLUMN TIMESTAMP,
                         $JSON_DATA_COLUMN    TEXT,
-                        PRIMARY KEY ($COMMAND_ID_COLUMN)
+                        PRIMARY KEY ($COMMAND_ID_COLUMN, $COMMAND_NAME_COLUMN)
                     );
             """
         )

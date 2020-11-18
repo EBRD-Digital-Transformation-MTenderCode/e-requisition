@@ -49,7 +49,7 @@ class CassandraHistoryRepository(private val session: Session) : HistoryReposito
         preparedFindHistoryCQL.bind()
             .apply {
                 setString(COMMAND_ID, commandId.underlying)
-                setString(COMMAND_NAME, commandId.underlying)
+                setString(COMMAND_NAME, commandName.key)
             }
             .tryExecute(session)
             .onFailure { return it }
