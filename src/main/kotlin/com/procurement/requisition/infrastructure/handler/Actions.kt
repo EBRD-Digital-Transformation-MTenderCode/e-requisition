@@ -1,5 +1,6 @@
 package com.procurement.requisition.infrastructure.handler
 
+import com.procurement.requisition.infrastructure.api.Action
 import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
 enum class Actions(override val key: String, override val kind: Action.Kind) : EnumElementProvider.Element, Action {

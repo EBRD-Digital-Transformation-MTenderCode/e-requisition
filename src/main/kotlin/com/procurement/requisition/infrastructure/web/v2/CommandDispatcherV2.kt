@@ -8,12 +8,12 @@ import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.RequestErrors
 import com.procurement.requisition.infrastructure.configuration.GlobalProperties
 import com.procurement.requisition.infrastructure.extension.tryGetAttributeAsEnum
-import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.infrastructure.api.Action
 import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.infrastructure.handler.Handlers
-import com.procurement.requisition.infrastructure.handler.model.ApiVersion
-import com.procurement.requisition.infrastructure.handler.model.CommandId
-import com.procurement.requisition.infrastructure.handler.model.response.ApiResponseV2
+import com.procurement.requisition.infrastructure.api.version.ApiVersion
+import com.procurement.requisition.infrastructure.api.command.id.CommandId
+import com.procurement.requisition.infrastructure.api.v2.ApiResponseV2
 import com.procurement.requisition.infrastructure.service.HistoryRepository
 import com.procurement.requisition.infrastructure.web.AbstractCommandDispatcher
 import com.procurement.requisition.lib.fail.Failure

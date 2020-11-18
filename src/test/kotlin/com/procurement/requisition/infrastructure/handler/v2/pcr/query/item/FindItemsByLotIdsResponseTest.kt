@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.pcr.query.item
 
-import com.procurement.requisition.infrastructure.handler.v2.pcr.query.find.item.model.FindItemsByLotIdsResponse
+import com.procurement.requisition.infrastructure.handler.v2.model.response.FindItemsByLotIdsResponse
 import com.procurement.requisition.json.testingBindingAndMapping
 import org.junit.jupiter.api.Test
 

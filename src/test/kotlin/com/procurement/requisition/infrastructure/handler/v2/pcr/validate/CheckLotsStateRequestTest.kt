@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.pcr.validate
 
-import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model.CheckLotsStateRequest
+import com.procurement.requisition.infrastructure.handler.v2.model.request.CheckLotsStateRequest
 import com.procurement.requisition.json.testingBindingAndMapping
 import org.junit.jupiter.api.Test
 

@@ -7,10 +7,10 @@ import com.datastax.driver.core.PoolingOptions
 import com.datastax.driver.core.Session
 import com.nhaarman.mockito_kotlin.spy
 import com.procurement.requisition.domain.extension.parseLocalDateTime
-import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.infrastructure.api.Action
+import com.procurement.requisition.infrastructure.api.command.id.CommandId
 import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.infrastructure.handler.converter.asString
-import com.procurement.requisition.infrastructure.handler.model.CommandId
 import com.procurement.requisition.infrastructure.repository.CassandraTestContainer
 import com.procurement.requisition.infrastructure.repository.DatabaseTestConfiguration
 import com.procurement.requisition.infrastructure.service.HistoryEntity

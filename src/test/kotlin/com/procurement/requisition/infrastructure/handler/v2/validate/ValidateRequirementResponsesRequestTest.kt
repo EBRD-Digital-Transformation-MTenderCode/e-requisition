@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.validate
 
-import com.procurement.requisition.infrastructure.handler.v2.validate.model.ValidateRequirementResponsesRequest
+import com.procurement.requisition.infrastructure.handler.v2.model.request.ValidateRequirementResponsesRequest
 import com.procurement.requisition.json.testingBindingAndMapping
 import org.junit.jupiter.api.Test
 
