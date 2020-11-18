@@ -8,23 +8,17 @@ import com.procurement.requisition.lib.functional.Result
 
 interface RulesRepository {
 
-    companion object {
-        const val validTenderStates = "validStates"
-        const val validLotStates = "validLotStates"
-        const val minSpecificWeightPrice = "minSpecificWeightPrice"
-    }
-
     fun find(
         country: String,
         pmd: ProcurementMethodDetails,
-        operationType: OperationType,
+        operationType: OperationType? = null,
         parameter: String
     ): Result<String?, DatabaseIncident>
 
     fun get(
         country: String,
         pmd: ProcurementMethodDetails,
-        operationType: OperationType,
+        operationType: OperationType? = null,
         parameter: String
     ): Result<String, Failure>
 }

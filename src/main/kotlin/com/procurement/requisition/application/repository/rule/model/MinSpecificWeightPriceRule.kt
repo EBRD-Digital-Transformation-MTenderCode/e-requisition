@@ -8,7 +8,7 @@ data class MinSpecificWeightPriceRule(
     private val services: BigDecimal,
     private val works: BigDecimal
 ) {
-    fun getFor(mainProcurementCategory: MainProcurementCategory): BigDecimal =
+    fun valueOf(mainProcurementCategory: MainProcurementCategory): BigDecimal =
         when (mainProcurementCategory) {
             MainProcurementCategory.GOODS -> goods
             MainProcurementCategory.WORKS -> works
