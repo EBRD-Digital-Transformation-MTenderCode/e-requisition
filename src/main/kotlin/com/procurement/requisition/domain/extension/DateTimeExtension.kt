@@ -1,6 +1,6 @@
 package com.procurement.requisition.domain.extension
 
-import com.procurement.requisition.domain.failure.error.DataTimeParseError
+import com.procurement.requisition.domain.failure.error.DataTimeError
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
 import java.time.LocalDateTime
@@ -19,13 +19,13 @@ fun nowDefaultUTC(): LocalDateTime = LocalDateTime.now(ZoneOffset.UTC)
 
 fun String.parseLocalDateTime(): LocalDateTime = LocalDateTime.parse(this, formatter)
 
-fun String.tryParseLocalDateTime(): Result<LocalDateTime, DataTimeParseError> = try {
+fun String.tryParseLocalDateTime(): Result<LocalDateTime, DataTimeError> = try {
     Result.success(parseLocalDateTime())
 } catch (expected: Exception) {
     if (expected.cause == null)
-        failure(DataTimeParseError.InvalidFormat(value = this, pattern = PATTERN_OF_FORMATTER, reason = expected))
+        failure(DataTimeError.InvalidFormat(value = this, pattern = PATTERN_OF_FORMATTER, reason = expected))
     else
-        failure(DataTimeParseError.InvalidDateTime(value = this, reason = expected))
+        failure(DataTimeError.InvalidDateTime(value = this, reason = expected))
 }
 
 fun LocalDateTime.toMilliseconds(): Long = this.toInstant(ZoneOffset.UTC).toEpochMilli()

@@ -2,7 +2,7 @@ package com.procurement.requisition.infrastructure.handler.converter
 
 import com.procurement.requisition.domain.extension.format
 import com.procurement.requisition.domain.extension.tryParseLocalDateTime
-import com.procurement.requisition.domain.failure.error.DataTimeParseError
+import com.procurement.requisition.domain.failure.error.DataTimeError
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
@@ -45,14 +45,14 @@ fun <T> T.asString(): String where T : Enum<T>,
 fun String.asLocalDateTime(): Result<LocalDateTime, JsonErrors> = tryParseLocalDateTime()
     .mapFailure { failure ->
         when (failure) {
-            is DataTimeParseError.InvalidFormat ->
+            is DataTimeError.InvalidFormat ->
                 JsonErrors.DataFormatMismatch(
                     actualValue = failure.value,
                     expectedFormat = failure.pattern,
                     reason = failure.reason
                 )
 
-            is DataTimeParseError.InvalidDateTime ->
+            is DataTimeError.InvalidDateTime ->
                 JsonErrors.DateTimeInvalid(value = failure.value, reason = failure.reason)
         }
     }

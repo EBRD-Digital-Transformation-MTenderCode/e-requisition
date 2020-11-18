@@ -8,6 +8,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.procurement.requisition.infrastructure.bind.api.command.id.CommandIdModule
 import com.procurement.requisition.infrastructure.bind.api.version.ApiVersionModule
 import com.procurement.requisition.infrastructure.bind.coefficient.CoefficientRateModule
+import com.procurement.requisition.infrastructure.bind.date.JsonDateTimeModule
 import com.procurement.requisition.infrastructure.bind.dynamic.DynamicValueModule
 import com.procurement.requisition.infrastructure.bind.observation.measure.ObservationMeasureModule
 import com.procurement.requisition.infrastructure.bind.quantity.QuantityModule
@@ -15,6 +16,7 @@ import com.procurement.requisition.infrastructure.bind.quantity.QuantityModule
 fun ObjectMapper.configuration() {
     registerModule(ApiVersionModule())
     registerModule(CommandIdModule())
+    registerModule(JsonDateTimeModule())
     registerModule(CoefficientRateModule())
     registerModule(ObservationMeasureModule())
     registerModule(DynamicValueModule())
