@@ -1,7 +1,7 @@
 package com.procurement.requisition.application.service.validate.error
 
 import com.procurement.requisition.application.service.validate.SpecificWeightedPrice
-import com.procurement.requisition.domain.extension.format
+import com.procurement.requisition.domain.extension.asString
 import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.lib.fail.Failure
 import java.time.LocalDateTime
@@ -43,7 +43,7 @@ sealed class ValidatePCRErrors(
             class InvalidPeriod(path: String, startDate: LocalDateTime, endDate: LocalDateTime) :
                 Observation(
                     code = "VR.COM-17.1.11",
-                    description = "Start-date '${startDate.format()} equals or more than end-date '${endDate.format()}'. Path: '$path'."
+                    description = "Start-date '${startDate.asString()} equals or more than end-date '${endDate.asString()}'. Path: '$path'."
                 )
 
             class InvalidRelatedRequirementId(path: String, relatedRequirementId: String) : Observation(
@@ -93,7 +93,7 @@ sealed class ValidatePCRErrors(
                 class InvalidPeriod(path: String, startDate: LocalDateTime, endDate: LocalDateTime) :
                     RequirementGroup(
                         code = "VR.COM-17.1.18",
-                        description = "Start-date '${startDate.format()} equals or more than end-date '${endDate.format()}'. Path: '$path'."
+                        description = "Start-date '${startDate.asString()} equals or more than end-date '${endDate.asString()}'. Path: '$path'."
                     )
 
                 class WrongValueAttributesCombination(id: String) :
