@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.pcr.query.pmm
 
-import com.procurement.requisition.infrastructure.handler.v2.pcr.query.find.pmm.model.FindProcurementMethodModalitiesResponse
+import com.procurement.requisition.infrastructure.handler.v2.model.response.FindProcurementMethodModalitiesResponse
 import com.procurement.requisition.json.testingBindingAndMapping
 import org.junit.jupiter.api.Test
 

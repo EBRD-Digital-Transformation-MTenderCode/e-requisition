@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v1.get
 
-import com.procurement.requisition.infrastructure.handler.v1.get.model.GetTenderCurrencyV1Response
+import com.procurement.requisition.infrastructure.handler.v1.model.response.GetTenderCurrencyV1Response
 import com.procurement.requisition.json.testingBindingAndMapping
 import org.junit.jupiter.api.Test
 
