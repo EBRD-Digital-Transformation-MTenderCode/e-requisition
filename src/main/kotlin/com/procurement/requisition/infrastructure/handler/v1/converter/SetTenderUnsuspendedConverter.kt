@@ -6,8 +6,8 @@ import com.procurement.requisition.infrastructure.handler.v1.model.response.SetT
 
 fun SetTenderUnsuspendedResult.convert() = SetTenderUnsuspendedResponse(
     tender = SetTenderUnsuspendedResponse.Tender(
-        status = tender.status,
-        statusDetails = tender.statusDetails,
+        status = tender.status.asString(),
+        statusDetails = tender.statusDetails.asString(),
         procurementMethodModalities = tender.procurementMethodModalities.map { it.asString() }
     )
 )
