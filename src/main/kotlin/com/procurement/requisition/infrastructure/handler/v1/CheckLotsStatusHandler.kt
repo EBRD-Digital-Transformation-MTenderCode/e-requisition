@@ -8,13 +8,14 @@ import com.procurement.requisition.application.service.check.lot.status.model.Ch
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.api.Action
+import com.procurement.requisition.infrastructure.api.v1.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.infrastructure.handler.base.CommandHandler
 import com.procurement.requisition.infrastructure.handler.converter.asLotId
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
-import com.procurement.requisition.infrastructure.api.v1.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.v1.base.AbstractHandlerV1
 import com.procurement.requisition.infrastructure.handler.v1.model.request.CheckLotsStatusRequest
+import com.procurement.requisition.infrastructure.handler.v1.model.response.CheckLotsStatusResponse
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asFailure
@@ -36,7 +37,7 @@ class CheckLotsStatusHandler(
         checkLotsStatusService.check(command)
             .onFailure { return it.reason.asFailure() }
 
-        return ApiResponseV1.Success(version = descriptor.version, id = descriptor.id, result = null)
+        return ApiResponseV1.Success(version = descriptor.version, id = descriptor.id, result = CheckLotsStatusResponse)
             .trySerialization(transform)
             .mapFailure { failure ->
                 InternalServerError(description = failure.description, reason = failure.reason)
