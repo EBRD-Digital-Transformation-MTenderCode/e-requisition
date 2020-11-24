@@ -21,14 +21,14 @@ sealed class CheckLotsStateErrors(
 
     sealed class Lot(code: String, description: String) : CheckLotsStateErrors(code = code, description = description) {
         class Unknown(lotId: LotId) :
-            CheckLotsStateErrors(
+            Lot(
                 code = "VR.COM-17.10.2",
                 description = "Lot by id '${lotId.underlying}' is not found."
             )
 
         class InvalidState(lotId: LotId, status: TenderStatus) :
-            CheckLotsStateErrors(
-                code = "VR.COM-17.6.3",
+            Lot(
+                code = "VR.COM-17.10.3",
                 description = "Lot with id '$lotId' has invalid status '${status.key}'."
             )
     }
