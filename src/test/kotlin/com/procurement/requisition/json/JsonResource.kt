@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.procurement.requisition.infrastructure.bind.jackson.configuration
+import com.procurement.requisition.infrastructure.bind.configuration
 import com.procurement.requisition.json.exception.JsonBindingException
 import com.procurement.requisition.json.exception.JsonFileNotFoundException
 import com.procurement.requisition.json.exception.JsonMappingException

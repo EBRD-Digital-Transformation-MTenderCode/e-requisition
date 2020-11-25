@@ -90,6 +90,7 @@ class ValidateRequirementResponsesService(
 
         // VR.COM-17.9.3
         checkRequirementResponsesDataType(criteria = criteria, requirementResponses = detail.requirementResponses)
+            .onFailure { return it }
 
         // VR.COM-17.9.8
         detail.requirementResponses.forEach { rr ->

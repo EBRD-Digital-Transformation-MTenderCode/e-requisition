@@ -6,11 +6,10 @@ import com.datastax.driver.core.PlainTextAuthProvider
 import com.datastax.driver.core.PoolingOptions
 import com.datastax.driver.core.Session
 import com.nhaarman.mockito_kotlin.spy
-import com.procurement.requisition.domain.extension.parseLocalDateTime
-import com.procurement.requisition.infrastructure.handler.Action
+import com.procurement.requisition.domain.extension.nowDefaultUTC
+import com.procurement.requisition.infrastructure.api.Action
+import com.procurement.requisition.infrastructure.api.command.id.CommandId
 import com.procurement.requisition.infrastructure.handler.Actions
-import com.procurement.requisition.infrastructure.handler.converter.asString
-import com.procurement.requisition.infrastructure.handler.model.CommandId
 import com.procurement.requisition.infrastructure.repository.CassandraTestContainer
 import com.procurement.requisition.infrastructure.repository.DatabaseTestConfiguration
 import com.procurement.requisition.infrastructure.service.HistoryEntity
@@ -25,7 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.time.LocalDateTime
 import java.util.*
 
 @ExtendWith(SpringExtension::class)
@@ -42,7 +40,7 @@ class CassandraHistoryRepositoryIT {
 
         private val COMMAND_ID: CommandId = CommandId(UUID.randomUUID().toString())
         private val COMMAND_NAME: Action = Actions.VALIDATE_PCR_DATA
-        private val COMMAND_DATE = LocalDateTime.now().asString().parseLocalDateTime()
+        private val COMMAND_DATE = nowDefaultUTC()
         private const val JSON_DATA: String = """{"tender": {"title" : "Tender-Title"}}"""
 
         private val HISTORY_ENTITY = HistoryEntity(
@@ -137,7 +135,7 @@ class CassandraHistoryRepositoryIT {
                         $COMMAND_NAME_COLUMN TEXT,
                         $COMMAND_DATE_COLUMN TIMESTAMP,
                         $JSON_DATA_COLUMN    TEXT,
-                        PRIMARY KEY ($COMMAND_ID_COLUMN)
+                        PRIMARY KEY ($COMMAND_ID_COLUMN, $COMMAND_NAME_COLUMN)
                     );
             """
         )

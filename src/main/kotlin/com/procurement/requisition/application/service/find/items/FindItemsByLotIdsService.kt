@@ -9,7 +9,7 @@ import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asFailure
 import org.springframework.stereotype.Service
-import com.procurement.requisition.infrastructure.handler.v2.pcr.query.find.item.model.ToFindItemsByLotIdsResultConverter.Item as ItemConverter
+import com.procurement.requisition.infrastructure.handler.v2.converter.ToFindItemsByLotIdsResultConverter.Item as ItemConverter
 
 @Service
 class FindItemsByLotIdsService(
