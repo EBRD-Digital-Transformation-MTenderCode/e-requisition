@@ -4,6 +4,8 @@ import com.procurement.requisition.application.service.validate.error.ValidatePC
 import com.procurement.requisition.application.service.validate.model.ValidatePCRDataCommand
 import com.procurement.requisition.domain.failure.incident.InvalidArgumentValueIncident
 import com.procurement.requisition.domain.model.DynamicValue
+import com.procurement.requisition.domain.model.award.AwardCriteria
+import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
 import com.procurement.requisition.domain.model.dataType
 import com.procurement.requisition.domain.model.isNotUniqueIds
 import com.procurement.requisition.domain.model.requirement.ExpectedValue
@@ -271,8 +273,18 @@ class ValidatePCRService {
         if (command.tender.procurementMethodModalities.size > 1)
             return ValidatePCRErrors.ProcurementMethodModality.MultiValue().asValidatedError()
 
+        //VR.COM-17.1.40
+       checkAwardCriteriaDetails(command.tender).onFailure { return it }
+
         return Validated.ok()
     }
+
+    private fun checkAwardCriteriaDetails(tender: ValidatePCRDataCommand.Tender) =
+        if (tender.awardCriteria == AwardCriteria.PRICE_ONLY
+            && tender.awardCriteriaDetails != AwardCriteriaDetails.AUTOMATED)
+            ValidatePCRErrors.AwardCriteriaDetails.InvalidValue(tender.awardCriteriaDetails.toString())
+                .asValidatedError()
+        else Validated.ok()
 
     companion object {
 
