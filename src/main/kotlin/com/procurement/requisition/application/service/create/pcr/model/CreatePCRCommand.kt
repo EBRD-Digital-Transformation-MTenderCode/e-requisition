@@ -42,6 +42,7 @@ data class CreatePCRCommand(
         val procurementMethodModalities: List<ProcurementMethodModality>,
         val awardCriteria: AwardCriteria,
         val awardCriteriaDetails: AwardCriteriaDetails,
+        val electronicAuctions: ElectronicAuctions?,
         val documents: List<Document>,
         val value: Value
     ) {
@@ -161,6 +162,15 @@ data class CreatePCRCommand(
         data class Value(
             val currency: String
         )
+
+        data class ElectronicAuctions(
+            val details: List<Detail>
+        ) {
+            data class Detail(
+                override val id: String,
+                val relatedLot: String,
+            ) : EntityBase<String>()
+        }
     }
 
     data class Unit(

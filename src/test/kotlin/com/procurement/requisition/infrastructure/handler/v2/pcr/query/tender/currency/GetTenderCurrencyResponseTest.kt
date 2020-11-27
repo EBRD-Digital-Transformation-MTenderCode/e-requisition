@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.pcr.query.tender.currency
 
-import com.procurement.requisition.infrastructure.handler.v2.pcr.query.get.currency.model.GetTenderCurrencyResponse
+import com.procurement.requisition.infrastructure.handler.v2.model.response.GetTenderCurrencyResponse
 import com.procurement.requisition.json.testingBindingAndMapping
 import org.junit.jupiter.api.Test
 

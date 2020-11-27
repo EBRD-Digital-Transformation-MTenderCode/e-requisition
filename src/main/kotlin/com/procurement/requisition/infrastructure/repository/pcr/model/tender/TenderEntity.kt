@@ -2,6 +2,7 @@ package com.procurement.requisition.infrastructure.repository.pcr.model.tender
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.procurement.requisition.domain.extension.asString
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.award.AwardCriteria

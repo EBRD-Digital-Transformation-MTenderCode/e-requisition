@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.pcr.validate
 
-import com.procurement.requisition.infrastructure.handler.v2.pcr.validate.model.CheckTenderStateRequest
+import com.procurement.requisition.infrastructure.handler.v2.model.request.CheckTenderStateRequest
 import com.procurement.requisition.json.testingBindingAndMapping
 import org.junit.jupiter.api.Test
 

@@ -148,6 +148,14 @@
     "procurementMethodModalities": [
       "requiresElectronicCatalogue"
     ],
+    "electronicAuctions": {
+      "details": [
+        {
+          "id": "string",
+          "relatedLot": "string"
+        }
+      ]
+    },
     "documents": [
       {
         "id": "string",
