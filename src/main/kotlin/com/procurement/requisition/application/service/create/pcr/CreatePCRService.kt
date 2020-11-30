@@ -123,6 +123,7 @@ class CreatePCRService(
         )
 
         val relatedProcesses = relatedProcesses(command, uriProperties)
+        val electronicAuctions = command.tender.electronicAuctions?.relatedIds(lotsMapping)
 
         val ocid: Ocid = Ocid.SingleStage.generate(cpid = command.cpid, stage = Stage.PC, timestamp = nowDefaultUTC())
         val pcr = PCR(
@@ -146,9 +147,17 @@ class CreatePCRService(
             data = json
         ).onFailure { return it }
 
-        return pcr.convertToCreatedPCR().asSuccess()
+        return pcr.convertToCreatedPCR(electronicAuctions).asSuccess()
     }
 }
+
+fun CreatePCRCommand.Tender.ElectronicAuctions.relatedIds(lotsMapping: Map<String, LotId>): CreatePCRResult.Tender.ElectronicAuctions =
+    this.details
+        .map { detail ->
+            val relatedLot = lotsMapping.getValue(detail.relatedLot)
+            CreatePCRResult.Tender.ElectronicAuctions.Detail(id = detail.id, relatedLot = relatedLot)
+        }
+        .let { details -> CreatePCRResult.Tender.ElectronicAuctions(details) }
 
 fun tenderStatus(stageFE: StateFE): TenderStatus = when (stageFE) {
     StateFE.EVALUATION -> TenderStatus.ACTIVE

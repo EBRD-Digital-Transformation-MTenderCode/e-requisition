@@ -1,7 +1,9 @@
 package com.procurement.requisition.infrastructure.handler
 
 import com.procurement.requisition.application.service.Logger
-import com.procurement.requisition.infrastructure.handler.model.ApiVersion
+import com.procurement.requisition.infrastructure.api.Action
+import com.procurement.requisition.infrastructure.api.version.ApiVersion
+import com.procurement.requisition.infrastructure.handler.base.Handler
 import com.procurement.requisition.lib.console.ConsoleColor
 import org.springframework.stereotype.Component
 

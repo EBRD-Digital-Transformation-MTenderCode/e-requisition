@@ -1,10 +1,13 @@
 package com.procurement.requisition.infrastructure.handler
 
+import com.procurement.requisition.infrastructure.api.Action
 import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
 enum class Actions(override val key: String, override val kind: Action.Kind) : EnumElementProvider.Element, Action {
 
+    CHECK_LOT_AWARDED(key = "checkLotAwarded", kind = Action.Kind.QUERY),
     CHECK_LOTS_STATE(key = "checkLotsState", kind = Action.Kind.QUERY),
+    CHECK_LOTS_STATUS(key = "checkLotsStatus", kind = Action.Kind.QUERY),
     CHECK_TENDER_STATE(key = "checkTenderState", kind = Action.Kind.QUERY),
     CREATE_PCR(key = "createPcr", kind = Action.Kind.COMMAND),
     CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE(key = "createRelationToContractProcessStage", kind = Action.Kind.COMMAND),
@@ -20,11 +23,11 @@ enum class Actions(override val key: String, override val kind: Action.Kind) : E
     SET_LOTS_STATUS_UNSUCCESSFUL(key = "setLotsStatusUnsuccessful", kind = Action.Kind.COMMAND),
     SET_TENDER_STATUS_DETAILS(key = "setTenderStatusDetails", kind = Action.Kind.COMMAND),
     SET_TENDER_STATUS_UNSUCCESSFUL(key = "setTenderUnsuccessful", kind = Action.Kind.COMMAND),
-    SET_TENDER_UNSUSPENDED("setTenderUnsuspended", kind = Action.Kind.COMMAND),
+    SET_TENDER_SUSPENDED(key = "setTenderSuspended", kind = Action.Kind.COMMAND),
+    SET_TENDER_UNSUSPENDED(key = "setTenderUnsuspended", kind = Action.Kind.COMMAND),
     VALIDATE_PCR_DATA(key = "validatePcrData", kind = Action.Kind.QUERY),
     VALIDATE_REQUIREMENT_RESPONSES(key = "validateRequirementResponses", kind = Action.Kind.QUERY),
-    CHECK_LOTS_STATUS(key = "checkLotsStatus", kind = Action.Kind.QUERY),
-    CHECK_LOT_AWARDED(key = "checkLotAwarded", kind = Action.Kind.QUERY);
+    ;
 
     override fun toString(): String = key
 

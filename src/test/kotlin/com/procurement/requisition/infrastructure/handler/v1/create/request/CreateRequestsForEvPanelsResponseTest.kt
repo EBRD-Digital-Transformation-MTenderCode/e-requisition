@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v1.create.request
 
-import com.procurement.requisition.infrastructure.handler.v1.create.request.model.CreateRequestsForEvPanelsResponse
+import com.procurement.requisition.infrastructure.handler.v1.model.response.CreateRequestsForEvPanelsResponse
 import com.procurement.requisition.json.testingBindingAndMapping
 import org.junit.jupiter.api.Test
 

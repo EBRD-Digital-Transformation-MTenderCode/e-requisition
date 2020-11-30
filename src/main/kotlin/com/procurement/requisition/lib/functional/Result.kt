@@ -43,7 +43,7 @@ sealed class Result<out T, out E> {
             is Failure -> null
         }
 
-    infix fun orThrow(block: (E) -> Nothing): T = when (this) {
+    infix fun orThrow(block: (E) -> Exception): T = when (this) {
         is Success -> value
         is Failure -> throw block(reason)
     }

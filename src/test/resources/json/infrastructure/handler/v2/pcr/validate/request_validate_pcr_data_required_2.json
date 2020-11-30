@@ -1,4 +1,7 @@
 {
+  "pmd": "CF",
+  "country": "string",
+  "operationType": "createPcr",
   "tender": {
     "title": "string",
     "description": "string",
@@ -21,6 +24,7 @@
         ]
       }
     ],
+    "mainProcurementCategory": "goods",
     "awardCriteria": "priceOnly",
     "awardCriteriaDetails": "automated"
   }
