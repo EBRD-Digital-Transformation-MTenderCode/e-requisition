@@ -138,6 +138,10 @@ class ValidateRequirementResponsesService(
                 ValidateRequirementResponsesErrors.RequirementResponse.EmptyCriterion(criterionId = id)
                     .asValidatedError()
 
+            // VR.COM-17.9.4
+            CriterionChecker.State.PARTIALLY ->
+                ValidateRequirementResponsesErrors.RequirementResponse.CriterionRequirementGroupIsPartlySubmitted(criterionId = id).asValidatedError()
+
             // VR.COM-17.9.5
             CriterionChecker.State.MULTI_GROUP ->
                 ValidateRequirementResponsesErrors.RequirementResponse.MultiGroup(criterionId = id).asValidatedError()
@@ -217,7 +221,7 @@ class CriterionChecker(val id: CriterionId, private val requirementGroups: List<
                 when (group.state) {
                     RequirementGroupChecker.State.EMPTY -> Unit
 
-                    RequirementGroupChecker.State.PARTIALLY,
+                    RequirementGroupChecker.State.PARTIALLY -> return State.PARTIALLY
                     RequirementGroupChecker.State.COMPLETELY -> {
                         completely++
                         if (completely > 1) return State.MULTI_GROUP
@@ -230,6 +234,7 @@ class CriterionChecker(val id: CriterionId, private val requirementGroups: List<
 
     enum class State {
         EMPTY, //VR.COM-17.9.4
+        PARTIALLY, //VR.COM-17.9.4
         MULTI_GROUP, //VR.COM-17.9.5
         OK
     }
