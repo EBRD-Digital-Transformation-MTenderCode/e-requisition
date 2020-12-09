@@ -183,4 +183,11 @@ sealed class ValidatePCRErrors(
 
         class MultiValue : ProcurementMethodModality(code = "VR.COM-17.1.28", description = "")
     }
+
+    sealed class AwardCriteriaDetails(code: String, description: String) :
+        ValidatePCRErrors(code = code, description = description) {
+
+        class InvalidValue(awardCriteriaDetails: String) :
+            AwardCriteriaDetails(code = "VR.COM-17.1.40", description = "Invalid awardCriteriaDetails '$awardCriteriaDetails'.")
+    }
 }
