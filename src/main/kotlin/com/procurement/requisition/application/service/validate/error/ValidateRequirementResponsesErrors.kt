@@ -40,6 +40,11 @@ sealed class ValidateRequirementResponsesErrors(
             description = "Criterion '$criterionId'."
         )
 
+        class CriterionRequirementGroupIsPartlySubmitted(criterionId: CriterionId) : RequirementResponse(
+            code = "VR.COM-17.9.4",
+            description = "Criterion '$criterionId' contains requirement group that received requirement responses partly."
+        )
+
         class MultiGroup(criterionId: CriterionId) : RequirementResponse(
             code = "VR.COM-17.9.5",
             description = "Criterion '$criterionId'."
