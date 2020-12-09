@@ -2,6 +2,9 @@ package com.procurement.requisition.application.service.validate.model
 
 import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.EntityBase
+import com.procurement.requisition.domain.model.MainProcurementCategory
+import com.procurement.requisition.domain.model.OperationType
+import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
 import com.procurement.requisition.domain.model.classification.ClassificationScheme
@@ -19,7 +22,10 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class ValidatePCRDataCommand(
-    val tender: Tender
+    val tender: Tender,
+    val country: String,
+    val pmd: ProcurementMethodDetails,
+    val operationType: OperationType
 ) {
 
     data class Tender(
@@ -32,6 +38,7 @@ data class ValidatePCRDataCommand(
         val criteria: List<Criterion>,
         val conversions: List<Conversion>,
         val procurementMethodModalities: List<ProcurementMethodModality>,
+        val mainProcurementCategory: MainProcurementCategory,
         val awardCriteria: AwardCriteria,
         val awardCriteriaDetails: AwardCriteriaDetails,
         val documents: List<Document>

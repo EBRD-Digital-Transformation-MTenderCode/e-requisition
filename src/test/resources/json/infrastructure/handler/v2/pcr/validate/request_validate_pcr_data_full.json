@@ -1,4 +1,7 @@
 {
+  "pmd": "CF",
+  "country": "string",
+  "operationType": "createPcr",
   "tender": {
     "title": "string",
     "description": "string",
@@ -173,6 +176,7 @@
     "procurementMethodModalities": [
       "requiresElectronicCatalogue"
     ],
+    "mainProcurementCategory": "goods",
     "documents": [
       {
         "id": "string",

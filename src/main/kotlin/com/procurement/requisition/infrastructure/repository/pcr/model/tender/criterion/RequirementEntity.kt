@@ -2,7 +2,7 @@ package com.procurement.requisition.infrastructure.repository.pcr.model.tender.c
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.procurement.requisition.domain.extension.format
+import com.procurement.requisition.domain.extension.asString
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.DynamicValue
@@ -49,7 +49,7 @@ fun Requirement.serialization() = RequirementEntity(
     title = title,
     description = description,
     period = period?.let {
-        RequirementEntity.Period(startDate = it.startDate.format(), endDate = it.endDate.format())
+        RequirementEntity.Period(startDate = it.startDate.asString(), endDate = it.endDate.asString())
     },
     dataType = dataType.asString(),
     expectedValue = expectedValue?.value,

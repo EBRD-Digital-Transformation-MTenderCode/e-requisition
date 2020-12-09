@@ -1,6 +1,7 @@
 package com.procurement.requisition.application.service.validate.error
 
-import com.procurement.requisition.domain.extension.format
+import com.procurement.requisition.application.service.validate.SpecificWeightedPrice
+import com.procurement.requisition.domain.extension.asString
 import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.lib.fail.Failure
 import java.time.LocalDateTime
@@ -42,7 +43,7 @@ sealed class ValidatePCRErrors(
             class InvalidPeriod(path: String, startDate: LocalDateTime, endDate: LocalDateTime) :
                 Observation(
                     code = "VR.COM-17.1.11",
-                    description = "Start-date '${startDate.format()} equals or more than end-date '${endDate.format()}'. Path: '$path'."
+                    description = "Start-date '${startDate.asString()} equals or more than end-date '${endDate.asString()}'. Path: '$path'."
                 )
 
             class InvalidRelatedRequirementId(path: String, relatedRequirementId: String) : Observation(
@@ -68,6 +69,15 @@ sealed class ValidatePCRErrors(
             description = "Missing required relatedItem. Path: '$path'."
         )
 
+        class MissingCriteria : Criterion(code = "VR.COM-17.1.39", description = "Missing required criteria.")
+
+        class TooSmallSpecificWeightPrice(
+            combination: SpecificWeightedPrice.Operations.Combination<SpecificWeightedPrice.Model.Requirements>
+        ) : Criterion(
+            code = "VR.COM-17.1.37",
+            description = "Too small specific weight price. Combination: ${combination.product.joinToString()}"
+        )
+
         sealed class RequirementGroup(code: String, description: String) :
             Criterion(code = code, description = description) {
 
@@ -83,7 +93,7 @@ sealed class ValidatePCRErrors(
                 class InvalidPeriod(path: String, startDate: LocalDateTime, endDate: LocalDateTime) :
                     RequirementGroup(
                         code = "VR.COM-17.1.18",
-                        description = "Start-date '${startDate.format()} equals or more than end-date '${endDate.format()}'. Path: '$path'."
+                        description = "Start-date '${startDate.asString()} equals or more than end-date '${endDate.asString()}'. Path: '$path'."
                     )
 
                 class WrongValueAttributesCombination(id: String) :
@@ -139,6 +149,9 @@ sealed class ValidatePCRErrors(
         class InvalidRelatedItem(path: String, relatedItem: String) :
             Conversion(code = "VR.COM-17.1.23", description = "Invalid related item '$relatedItem'. Path: '$path'.")
 
+        class RedundantConversionsList(path: String) :
+            Conversion(code = "VR.COM-17.1.38", description = "Redundant conversions list. Path: $path")
+
         sealed class Coefficient(code: String, description: String) :
             Conversion(code = code, description = description) {
 
@@ -169,5 +182,12 @@ sealed class ValidatePCRErrors(
         ValidatePCRErrors(code = code, description = description) {
 
         class MultiValue : ProcurementMethodModality(code = "VR.COM-17.1.28", description = "")
+    }
+
+    sealed class AwardCriteriaDetails(code: String, description: String) :
+        ValidatePCRErrors(code = code, description = description) {
+
+        class InvalidValue(awardCriteriaDetails: String) :
+            AwardCriteriaDetails(code = "VR.COM-17.1.40", description = "Invalid awardCriteriaDetails '$awardCriteriaDetails'.")
     }
 }

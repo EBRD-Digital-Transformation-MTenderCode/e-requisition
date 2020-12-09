@@ -44,8 +44,8 @@ class SetTenderUnsuspendedService(
 
         return SetTenderUnsuspendedResult(
             SetTenderUnsuspendedResult.Tender(
-                updatedPcr.tender.status.key,
-                updatedPcr.tender.statusDetails.key,
+                updatedPcr.tender.status,
+                updatedPcr.tender.statusDetails,
                 updatedPcr.tender.procurementMethodModalities,
             )
         ).asSuccess()
