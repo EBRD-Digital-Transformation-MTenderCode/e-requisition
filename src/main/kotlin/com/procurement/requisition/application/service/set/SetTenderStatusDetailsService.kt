@@ -36,11 +36,11 @@ class SetTenderStatusDetailsService(
         )
 
         val json = pcrSerializer.build(updatedPCR).onFailure { return it }
+        val state = TenderState(status = updatedPCR.tender.status, statusDetails = updatedPCR.tender.statusDetails)
         pcrRepository.update(
             cpid = command.cpid,
             ocid = command.ocid,
-            status = updatedPCR.tender.status,
-            statusDetails = updatedPCR.tender.statusDetails,
+            state = state,
             data = json
         ).onFailure { return it }
 

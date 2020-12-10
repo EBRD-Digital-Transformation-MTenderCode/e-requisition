@@ -3,6 +3,7 @@ package com.procurement.requisition.application.service.set.tender
 import com.procurement.requisition.application.repository.pcr.PCRDeserializer
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.repository.pcr.PCRSerializer
+import com.procurement.requisition.application.repository.pcr.model.TenderState
 import com.procurement.requisition.application.service.set.tender.model.SetTenderStatusSuspendedCommand
 import com.procurement.requisition.application.service.set.tender.model.SetTenderStatusSuspendedResult
 import com.procurement.requisition.domain.model.tender.TenderStatusDetails
@@ -28,12 +29,11 @@ class SetTenderStatusSuspendedService(
 
         val updatedPcr = pcr.copy(tender = pcr.tender.copy(statusDetails = TenderStatusDetails.SUSPENDED))
         val json = pcrSerializer.build(updatedPcr).onFailure { return it }
-
+        val state = TenderState(status = updatedPcr.tender.status, statusDetails = updatedPcr.tender.statusDetails)
         pcrRepository.update(
             cpid = command.cpid,
             ocid = command.ocid,
-            status = updatedPcr.tender.status,
-            statusDetails = updatedPcr.tender.statusDetails,
+            state = state,
             data = json
         )
 
