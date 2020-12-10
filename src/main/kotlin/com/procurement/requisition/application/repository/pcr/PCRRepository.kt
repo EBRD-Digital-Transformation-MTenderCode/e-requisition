@@ -20,8 +20,7 @@ interface PCRRepository {
     fun saveNew(
         cpid: Cpid,
         ocid: Ocid,
-        token: Token,
-        owner: String,
+        credential: Credential,
         status: TenderStatus,
         statusDetails: TenderStatusDetails,
         data: String

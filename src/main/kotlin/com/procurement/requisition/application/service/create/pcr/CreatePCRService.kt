@@ -1,5 +1,6 @@
 package com.procurement.requisition.application.service.create.pcr
 
+import com.procurement.requisition.application.repository.pcr.Credential
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.repository.pcr.PCRSerializer
 import com.procurement.requisition.application.service.create.pcr.model.CreatePCRCommand
@@ -136,12 +137,11 @@ class CreatePCRService(
         )
 
         val json = pcrSerializer.build(pcr).onFailure { return it }
-
+        val credential = Credential(token = pcr.token, owner = pcr.owner)
         pcrRepository.saveNew(
             cpid = command.cpid,
             ocid = ocid,
-            token = pcr.token,
-            owner = pcr.owner,
+            credential = credential,
             status = pcr.tender.status,
             statusDetails = pcr.tender.statusDetails,
             data = json

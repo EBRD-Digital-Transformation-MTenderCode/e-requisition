@@ -142,8 +142,7 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
     override fun saveNew(
         cpid: Cpid,
         ocid: Ocid,
-        token: Token,
-        owner: String,
+        credential: Credential,
         status: TenderStatus,
         statusDetails: TenderStatusDetails,
         data: String
@@ -151,8 +150,8 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
         .apply {
             setString(COLUMN_CPID, cpid.underlying)
             setString(COLUMN_OCID, ocid.underlying)
-            setString(COLUMN_TOKEN, token.underlying)
-            setString(COLUMN_OWNER, owner)
+            setString(COLUMN_TOKEN, credential.token.underlying)
+            setString(COLUMN_OWNER, credential.owner)
             setString(COLUMN_STATUS, status.key)
             setString(COLUMN_STATUS_DETAIL, statusDetails.key)
             setString(COLUMN_JSON_DATA, data)

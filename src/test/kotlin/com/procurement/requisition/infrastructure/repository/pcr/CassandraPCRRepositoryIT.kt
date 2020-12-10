@@ -6,6 +6,7 @@ import com.datastax.driver.core.PlainTextAuthProvider
 import com.datastax.driver.core.PoolingOptions
 import com.datastax.driver.core.Session
 import com.nhaarman.mockito_kotlin.spy
+import com.procurement.requisition.application.repository.pcr.Credential
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.domain.extension.nowDefaultUTC
 import com.procurement.requisition.domain.model.Cpid
@@ -47,6 +48,7 @@ class CassandraPCRRepositoryIT {
         private val OCID = Ocid.SingleStage.generate(cpid = CPID, stage = Stage.PC, timestamp = nowDefaultUTC())
         private val TOKEN = Token.generate()
         private const val OWNER = "owner"
+        private val CREDENTIAL = Credential(token = TOKEN, owner = OWNER)
         private val STATUS = TenderStatus.ACTIVE
         private val STATUS_UPDATED = TenderStatus.PLANNED
         private val STATUS_DETAILS = TenderStatusDetails.TENDERING
@@ -90,8 +92,7 @@ class CassandraPCRRepositoryIT {
         repository.saveNew(
             cpid = CPID,
             ocid = OCID,
-            token = TOKEN,
-            owner = OWNER,
+            credential = CREDENTIAL,
             status = STATUS,
             statusDetails = STATUS_DETAILS,
             data = JSON_DATA
@@ -111,8 +112,7 @@ class CassandraPCRRepositoryIT {
         repository.saveNew(
             cpid = CPID,
             ocid = OCID,
-            token = TOKEN,
-            owner = OWNER,
+            credential = CREDENTIAL,
             status = STATUS,
             statusDetails = STATUS_DETAILS,
             data = JSON_DATA
@@ -131,8 +131,7 @@ class CassandraPCRRepositoryIT {
         repository.saveNew(
             cpid = CPID,
             ocid = OCID,
-            token = TOKEN,
-            owner = OWNER,
+            credential = CREDENTIAL,
             status = STATUS,
             statusDetails = STATUS_DETAILS,
             data = JSON_DATA
@@ -153,8 +152,7 @@ class CassandraPCRRepositoryIT {
         val result = repository.saveNew(
             cpid = CPID,
             ocid = OCID,
-            token = TOKEN,
-            owner = OWNER,
+            credential = CREDENTIAL,
             status = STATUS,
             statusDetails = STATUS_DETAILS,
             data = JSON_DATA
@@ -189,8 +187,7 @@ class CassandraPCRRepositoryIT {
         val resultInsert = repository.saveNew(
             cpid = CPID,
             ocid = OCID,
-            token = TOKEN,
-            owner = OWNER,
+            credential = CREDENTIAL,
             status = STATUS,
             statusDetails = STATUS_DETAILS,
             data = JSON_DATA
