@@ -11,6 +11,8 @@ import com.procurement.requisition.lib.functional.Result
 
 interface PCRRepository {
 
+    fun getCredential(cpid: Cpid, ocid: Ocid): Result<Credential?, DatabaseIncident>
+
     fun getPCR(cpid: Cpid, ocid: Ocid): Result<String?, DatabaseIncident>
 
     fun getTenderState(cpid: Cpid, ocid: Ocid): Result<TenderState?, DatabaseIncident>
@@ -33,3 +35,5 @@ interface PCRRepository {
         data: String
     ): Result<Boolean, DatabaseIncident>
 }
+
+data class Credential(val token: Token, val owner: String)

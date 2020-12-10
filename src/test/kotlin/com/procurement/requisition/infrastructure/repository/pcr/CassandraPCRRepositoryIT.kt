@@ -86,6 +86,27 @@ class CassandraPCRRepositoryIT {
     }
 
     @Test
+    fun getCredential() {
+        repository.saveNew(
+            cpid = CPID,
+            ocid = OCID,
+            token = TOKEN,
+            owner = OWNER,
+            status = STATUS,
+            statusDetails = STATUS_DETAILS,
+            data = JSON_DATA
+        )
+
+        val result = repository.getCredential(cpid = CPID, ocid = OCID)
+        assertTrue(result.isSuccess)
+        result.forEach { credential ->
+            assertNotNull(credential)
+            assertEquals(TOKEN, credential!!.token)
+            assertEquals(OWNER, credential.owner)
+        }
+    }
+
+    @Test
     fun getPCR() {
         repository.saveNew(
             cpid = CPID,
