@@ -34,7 +34,7 @@ class SetTenderUnsuspendedService(
             ?: return SetTenderUnsuspendedErrors.TenderStatusDetailsParseFailed(command.phase).asFailure()
         val updatedPcr = pcr.copy(tender = pcr.tender.copy(statusDetails = statusDetails))
         val json = pcrSerializer.build(updatedPcr).onFailure { return it }
-        val state = TenderState(status = pcr.tender.status, statusDetails = pcr.tender.statusDetails)
+        val state = TenderState(status = updatedPcr.tender.status, statusDetails = updatedPcr.tender.statusDetails)
         pcrRepository.update(
             cpid = command.cpid,
             ocid = command.ocid,

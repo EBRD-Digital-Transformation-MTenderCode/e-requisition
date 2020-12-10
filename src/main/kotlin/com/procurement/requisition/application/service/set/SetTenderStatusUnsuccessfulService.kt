@@ -51,7 +51,7 @@ class SetTenderStatusUnsuccessfulService(
         )
 
         val json = pcrSerializer.build(updatedPCR).onFailure { return it }
-        val state = TenderState(status = pcr.tender.status, statusDetails = pcr.tender.statusDetails)
+        val state = TenderState(status = updatedPCR.tender.status, statusDetails = updatedPCR.tender.statusDetails)
         pcrRepository.update(
             cpid = command.cpid,
             ocid = command.ocid,
