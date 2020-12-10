@@ -3,6 +3,7 @@ package com.procurement.requisition.application.service.create.request
 import com.procurement.requisition.application.repository.pcr.PCRDeserializer
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.repository.pcr.PCRSerializer
+import com.procurement.requisition.application.repository.pcr.model.TenderState
 import com.procurement.requisition.application.service.create.request.model.CreateRequestsForEvPanelsCommand
 import com.procurement.requisition.application.service.create.request.model.CreatedRequestsForEvPanels
 import com.procurement.requisition.application.service.get.lot.error.GetActiveLotIdsErrors
@@ -48,12 +49,11 @@ class CreateRequestsForEvPanelsService(
         val updatedPCR = pcr.copy(tender = updatedTender)
 
         val json = pcrSerializer.build(updatedPCR).onFailure { return it }
-
+        val state = TenderState(status = pcr.tender.status, statusDetails = pcr.tender.statusDetails)
         pcrRepository.update(
             cpid = command.cpid,
             ocid = command.ocid,
-            status = pcr.tender.status,
-            statusDetails = pcr.tender.statusDetails,
+            state = state,
             data = json
         ).onFailure { return it }
 

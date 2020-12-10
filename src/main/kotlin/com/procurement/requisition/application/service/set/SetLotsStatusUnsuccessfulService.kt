@@ -3,6 +3,7 @@ package com.procurement.requisition.application.service.set
 import com.procurement.requisition.application.repository.pcr.PCRDeserializer
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.repository.pcr.PCRSerializer
+import com.procurement.requisition.application.repository.pcr.model.TenderState
 import com.procurement.requisition.application.service.set.error.SetLotsStatusUnsuccessfulErrors
 import com.procurement.requisition.application.service.set.model.SetLotsStatusUnsuccessfulCommand
 import com.procurement.requisition.application.service.set.model.SetLotsStatusUnsuccessfulResult
@@ -48,11 +49,11 @@ class SetLotsStatusUnsuccessfulService(
         )
 
         val json = pcrSerializer.build(updatedPCR).onFailure { return it }
+        val state = TenderState(status = pcr.tender.status, statusDetails = pcr.tender.statusDetails)
         pcrRepository.update(
             cpid = command.cpid,
             ocid = command.ocid,
-            status = updatedPCR.tender.status,
-            statusDetails = updatedPCR.tender.statusDetails,
+            state = state,
             data = json
         ).onFailure { return it }
 

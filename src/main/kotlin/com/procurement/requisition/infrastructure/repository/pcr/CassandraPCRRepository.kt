@@ -143,8 +143,7 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
         cpid: Cpid,
         ocid: Ocid,
         credential: Credential,
-        status: TenderStatus,
-        statusDetails: TenderStatusDetails,
+        state: TenderState,
         data: String
     ): Result<Boolean, DatabaseIncident> = preparedSaveNewPCRCQL.bind()
         .apply {
@@ -152,8 +151,8 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
             setString(COLUMN_OCID, ocid.underlying)
             setString(COLUMN_TOKEN, credential.token.underlying)
             setString(COLUMN_OWNER, credential.owner)
-            setString(COLUMN_STATUS, status.key)
-            setString(COLUMN_STATUS_DETAIL, statusDetails.key)
+            setString(COLUMN_STATUS, state.status.key)
+            setString(COLUMN_STATUS_DETAIL, state.statusDetails.key)
             setString(COLUMN_JSON_DATA, data)
         }
         .tryExecute(session)
@@ -162,15 +161,14 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
     override fun update(
         cpid: Cpid,
         ocid: Ocid,
-        status: TenderStatus,
-        statusDetails: TenderStatusDetails,
+        state: TenderState,
         data: String
     ): Result<Boolean, DatabaseIncident> = preparedUpdatePCRCQL.bind()
         .apply {
             setString(COLUMN_CPID, cpid.underlying)
             setString(COLUMN_OCID, ocid.underlying)
-            setString(COLUMN_STATUS, status.key)
-            setString(COLUMN_STATUS_DETAIL, statusDetails.key)
+            setString(COLUMN_STATUS, state.status.key)
+            setString(COLUMN_STATUS_DETAIL, state.statusDetails.key)
             setString(COLUMN_JSON_DATA, data)
         }
         .tryExecute(session)

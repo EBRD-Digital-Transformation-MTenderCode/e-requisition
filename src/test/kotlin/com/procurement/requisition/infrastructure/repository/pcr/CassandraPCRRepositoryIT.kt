@@ -8,6 +8,7 @@ import com.datastax.driver.core.Session
 import com.nhaarman.mockito_kotlin.spy
 import com.procurement.requisition.application.repository.pcr.Credential
 import com.procurement.requisition.application.repository.pcr.PCRRepository
+import com.procurement.requisition.application.repository.pcr.model.TenderState
 import com.procurement.requisition.domain.extension.nowDefaultUTC
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
@@ -53,6 +54,8 @@ class CassandraPCRRepositoryIT {
         private val STATUS_UPDATED = TenderStatus.PLANNED
         private val STATUS_DETAILS = TenderStatusDetails.TENDERING
         private val STATUS_DETAILS_UPDATED = TenderStatusDetails.CLARIFICATION
+        private val STATE = TenderState(status = STATUS, statusDetails = STATUS_DETAILS)
+        private val STATE_UPDATED = TenderState(status = STATUS_UPDATED, statusDetails = STATUS_DETAILS_UPDATED)
         private const val JSON_DATA: String = """{"tender": {"title" : "Tender-Title"}}"""
         private const val JSON_UPDATED_DATA: String = """{"tender": {"title" : "Tender-Title-Updated"}}"""
     }
@@ -93,8 +96,7 @@ class CassandraPCRRepositoryIT {
             cpid = CPID,
             ocid = OCID,
             credential = CREDENTIAL,
-            status = STATUS,
-            statusDetails = STATUS_DETAILS,
+            state = STATE,
             data = JSON_DATA
         )
 
@@ -113,8 +115,7 @@ class CassandraPCRRepositoryIT {
             cpid = CPID,
             ocid = OCID,
             credential = CREDENTIAL,
-            status = STATUS,
-            statusDetails = STATUS_DETAILS,
+            state = STATE,
             data = JSON_DATA
         )
 
@@ -132,8 +133,7 @@ class CassandraPCRRepositoryIT {
             cpid = CPID,
             ocid = OCID,
             credential = CREDENTIAL,
-            status = STATUS,
-            statusDetails = STATUS_DETAILS,
+            state = STATE,
             data = JSON_DATA
         )
 
@@ -153,8 +153,7 @@ class CassandraPCRRepositoryIT {
             cpid = CPID,
             ocid = OCID,
             credential = CREDENTIAL,
-            status = STATUS,
-            statusDetails = STATUS_DETAILS,
+            state = STATE,
             data = JSON_DATA
         )
 
@@ -170,8 +169,7 @@ class CassandraPCRRepositoryIT {
         val result = repository.update(
             cpid = CPID,
             ocid = OCID,
-            status = STATUS,
-            statusDetails = STATUS_DETAILS,
+            state = STATE,
             data = JSON_DATA
         )
 
@@ -188,8 +186,7 @@ class CassandraPCRRepositoryIT {
             cpid = CPID,
             ocid = OCID,
             credential = CREDENTIAL,
-            status = STATUS,
-            statusDetails = STATUS_DETAILS,
+            state = STATE,
             data = JSON_DATA
         )
 
@@ -201,8 +198,7 @@ class CassandraPCRRepositoryIT {
         val resultUpdate = repository.update(
             cpid = CPID,
             ocid = OCID,
-            status = STATUS_UPDATED,
-            statusDetails = STATUS_DETAILS_UPDATED,
+            state = STATE_UPDATED,
             data = JSON_UPDATED_DATA
         )
 

@@ -3,6 +3,7 @@ package com.procurement.requisition.application.service.set.tender
 import com.procurement.requisition.application.repository.pcr.PCRDeserializer
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.repository.pcr.PCRSerializer
+import com.procurement.requisition.application.repository.pcr.model.TenderState
 import com.procurement.requisition.application.service.set.tender.model.SetTenderUnsuspendedCommand
 import com.procurement.requisition.application.service.set.tender.model.SetTenderUnsuspendedResult
 import com.procurement.requisition.domain.model.tender.TenderStatusDetails
@@ -33,12 +34,11 @@ class SetTenderUnsuspendedService(
             ?: return SetTenderUnsuspendedErrors.TenderStatusDetailsParseFailed(command.phase).asFailure()
         val updatedPcr = pcr.copy(tender = pcr.tender.copy(statusDetails = statusDetails))
         val json = pcrSerializer.build(updatedPcr).onFailure { return it }
-
+        val state = TenderState(status = pcr.tender.status, statusDetails = pcr.tender.statusDetails)
         pcrRepository.update(
             cpid = command.cpid,
             ocid = command.ocid,
-            status = updatedPcr.tender.status,
-            statusDetails = updatedPcr.tender.statusDetails,
+            state = state,
             data = json
         )
 
