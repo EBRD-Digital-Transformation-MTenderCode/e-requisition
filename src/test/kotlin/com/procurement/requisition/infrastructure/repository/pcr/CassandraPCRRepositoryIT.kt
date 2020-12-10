@@ -6,8 +6,8 @@ import com.datastax.driver.core.PlainTextAuthProvider
 import com.datastax.driver.core.PoolingOptions
 import com.datastax.driver.core.Session
 import com.nhaarman.mockito_kotlin.spy
-import com.procurement.requisition.application.repository.pcr.Credential
 import com.procurement.requisition.application.repository.pcr.PCRRepository
+import com.procurement.requisition.application.repository.pcr.model.Credential
 import com.procurement.requisition.application.repository.pcr.model.TenderState
 import com.procurement.requisition.domain.extension.nowDefaultUTC
 import com.procurement.requisition.domain.model.Cpid

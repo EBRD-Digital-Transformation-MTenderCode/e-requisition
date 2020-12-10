@@ -1,8 +1,8 @@
 package com.procurement.requisition.application.service.create.pcr
 
-import com.procurement.requisition.application.repository.pcr.Credential
 import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.repository.pcr.PCRSerializer
+import com.procurement.requisition.application.repository.pcr.model.Credential
 import com.procurement.requisition.application.repository.pcr.model.TenderState
 import com.procurement.requisition.application.service.create.pcr.model.CreatePCRCommand
 import com.procurement.requisition.application.service.create.pcr.model.CreatePCRResult

@@ -1,10 +1,10 @@
 package com.procurement.requisition.application.repository.pcr
 
+import com.procurement.requisition.application.repository.pcr.model.Credential
 import com.procurement.requisition.application.repository.pcr.model.TenderState
 import com.procurement.requisition.domain.failure.incident.DatabaseIncident
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
-import com.procurement.requisition.domain.model.Token
 import com.procurement.requisition.lib.functional.Result
 
 interface PCRRepository {
@@ -30,5 +30,3 @@ interface PCRRepository {
         data: String
     ): Result<Boolean, DatabaseIncident>
 }
-
-data class Credential(val token: Token, val owner: String)

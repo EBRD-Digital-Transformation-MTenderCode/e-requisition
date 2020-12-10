@@ -1,8 +1,8 @@
 package com.procurement.requisition.infrastructure.repository.pcr
 
 import com.datastax.driver.core.Session
-import com.procurement.requisition.application.repository.pcr.Credential
 import com.procurement.requisition.application.repository.pcr.PCRRepository
+import com.procurement.requisition.application.repository.pcr.model.Credential
 import com.procurement.requisition.application.repository.pcr.model.TenderState
 import com.procurement.requisition.domain.failure.incident.DatabaseIncident
 import com.procurement.requisition.domain.model.Cpid
