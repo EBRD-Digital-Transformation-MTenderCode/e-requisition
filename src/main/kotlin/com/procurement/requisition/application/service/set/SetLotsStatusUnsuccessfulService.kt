@@ -1,9 +1,6 @@
 package com.procurement.requisition.application.service.set
 
-import com.procurement.requisition.application.repository.pcr.PCRDeserializer
-import com.procurement.requisition.application.repository.pcr.PCRRepository
-import com.procurement.requisition.application.repository.pcr.PCRSerializer
-import com.procurement.requisition.application.repository.pcr.model.TenderState
+import com.procurement.requisition.application.service.PCRManagementService
 import com.procurement.requisition.application.service.set.error.SetLotsStatusUnsuccessfulErrors
 import com.procurement.requisition.application.service.set.model.SetLotsStatusUnsuccessfulCommand
 import com.procurement.requisition.application.service.set.model.SetLotsStatusUnsuccessfulResult
@@ -23,16 +20,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class SetLotsStatusUnsuccessfulService(
-    private val pcrRepository: PCRRepository,
-    private val pcrDeserializer: PCRDeserializer,
-    private val pcrSerializer: PCRSerializer,
+    private val pcrManagement: PCRManagementService
 ) {
 
     fun set(command: SetLotsStatusUnsuccessfulCommand): Result<SetLotsStatusUnsuccessfulResult, Failure> {
-        val pcr = pcrRepository.getPCR(cpid = command.cpid, ocid = command.ocid)
+        val pcr = pcrManagement.find(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it }
-            ?.let { json -> pcrDeserializer.build(json) }
-            ?.onFailure { return it }
             ?: return SetLotsStatusUnsuccessfulErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asFailure()
 
         val idsUnsuccessfulLots: Set<LotId> = command.lots.toSet { it.id }
@@ -48,14 +41,8 @@ class SetLotsStatusUnsuccessfulService(
             )
         )
 
-        val json = pcrSerializer.build(updatedPCR).onFailure { return it }
-        val state = TenderState(status = updatedPCR.tender.status, statusDetails = updatedPCR.tender.statusDetails)
-        pcrRepository.update(
-            cpid = command.cpid,
-            ocid = command.ocid,
-            state = state,
-            data = json
-        ).onFailure { return it }
+        pcrManagement.update(cpid = command.cpid, ocid = command.ocid, pcr = updatedPCR)
+            .onFailure { return it }
 
         return updatedPCR.convert(idsUnsuccessfulLots).asSuccess()
     }

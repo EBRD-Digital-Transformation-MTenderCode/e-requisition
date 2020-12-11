@@ -26,9 +26,9 @@ class SetLotsStateService(
 ) {
 
     fun set(command: SetLotsStateCommand): Result<SetLotsStateResult, Failure> {
-        val pcr = pcrManagement
-            .findOrFailure(cpid = command.cpid, ocid = command.ocid, failure = SetLotsStateErrors::PCRNotFound)
+        val pcr = pcrManagement.find(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it }
+            ?: return SetLotsStateErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asFailure()
 
         val tender = pcr.tender
         val receivedLotIds: Set<LotId> = command.tender.lots.toSet { it.id }

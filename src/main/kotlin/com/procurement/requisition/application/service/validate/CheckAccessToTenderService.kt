@@ -1,6 +1,6 @@
 package com.procurement.requisition.application.service.validate
 
-import com.procurement.requisition.application.repository.pcr.PCRRepository
+import com.procurement.requisition.application.service.PCRManagementService
 import com.procurement.requisition.application.service.validate.error.CheckAccessToTenderErrors
 import com.procurement.requisition.application.service.validate.model.CheckAccessToTenderCommand
 import com.procurement.requisition.lib.fail.Failure
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class CheckAccessToTenderService(
-    private val pcrRepository: PCRRepository
+    private val pcrManagement: PCRManagementService,
 ) {
 
     fun check(command: CheckAccessToTenderCommand): Validated<Failure> {
-        val credential = pcrRepository.getCredential(cpid = command.cpid, ocid = command.ocid)
+        val credential = pcrManagement.findCredential(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it.reason.asValidatedError() }
             ?: return CheckAccessToTenderErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asValidatedError()
 

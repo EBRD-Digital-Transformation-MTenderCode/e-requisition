@@ -1,9 +1,6 @@
 package com.procurement.requisition.application.service.set
 
-import com.procurement.requisition.application.repository.pcr.PCRDeserializer
-import com.procurement.requisition.application.repository.pcr.PCRRepository
-import com.procurement.requisition.application.repository.pcr.PCRSerializer
-import com.procurement.requisition.application.repository.pcr.model.TenderState
+import com.procurement.requisition.application.service.PCRManagementService
 import com.procurement.requisition.application.service.set.error.SetTenderStatusUnsuccessfulErrors
 import com.procurement.requisition.application.service.set.model.SetTenderStatusUnsuccessfulCommand
 import com.procurement.requisition.application.service.set.model.SetTenderStatusUnsuccessfulResult
@@ -23,17 +20,14 @@ import org.springframework.stereotype.Service
 
 @Service
 class SetTenderStatusUnsuccessfulService(
-    private val pcrRepository: PCRRepository,
-    private val pcrDeserializer: PCRDeserializer,
-    private val pcrSerializer: PCRSerializer,
+    private val pcrManagement: PCRManagementService,
 ) {
 
     fun set(command: SetTenderStatusUnsuccessfulCommand): Result<SetTenderStatusUnsuccessfulResult, Failure> {
-        val pcr = pcrRepository.getPCR(cpid = command.cpid, ocid = command.ocid)
+        val pcr = pcrManagement.find(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it }
-            ?.let { json -> pcrDeserializer.build(json) }
-            ?.onFailure { return it }
-            ?: return SetTenderStatusUnsuccessfulErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asFailure()
+            ?: return SetTenderStatusUnsuccessfulErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid)
+                .asFailure()
 
         val tender = pcr.tender
         val idsActiveLots = tender.lots.asSequence()
@@ -50,14 +44,8 @@ class SetTenderStatusUnsuccessfulService(
             )
         )
 
-        val json = pcrSerializer.build(updatedPCR).onFailure { return it }
-        val state = TenderState(status = updatedPCR.tender.status, statusDetails = updatedPCR.tender.statusDetails)
-        pcrRepository.update(
-            cpid = command.cpid,
-            ocid = command.ocid,
-            state = state,
-            data = json
-        ).onFailure { return it }
+        pcrManagement.update(cpid = command.cpid, ocid = command.ocid, pcr = updatedPCR)
+            .onFailure { return it }
 
         return updatedPCR.convert(idsActiveLots).asSuccess()
     }

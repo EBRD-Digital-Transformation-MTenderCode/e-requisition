@@ -1,7 +1,6 @@
 package com.procurement.requisition.application.service.validate
 
-import com.procurement.requisition.application.repository.pcr.PCRDeserializer
-import com.procurement.requisition.application.repository.pcr.PCRRepository
+import com.procurement.requisition.application.service.PCRManagementService
 import com.procurement.requisition.application.service.validate.error.ValidateRequirementResponsesErrors
 import com.procurement.requisition.application.service.validate.model.ValidateRequirementResponsesCommand
 import com.procurement.requisition.domain.model.dataType
@@ -23,16 +22,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class ValidateRequirementResponsesService(
-    private val pcrRepository: PCRRepository,
-    private val pcrDeserializer: PCRDeserializer,
+    private val pcrManagement: PCRManagementService
 ) {
 
     fun validate(command: ValidateRequirementResponsesCommand): Validated<Failure> {
-
-        val pcr = pcrRepository.getPCR(cpid = command.cpid, ocid = command.ocid)
+        val pcr = pcrManagement.find(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it.reason.asValidatedError() }
-            ?.let { json -> pcrDeserializer.build(json) }
-            ?.onFailure { return it.reason.asValidatedError() }
             ?: return ValidateRequirementResponsesErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid)
                 .asValidatedError()
 
@@ -140,7 +135,9 @@ class ValidateRequirementResponsesService(
 
             // VR.COM-17.9.4
             CriterionChecker.State.PARTIALLY ->
-                ValidateRequirementResponsesErrors.RequirementResponse.CriterionRequirementGroupIsPartlySubmitted(criterionId = id).asValidatedError()
+                ValidateRequirementResponsesErrors.RequirementResponse.CriterionRequirementGroupIsPartlySubmitted(
+                    criterionId = id
+                ).asValidatedError()
 
             // VR.COM-17.9.5
             CriterionChecker.State.MULTI_GROUP ->

@@ -1,7 +1,6 @@
 package com.procurement.requisition.application.service.get.lot.auction
 
-import com.procurement.requisition.application.repository.pcr.PCRDeserializer
-import com.procurement.requisition.application.repository.pcr.PCRRepository
+import com.procurement.requisition.application.service.PCRManagementService
 import com.procurement.requisition.application.service.get.lot.auction.model.GetLotsAuctionCommand
 import com.procurement.requisition.application.service.get.lot.auction.model.GetLotsAuctionResult
 import com.procurement.requisition.application.service.get.lot.auction.model.ToGetLotsAuctionResultConverter
@@ -14,15 +13,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class GetLotsAuctionService(
-    val pcrRepository: PCRRepository,
-    val pcrDeserializer: PCRDeserializer
+    private val pcrManagement: PCRManagementService,
 ) {
 
     fun get(command: GetLotsAuctionCommand): Result<GetLotsAuctionResult, Failure> {
-        val pcr = pcrRepository.getPCR(cpid = command.cpid, ocid = command.ocid)
+        val pcr = pcrManagement.find(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it }
-            ?.let { json -> pcrDeserializer.build(json) }
-            ?.onFailure { return it }
             ?: return GetLotsAuctionErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asFailure()
 
         val activeLots = pcr.tender.lots
@@ -30,7 +26,6 @@ class GetLotsAuctionService(
             .takeIf { it.isNotEmpty() }
             ?.map { lot -> ToGetLotsAuctionResultConverter.fromDomain(lot) }
             ?: return GetLotsAuctionErrors.NoActiveLotsFound(cpid = command.cpid, ocid = command.ocid).asFailure()
-
 
         return GetLotsAuctionResult(
             tender = GetLotsAuctionResult.Tender(

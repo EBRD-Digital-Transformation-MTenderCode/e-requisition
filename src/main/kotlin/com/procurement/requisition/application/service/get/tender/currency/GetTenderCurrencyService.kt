@@ -1,7 +1,6 @@
 package com.procurement.requisition.application.service.get.tender.currency
 
-import com.procurement.requisition.application.repository.pcr.PCRDeserializer
-import com.procurement.requisition.application.repository.pcr.PCRRepository
+import com.procurement.requisition.application.service.PCRManagementService
 import com.procurement.requisition.application.service.get.tender.currency.error.GetTenderCurrencyErrors
 import com.procurement.requisition.application.service.get.tender.currency.model.GetTenderCurrencyCommand
 import com.procurement.requisition.application.service.get.tender.currency.model.GetTenderCurrencyResult
@@ -12,15 +11,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class GetTenderCurrencyService(
-    val pcrRepository: PCRRepository,
-    val pcrDeserializer: PCRDeserializer
+    private val pcrManagement: PCRManagementService,
 ) {
 
     fun get(command: GetTenderCurrencyCommand): Result<GetTenderCurrencyResult, Failure> {
-        val pcr = pcrRepository.getPCR(cpid = command.cpid, ocid = command.ocid)
+        val pcr = pcrManagement.find(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it }
-            ?.let { json -> pcrDeserializer.build(json) }
-            ?.onFailure { return it }
             ?: return GetTenderCurrencyErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asFailure()
 
         val result = GetTenderCurrencyResult(

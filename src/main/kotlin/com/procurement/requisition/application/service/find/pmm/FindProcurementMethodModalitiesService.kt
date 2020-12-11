@@ -1,7 +1,6 @@
 package com.procurement.requisition.application.service.find.pmm
 
-import com.procurement.requisition.application.repository.pcr.PCRDeserializer
-import com.procurement.requisition.application.repository.pcr.PCRRepository
+import com.procurement.requisition.application.service.PCRManagementService
 import com.procurement.requisition.application.service.find.pmm.error.FindProcurementMethodModalitiesErrors
 import com.procurement.requisition.application.service.find.pmm.model.FindProcurementMethodModalitiesCommand
 import com.procurement.requisition.application.service.find.pmm.model.FindProcurementMethodModalitiesResult
@@ -12,15 +11,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class FindProcurementMethodModalitiesService(
-    val pcrRepository: PCRRepository,
-    val pcrDeserializer: PCRDeserializer
+    private val pcrManagement: PCRManagementService,
 ) {
 
     fun find(command: FindProcurementMethodModalitiesCommand): Result<FindProcurementMethodModalitiesResult, Failure> {
-        val pcr = pcrRepository.getPCR(cpid = command.cpid, ocid = command.ocid)
+        val pcr = pcrManagement.find(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it }
-            ?.let { json -> pcrDeserializer.build(json) }
-            ?.onFailure { return it }
             ?: return FindProcurementMethodModalitiesErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid)
                 .asFailure()
 

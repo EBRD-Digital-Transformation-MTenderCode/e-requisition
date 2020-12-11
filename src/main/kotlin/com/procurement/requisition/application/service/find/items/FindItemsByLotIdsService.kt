@@ -1,7 +1,6 @@
 package com.procurement.requisition.application.service.find.items
 
-import com.procurement.requisition.application.repository.pcr.PCRDeserializer
-import com.procurement.requisition.application.repository.pcr.PCRRepository
+import com.procurement.requisition.application.service.PCRManagementService
 import com.procurement.requisition.application.service.find.items.error.FindItemsByLotIdsErrors
 import com.procurement.requisition.application.service.find.items.model.FindItemsByLotIdsCommand
 import com.procurement.requisition.application.service.find.items.model.FindItemsByLotIdsResult
@@ -13,15 +12,12 @@ import com.procurement.requisition.infrastructure.handler.v2.converter.ToFindIte
 
 @Service
 class FindItemsByLotIdsService(
-    val pcrRepository: PCRRepository,
-    val pcrDeserializer: PCRDeserializer
+    private val pcrManagement: PCRManagementService,
 ) {
 
     fun find(command: FindItemsByLotIdsCommand): Result<FindItemsByLotIdsResult, Failure> {
-        val pcr = pcrRepository.getPCR(cpid = command.cpid, ocid = command.ocid)
+        val pcr = pcrManagement.find(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it }
-            ?.let { json -> pcrDeserializer.build(json) }
-            ?.onFailure { return it }
             ?: return FindItemsByLotIdsErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asFailure()
 
         val targetLots = command.tender.lots.toSet()

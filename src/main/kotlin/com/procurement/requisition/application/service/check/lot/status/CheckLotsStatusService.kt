@@ -1,7 +1,6 @@
 package com.procurement.requisition.application.service.check.lot.status
 
-import com.procurement.requisition.application.repository.pcr.PCRDeserializer
-import com.procurement.requisition.application.repository.pcr.PCRRepository
+import com.procurement.requisition.application.service.PCRManagementService
 import com.procurement.requisition.application.service.check.lot.status.error.CheckLotsStatusErrors
 import com.procurement.requisition.application.service.check.lot.status.model.CheckLotsStatusCommand
 import com.procurement.requisition.domain.model.tender.Tender
@@ -18,15 +17,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class CheckLotsStatusService(
-    private val pcrRepository: PCRRepository,
-    private val pcrDeserializer: PCRDeserializer,
+    private val pcrManagement: PCRManagementService,
 ) {
 
     fun check(command: CheckLotsStatusCommand): Validated<Failure> {
-        val pcr = pcrRepository.getPCR(cpid = command.cpid, ocid = command.ocid)
+        val pcr = pcrManagement.find(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it.reason.asValidatedError() }
-            ?.let { json -> pcrDeserializer.build(json) }
-            ?.onFailure { return it.reason.asValidatedError() }
             ?: return CheckLotsStatusErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asValidatedError()
 
         pcr.tender

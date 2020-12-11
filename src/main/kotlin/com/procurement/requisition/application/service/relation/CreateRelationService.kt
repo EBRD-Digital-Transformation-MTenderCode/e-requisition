@@ -1,6 +1,5 @@
 package com.procurement.requisition.application.service.relation
 
-import com.procurement.requisition.application.repository.pcr.PCRRepository
 import com.procurement.requisition.application.service.relation.model.CreateRelationCommand
 import com.procurement.requisition.application.service.relation.model.CreateRelationResult
 import com.procurement.requisition.domain.failure.incident.InvalidArgumentValueIncident
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service
 @Service
 class CreateRelationService(
     val uriProperties: UriProperties,
-    val pcrRepository: PCRRepository,
 ) {
 
     fun create(command: CreateRelationCommand): Result<CreateRelationResult, Failure> {
