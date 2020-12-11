@@ -1,5 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.model.response
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class SetLotsStateResponse(
@@ -7,6 +8,7 @@ data class SetLotsStateResponse(
 ) {
 
     data class Tender(
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>
     ) {
 
