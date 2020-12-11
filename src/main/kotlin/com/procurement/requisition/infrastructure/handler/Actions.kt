@@ -21,6 +21,7 @@ enum class Actions(override val key: String, override val kind: Action.Kind) : E
     GET_LOTS_AUCTION(key = "getLotsAuction", kind = Action.Kind.QUERY),
     GET_TENDER_OWNER(key = "getTenderOwner", kind = Action.Kind.QUERY),
     GET_TENDER_STATE(key = "getTenderState", kind = Action.Kind.QUERY),
+    SET_LOTS_STATE(key = "setStateForLots", kind = Action.Kind.COMMAND),
     SET_LOTS_STATUS_UNSUCCESSFUL(key = "setLotsStatusUnsuccessful", kind = Action.Kind.COMMAND),
     SET_TENDER_STATUS_DETAILS(key = "setTenderStatusDetails", kind = Action.Kind.COMMAND),
     SET_TENDER_STATUS_UNSUCCESSFUL(key = "setTenderUnsuccessful", kind = Action.Kind.COMMAND),
