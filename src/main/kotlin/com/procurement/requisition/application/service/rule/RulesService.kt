@@ -11,6 +11,7 @@ import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
+import com.procurement.requisition.lib.functional.flatMap
 import org.springframework.stereotype.Service
 
 interface RulesService {

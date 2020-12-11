@@ -8,15 +8,16 @@ import com.procurement.requisition.application.service.get.lot.auction.model.Get
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.infrastructure.api.Action
+import com.procurement.requisition.infrastructure.api.v1.ApiResponseV1
+import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.infrastructure.handler.base.CommandHandler
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
-import com.procurement.requisition.infrastructure.api.v1.ApiResponseV1
 import com.procurement.requisition.infrastructure.handler.v1.base.AbstractHandlerV1
 import com.procurement.requisition.infrastructure.handler.v1.converter.convert
-import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
+import com.procurement.requisition.lib.functional.flatMap
 
 @CommandHandler
 class GetLotsAuctionHandler(

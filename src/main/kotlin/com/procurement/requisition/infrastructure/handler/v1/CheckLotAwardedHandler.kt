@@ -18,6 +18,7 @@ import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asFailure
 import com.procurement.requisition.lib.functional.asSuccess
+import com.procurement.requisition.lib.functional.flatMap
 
 @CommandHandler
 class CheckLotAwardedHandler(

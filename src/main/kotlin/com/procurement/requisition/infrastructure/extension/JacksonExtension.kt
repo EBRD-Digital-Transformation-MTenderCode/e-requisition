@@ -11,6 +11,7 @@ import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
 import com.procurement.requisition.lib.functional.Result.Companion.success
 import com.procurement.requisition.lib.functional.asSuccess
+import com.procurement.requisition.lib.functional.flatMap
 import java.math.BigDecimal
 
 fun JsonNode.getOrNull(name: String): JsonNode? = if (this.has(name)) this.get(name) else null
