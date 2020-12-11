@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
-import com.procurement.requisition.application.service.find.items.model.FindItemsByLotIdsCommand
+import com.procurement.requisition.application.service.model.command.FindItemsByLotIdsCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.infrastructure.handler.converter.asCpid

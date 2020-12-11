@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
-import com.procurement.requisition.application.service.find.pmm.model.FindProcurementMethodModalitiesCommand
+import com.procurement.requisition.application.service.model.command.FindProcurementMethodModalitiesCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality

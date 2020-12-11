@@ -3,8 +3,8 @@ package com.procurement.requisition.infrastructure.handler.v1
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.set.tender.SetTenderUnsuspendedService
-import com.procurement.requisition.application.service.set.tender.model.SetTenderUnsuspendedCommand
+import com.procurement.requisition.application.service.SetTenderUnsuspendedService
+import com.procurement.requisition.application.service.model.command.SetTenderUnsuspendedCommand
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.api.Action
 import com.procurement.requisition.infrastructure.handler.Actions

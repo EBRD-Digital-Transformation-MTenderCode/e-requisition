@@ -3,8 +3,8 @@ package com.procurement.requisition.infrastructure.handler.v1
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.get.tender.currency.GetTenderCurrencyService
-import com.procurement.requisition.application.service.get.tender.currency.model.GetTenderCurrencyCommand
+import com.procurement.requisition.application.service.GetTenderCurrencyService
+import com.procurement.requisition.application.service.model.command.GetTenderCurrencyCommand
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.api.Action
 import com.procurement.requisition.infrastructure.handler.base.CommandHandler

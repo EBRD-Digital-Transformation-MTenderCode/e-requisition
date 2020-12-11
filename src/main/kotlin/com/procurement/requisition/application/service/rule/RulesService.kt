@@ -5,7 +5,7 @@ import com.procurement.requisition.application.repository.rule.deserializer.LotS
 import com.procurement.requisition.application.repository.rule.deserializer.LotStatesRuleDeserializer
 import com.procurement.requisition.application.repository.rule.deserializer.MinSpecificWeightPriceRuleDeserializer
 import com.procurement.requisition.application.repository.rule.deserializer.TenderStatesRuleDeserializer
-import com.procurement.requisition.application.repository.rule.model.LotStateForSettingsRule
+import com.procurement.requisition.application.repository.rule.model.LotStateForSettingRule
 import com.procurement.requisition.application.repository.rule.model.LotStatesRule
 import com.procurement.requisition.application.repository.rule.model.MinSpecificWeightPriceRule
 import com.procurement.requisition.application.repository.rule.model.TenderStatesRule
@@ -38,7 +38,7 @@ interface RulesService {
         country: String,
         pmd: ProcurementMethodDetails,
         operationType: OperationType
-    ): Result<LotStateForSettingsRule, Failure>
+    ): Result<LotStateForSettingRule, Failure>
 }
 
 @Service
@@ -90,7 +90,7 @@ class RulesServiceImpl(
         country: String,
         pmd: ProcurementMethodDetails,
         operationType: OperationType
-    ): Result<LotStateForSettingsRule, Failure> = ruleRepository
+    ): Result<LotStateForSettingRule, Failure> = ruleRepository
         .get(country, pmd, operationType, PARAMETER_LOT_STATE_FOR_SETTING)
         .flatMap { value ->
             lotStateForSettingRuleDeserializer.deserialize(value)

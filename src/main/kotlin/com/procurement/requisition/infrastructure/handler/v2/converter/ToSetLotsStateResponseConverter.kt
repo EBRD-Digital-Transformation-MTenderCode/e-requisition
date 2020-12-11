@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
-import com.procurement.requisition.application.service.set.model.SetLotsStateResult
+import com.procurement.requisition.application.service.model.result.SetLotsStateResult
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.handler.v2.model.response.SetLotsStateResponse
 

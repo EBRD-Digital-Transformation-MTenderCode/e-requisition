@@ -3,8 +3,8 @@ package com.procurement.requisition.infrastructure.handler.v1
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.get.lot.auction.GetLotsAuctionService
-import com.procurement.requisition.application.service.get.lot.auction.model.GetLotsAuctionCommand
+import com.procurement.requisition.application.service.GetLotsAuctionService
+import com.procurement.requisition.application.service.model.command.GetLotsAuctionCommand
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.infrastructure.api.Action

@@ -3,8 +3,8 @@ package com.procurement.requisition.infrastructure.handler.v1
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.get.lot.GetActiveLotsService
-import com.procurement.requisition.application.service.get.lot.model.GetActiveLotIdsCommand
+import com.procurement.requisition.application.service.GetActiveLotsService
+import com.procurement.requisition.application.service.model.command.GetActiveLotsCommand
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.api.Action
 import com.procurement.requisition.infrastructure.handler.base.CommandHandler
@@ -34,7 +34,7 @@ class GetActiveLotsHandler(
         val cpid = context.cpid.onFailure { return it }
         val ocid = context.ocid.onFailure { return it }
 
-        val command = GetActiveLotIdsCommand(cpid = cpid, ocid = ocid)
+        val command = GetActiveLotsCommand(cpid = cpid, ocid = ocid)
 
         return getActiveLotsService.get(command)
             .flatMap { result ->

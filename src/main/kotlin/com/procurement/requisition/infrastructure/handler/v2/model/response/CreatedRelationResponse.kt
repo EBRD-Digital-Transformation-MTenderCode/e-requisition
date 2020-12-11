@@ -1,7 +1,7 @@
 package com.procurement.requisition.infrastructure.handler.v2.model.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.procurement.requisition.application.service.relation.model.CreateRelationResult
+import com.procurement.requisition.application.service.model.result.CreateRelationResult
 import com.procurement.requisition.infrastructure.handler.converter.asString
 
 data class CreatedRelationResponse(
