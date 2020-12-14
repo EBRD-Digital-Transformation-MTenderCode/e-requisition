@@ -3,7 +3,7 @@ package com.procurement.requisition.infrastructure.handler.v2
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.find.items.FindItemsByLotIdsService
+import com.procurement.requisition.application.service.FindItemsByLotIdsService
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.api.Action
 import com.procurement.requisition.infrastructure.handler.Actions
@@ -15,6 +15,7 @@ import com.procurement.requisition.infrastructure.handler.v2.model.request.FindI
 import com.procurement.requisition.infrastructure.handler.v2.converter.convert
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
+import com.procurement.requisition.lib.functional.flatMap
 
 @CommandHandler
 class FindItemsByLotIdsHandler(

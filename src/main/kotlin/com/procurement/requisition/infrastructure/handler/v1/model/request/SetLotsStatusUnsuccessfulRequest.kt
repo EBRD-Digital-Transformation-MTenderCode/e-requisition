@@ -2,7 +2,7 @@ package com.procurement.requisition.infrastructure.handler.v1.model.request
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.procurement.requisition.application.service.set.model.SetLotsStatusUnsuccessfulCommand
+import com.procurement.requisition.application.service.model.command.SetLotsStatusUnsuccessfulCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.infrastructure.handler.converter.asLotId

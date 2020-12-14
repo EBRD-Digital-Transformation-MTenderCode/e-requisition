@@ -63,11 +63,6 @@ sealed class Result<out T, out E> {
         is Failure -> this
     }
 
-    infix fun <R> flatMap(transform: (T) -> Result<R, @UnsafeVariance E>): Result<R, E> = when (this) {
-        is Success -> transform(value)
-        is Failure -> this
-    }
-
     infix fun <R> mapFailure(transform: (E) -> R): Result<T, R> = when (this) {
         is Success -> this
         is Failure -> Failure(transform(reason))
@@ -91,4 +86,9 @@ sealed class Result<out T, out E> {
 
         override fun toString(): String = "Failure($reason)"
     }
+}
+
+infix fun <T, R, E> Result<T, E>.flatMap(transform: (T) -> Result<R, E>): Result<R, E> = when (this) {
+    is Result.Success -> transform(value)
+    is Result.Failure -> this
 }

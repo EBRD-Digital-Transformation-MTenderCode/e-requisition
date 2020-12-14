@@ -1,7 +1,7 @@
 package com.procurement.requisition.infrastructure.handler.v1.model.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.procurement.requisition.application.service.get.lot.model.ActiveLotIds
+import com.procurement.requisition.application.service.model.result.GetActiveLotsResult
 
 data class GetActiveLotIdsResponse(
     @field:JsonProperty("lots") @param:JsonProperty("lots") val lots: List<Lot>
@@ -12,8 +12,8 @@ data class GetActiveLotIdsResponse(
     )
 }
 
-fun ActiveLotIds.convert() = GetActiveLotIdsResponse(
+fun GetActiveLotsResult.convert() = GetActiveLotIdsResponse(
     lots = this.lots.map { lot -> lot.convert() }
 )
 
-fun ActiveLotIds.Lot.convert(): GetActiveLotIdsResponse.Lot = GetActiveLotIdsResponse.Lot(id = id.underlying)
+fun GetActiveLotsResult.Lot.convert(): GetActiveLotIdsResponse.Lot = GetActiveLotIdsResponse.Lot(id = id.underlying)

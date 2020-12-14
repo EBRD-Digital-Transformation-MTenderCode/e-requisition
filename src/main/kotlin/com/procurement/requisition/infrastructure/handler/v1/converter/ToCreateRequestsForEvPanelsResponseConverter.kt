@@ -1,15 +1,15 @@
 package com.procurement.requisition.infrastructure.handler.v1.converter
 
-import com.procurement.requisition.application.service.create.request.model.CreatedRequestsForEvPanels
+import com.procurement.requisition.application.service.model.result.CreatedRequestsForEvPanelsResult
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.handler.v1.model.response.CreateRequestsForEvPanelsResponse
 import com.procurement.requisition.infrastructure.repository.pcr.model.tender.criterion.serialization
 
-fun CreatedRequestsForEvPanels.convert() = CreateRequestsForEvPanelsResponse(
+fun CreatedRequestsForEvPanelsResult.convert() = CreateRequestsForEvPanelsResponse(
     criteria = criteria.convert()
 )
 
-fun CreatedRequestsForEvPanels.Criterion.convert() = CreateRequestsForEvPanelsResponse.Criterion(
+fun CreatedRequestsForEvPanelsResult.Criterion.convert() = CreateRequestsForEvPanelsResponse.Criterion(
     id = id.underlying,
     title = title,
     description = description,
@@ -19,7 +19,7 @@ fun CreatedRequestsForEvPanels.Criterion.convert() = CreateRequestsForEvPanelsRe
         .map { requirementGroup -> requirementGroup.convert() }
 )
 
-fun CreatedRequestsForEvPanels.Criterion.RequirementGroup.convert() =
+fun CreatedRequestsForEvPanelsResult.Criterion.RequirementGroup.convert() =
     CreateRequestsForEvPanelsResponse.Criterion.RequirementGroup(
         id = id.underlying,
         requirements = requirements.map { it.serialization() }

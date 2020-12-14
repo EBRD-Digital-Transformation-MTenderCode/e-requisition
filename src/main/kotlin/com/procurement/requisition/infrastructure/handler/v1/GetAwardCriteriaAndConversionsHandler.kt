@@ -3,8 +3,8 @@ package com.procurement.requisition.infrastructure.handler.v1
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.get.award.GetAwardCriteriaAndConversionsService
-import com.procurement.requisition.application.service.get.award.model.GetAwardCriteriaAndConversionsCommand
+import com.procurement.requisition.application.service.GetAwardCriteriaAndConversionsService
+import com.procurement.requisition.application.service.model.command.GetAwardCriteriaAndConversionsCommand
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.infrastructure.api.Action
@@ -17,6 +17,7 @@ import com.procurement.requisition.infrastructure.handler.v1.converter.convert
 import com.procurement.requisition.infrastructure.handler.Actions
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
+import com.procurement.requisition.lib.functional.flatMap
 
 @CommandHandler
 class GetAwardCriteriaAndConversionsHandler(

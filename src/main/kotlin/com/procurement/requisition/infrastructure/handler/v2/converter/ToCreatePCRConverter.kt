@@ -1,7 +1,7 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
-import com.procurement.requisition.application.service.create.pcr.model.CreatePCRCommand
-import com.procurement.requisition.application.service.create.pcr.model.StateFE
+import com.procurement.requisition.application.service.model.command.CreatePCRCommand
+import com.procurement.requisition.application.service.model.StateFE
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.DynamicValue

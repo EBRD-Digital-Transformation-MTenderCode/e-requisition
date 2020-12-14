@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
-import com.procurement.requisition.application.service.find.items.model.FindItemsByLotIdsResult
+import com.procurement.requisition.application.service.model.result.FindItemsByLotIdsResult
 import com.procurement.requisition.domain.model.tender.Classification
 import com.procurement.requisition.domain.model.tender.unit.Unit
 import com.procurement.requisition.domain.model.tender.item.Item as DomainItem

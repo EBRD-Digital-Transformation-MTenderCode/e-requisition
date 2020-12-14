@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v1.converter
 
-import com.procurement.requisition.application.service.set.tender.model.SetTenderUnsuspendedResult
+import com.procurement.requisition.application.service.model.result.SetTenderUnsuspendedResult
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.handler.v1.model.response.SetTenderUnsuspendedResponse
 
