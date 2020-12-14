@@ -13,6 +13,7 @@ enum class Actions(override val key: String, override val kind: Action.Kind) : E
     CREATE_PCR(key = "createPcr", kind = Action.Kind.COMMAND),
     CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE(key = "createRelationToContractProcessStage", kind = Action.Kind.COMMAND),
     CREATE_REQUESTS_FOR_EV_PANELS(key = "createRequestsForEvPanels", kind = Action.Kind.COMMAND),
+    FIND_CRITERIA_AND_TARGETS_FOR_PACS(key = "findCriteriaAndTargetsForPacs", kind = Action.Kind.QUERY),
     FIND_ITEMS_BY_LOT_IDS(key = "findItemsByLotIds", kind = Action.Kind.QUERY),
     FIND_PROCUREMENT_METHOD_MODALITIES(key = "findProcurementMethodModalities", kind = Action.Kind.QUERY),
     GET_ACTIVE_LOTS(key = "getActiveLots", kind = Action.Kind.QUERY),
