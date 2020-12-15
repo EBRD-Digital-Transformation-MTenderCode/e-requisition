@@ -5,10 +5,10 @@ import com.procurement.requisition.application.repository.rule.deserializer.LotS
 import com.procurement.requisition.application.repository.rule.deserializer.LotStatesRuleDeserializer
 import com.procurement.requisition.application.repository.rule.deserializer.MinSpecificWeightPriceRuleDeserializer
 import com.procurement.requisition.application.repository.rule.deserializer.TenderStatesRuleDeserializer
-import com.procurement.requisition.application.repository.rule.model.LotStateForSettingRule
-import com.procurement.requisition.application.repository.rule.model.LotStatesRule
-import com.procurement.requisition.application.repository.rule.model.MinSpecificWeightPriceRule
-import com.procurement.requisition.application.repository.rule.model.TenderStatesRule
+import com.procurement.requisition.application.service.rule.model.LotStateForSettingRule
+import com.procurement.requisition.application.service.rule.model.MinSpecificWeightPriceRule
+import com.procurement.requisition.application.service.rule.model.ValidLotStatesRule
+import com.procurement.requisition.application.service.rule.model.ValidTenderStatesRule
 import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.lib.fail.Failure
@@ -26,15 +26,15 @@ interface RulesService {
         country: String,
         pmd: ProcurementMethodDetails,
         operationType: OperationType
-    ): Result<LotStatesRule, Failure>
+    ): Result<ValidLotStatesRule, Failure>
 
     fun getValidTenderStates(
         country: String,
         pmd: ProcurementMethodDetails,
         operationType: OperationType
-    ): Result<TenderStatesRule, Failure>
+    ): Result<ValidTenderStatesRule, Failure>
 
-    fun getLotState(
+    fun getLotStateForSetting(
         country: String,
         pmd: ProcurementMethodDetails,
         operationType: OperationType
@@ -70,7 +70,7 @@ class RulesServiceImpl(
         country: String,
         pmd: ProcurementMethodDetails,
         operationType: OperationType
-    ): Result<LotStatesRule, Failure> = ruleRepository
+    ): Result<ValidLotStatesRule, Failure> = ruleRepository
         .get(country, pmd, operationType, PARAMETER_VALID_LOT_STATES)
         .flatMap { value ->
             lotStatesRuleDeserializer.deserialize(value)
@@ -80,13 +80,13 @@ class RulesServiceImpl(
         country: String,
         pmd: ProcurementMethodDetails,
         operationType: OperationType
-    ): Result<TenderStatesRule, Failure> = ruleRepository
+    ): Result<ValidTenderStatesRule, Failure> = ruleRepository
         .get(country, pmd, operationType, PARAMETER_VALID_TENDER_STATES)
         .flatMap { value ->
             tenderStatesRuleDeserializer.deserialize(value)
         }
 
-    override fun getLotState(
+    override fun getLotStateForSetting(
         country: String,
         pmd: ProcurementMethodDetails,
         operationType: OperationType

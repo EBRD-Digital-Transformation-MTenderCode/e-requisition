@@ -1,10 +1,8 @@
 package com.procurement.requisition.application.service
 
-import com.procurement.requisition.application.repository.rule.model.TenderStatesRule
-import com.procurement.requisition.application.repository.rule.model.contains
-import com.procurement.requisition.application.service.rule.RulesService
 import com.procurement.requisition.application.service.error.CheckTenderStateErrors
 import com.procurement.requisition.application.service.model.command.CheckTenderStateCommand
+import com.procurement.requisition.application.service.rule.RulesService
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Validated
 import com.procurement.requisition.lib.functional.asValidatedError
@@ -31,8 +29,7 @@ class CheckTenderStateService(
             )
             .onFailure { return it.reason.asValidatedError() }
 
-        val state = TenderStatesRule.State(status = tender.status, statusDetails = tender.statusDetails)
-        return if (state !in tenderStatesRules)
+        return if (tenderStatesRules.contains(status = tender.status, statusDetails = tender.statusDetails))
             CheckTenderStateErrors.Tender.InvalidState(status = tender.status, statusDetails = tender.statusDetails)
                 .asValidatedError()
         else
