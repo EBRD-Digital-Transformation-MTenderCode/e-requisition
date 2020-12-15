@@ -1,6 +1,6 @@
 package com.procurement.requisition.application.service
 
-import com.procurement.requisition.application.repository.rule.model.LotStateForSettingRule
+import com.procurement.requisition.application.service.rule.model.LotStateForSettingRule
 import com.procurement.requisition.application.service.rule.RulesService
 import com.procurement.requisition.application.service.error.SetLotsStateErrors
 import com.procurement.requisition.application.service.model.command.SetLotsStateCommand
@@ -38,10 +38,10 @@ class SetLotsStateService(
             .onFailure { return it.reason.asFailure() }
 
         val lotState = rulesService
-            .getLotState(country = command.country, pmd = command.pmd, operationType = command.operationType)
+            .getLotStateForSetting(country = command.country, pmd = command.pmd, operationType = command.operationType)
             .onFailure { return it }
 
-        val updatedLots = tender.lots.setStatus(ids = receivedLotIds, state = lotState)
+        val updatedLots = tender.lots.setState(ids = receivedLotIds, state = lotState)
         val updatedPCR = pcr.copy(
             tender = tender.copy(
                 lots = updatedLots
@@ -65,7 +65,7 @@ class SetLotsStateService(
             Validated.ok()
     }
 
-    fun List<Lot>.setStatus(ids: Set<LotId>, state: LotStateForSettingRule) = this
+    fun List<Lot>.setState(ids: Set<LotId>, state: LotStateForSettingRule) = this
         .map { lot ->
             if (lot.id in ids) {
                 lot.copy(

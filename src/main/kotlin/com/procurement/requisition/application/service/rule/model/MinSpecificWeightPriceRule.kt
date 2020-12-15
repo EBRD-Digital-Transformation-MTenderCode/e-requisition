@@ -1,4 +1,4 @@
-package com.procurement.requisition.application.repository.rule.model
+package com.procurement.requisition.application.service.rule.model
 
 import com.procurement.requisition.domain.model.MainProcurementCategory
 import java.math.BigDecimal
