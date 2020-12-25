@@ -44,6 +44,9 @@ inline fun <T, R> Collection<T>?.mapIndexedOrEmpty(transform: (Int, T) -> R): Li
 inline fun <T, C : Collection<T>?> C.failureIfEmpty(error: () -> Nothing): C =
     if (this != null && this.isEmpty()) error() else this
 
+inline fun <T : String?> T.failureIfBlank(error: () -> Nothing): T =
+    if (this != null && this.isBlank()) error() else this
+
 inline fun <T, C : Collection<T>, E : RuntimeException> C?.errorIfEmpty(exceptionBuilder: () -> E): C? =
     if (this != null && this.isEmpty())
         throw exceptionBuilder()
