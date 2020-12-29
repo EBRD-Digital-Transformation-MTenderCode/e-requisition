@@ -30,9 +30,9 @@ class CheckTenderStateService(
             .onFailure { return it.reason.asValidatedError() }
 
         return if (tenderStatesRules.contains(status = tender.status, statusDetails = tender.statusDetails))
+            Validated.ok()
+        else
             CheckTenderStateErrors.Tender.InvalidState(status = tender.status, statusDetails = tender.statusDetails)
                 .asValidatedError()
-        else
-            Validated.ok()
     }
 }
