@@ -35,7 +35,7 @@ class CheckLotsStateService(
             .forEach { lot ->
                 lotsById[lot.id]
                     ?.apply {
-                        if (validLotStateRules.contains(status, statusDetails))
+                        if (!validLotStateRules.contains(status, statusDetails))
                             return CheckLotsStateErrors.Lot.InvalidState(lotId = lot.id, status = tender.status)
                                 .asValidatedError()
                     }
