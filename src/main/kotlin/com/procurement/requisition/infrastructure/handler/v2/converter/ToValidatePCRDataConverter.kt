@@ -36,11 +36,15 @@ fun ValidatePCRDataRequest.convert(): Result<ValidatePCRDataCommand, JsonErrors>
     val pmd = pmd
         .asEnum(target = ProcurementMethodDetails, allowedElements = allowedProcurementMethodDetails)
         .onFailure { return it.repath(path = "/pmd") }
+
     val operationType = operationType
         .asEnum(target = OperationType, allowedElements = allowedOperationType)
         .onFailure { return it.repath(path = "/operationType") }
 
-    return ValidatePCRDataCommand(tender, country, pmd, operationType).asSuccess()
+    val mdm = mdm.convert()
+        .onFailure { return it.repath(path = "/mdm") }
+
+    return ValidatePCRDataCommand(tender, country, pmd, operationType, mdm).asSuccess()
 }
 
 private val allowedProcurementMethodDetails = ProcurementMethodDetails.allowedElements
@@ -424,4 +428,27 @@ fun ValidatePCRDataRequest.Tender.Document.convert(): Result<ValidatePCRDataComm
         description = description,
         relatedLots = relatedLots
     ).asSuccess()
+}
+
+
+/**
+ * Mdm
+ */
+fun ValidatePCRDataRequest.Mdm.convert(): Result<ValidatePCRDataCommand.Mdm, JsonErrors> {
+    val criteria = criteria
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "criteria")) }
+        .mapIndexedOrEmpty { idx, criterion ->
+            criterion.convert().onFailure { return it.repath(path = "/criteria[$idx]") }
+        }
+
+    return ValidatePCRDataCommand.Mdm(criteria = criteria).asSuccess()
+}
+
+/**
+ * Mdm
+ */
+fun ValidatePCRDataRequest.Mdm.Criterion.convert(): Result<ValidatePCRDataCommand.Mdm.Criterion, JsonErrors> {
+    val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
+
+    return ValidatePCRDataCommand.Mdm.Criterion(id = id, classification = classification).asSuccess()
 }

@@ -26,7 +26,8 @@ data class ValidatePCRDataCommand(
     val tender: Tender,
     val country: String,
     val pmd: ProcurementMethodDetails,
-    val operationType: OperationType
+    val operationType: OperationType,
+    val mdm: Mdm
 ) {
 
     data class Tender(
@@ -166,6 +167,15 @@ data class ValidatePCRDataCommand(
             val description: String?,
             val relatedLots: List<String>
         ) : EntityBase<String>()
+    }
+
+    data class Mdm(
+        val criteria: List<Criterion>,
+    ) {
+        data class Criterion(
+            val id: String,
+            val classification: Classification,
+        )
     }
 
     data class Classification(

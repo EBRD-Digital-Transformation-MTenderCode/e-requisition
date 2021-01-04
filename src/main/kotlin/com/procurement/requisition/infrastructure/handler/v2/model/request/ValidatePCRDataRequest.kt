@@ -18,7 +18,8 @@ data class ValidatePCRDataRequest(
     @field:JsonProperty("tender") @param:JsonProperty("tender") val tender: Tender,
     @field:JsonProperty("pmd") @param:JsonProperty("pmd") val pmd: String,
     @field:JsonProperty("country") @param:JsonProperty("country") val country: String,
-    @field:JsonProperty("operationType") @param:JsonProperty("operationType") val operationType: String
+    @field:JsonProperty("operationType") @param:JsonProperty("operationType") val operationType: String,
+    @field:JsonProperty("mdm") @param:JsonProperty("mdm") val mdm: Mdm
 ) {
 
     data class Tender(
@@ -240,6 +241,15 @@ data class ValidatePCRDataRequest(
 
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
+        )
+    }
+
+    data class Mdm(
+        @field:JsonProperty("criteria") @param:JsonProperty("criteria") val criteria: List<Criterion>,
+    ) {
+        data class Criterion(
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
         )
     }
 
