@@ -19,6 +19,7 @@ import com.procurement.requisition.infrastructure.service.HistoryRepository
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
+import com.procurement.requisition.lib.functional.flatMap
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 

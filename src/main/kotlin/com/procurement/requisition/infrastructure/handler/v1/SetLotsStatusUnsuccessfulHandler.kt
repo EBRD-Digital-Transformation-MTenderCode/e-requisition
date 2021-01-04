@@ -3,8 +3,8 @@ package com.procurement.requisition.infrastructure.handler.v1
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.set.SetLotsStatusUnsuccessfulService
-import com.procurement.requisition.application.service.set.model.SetLotsStatusUnsuccessfulCommand
+import com.procurement.requisition.application.service.SetLotsStatusUnsuccessfulService
+import com.procurement.requisition.application.service.model.command.SetLotsStatusUnsuccessfulCommand
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.api.Action
@@ -18,6 +18,7 @@ import com.procurement.requisition.infrastructure.handler.v1.model.request.SetLo
 import com.procurement.requisition.infrastructure.handler.v1.model.request.convert
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
+import com.procurement.requisition.lib.functional.flatMap
 
 @CommandHandler
 class SetLotsStatusUnsuccessfulHandler(

@@ -1,10 +1,11 @@
 package com.procurement.requisition.application.service.validate
 
-import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Model.CriteriaMatrix
-import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Model.Criterion
-import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Model.RequirementGroup
-import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Model.Requirements
-import com.procurement.requisition.application.service.validate.SpecificWeightedPrice.Operations.getAllRequirementsCombinations
+import com.procurement.requisition.application.service.SpecificWeightedPrice.Model.CriteriaMatrix
+import com.procurement.requisition.application.service.SpecificWeightedPrice.Model.Criterion
+import com.procurement.requisition.application.service.SpecificWeightedPrice.Model.RequirementGroup
+import com.procurement.requisition.application.service.SpecificWeightedPrice.Model.Requirements
+import com.procurement.requisition.application.service.SpecificWeightedPrice.Operations.getAllRequirementsCombinations
+import com.procurement.requisition.application.service.ValidatePCRService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

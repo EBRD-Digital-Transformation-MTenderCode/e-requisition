@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
-import com.procurement.requisition.application.service.create.pcr.model.CreatePCRResult
+import com.procurement.requisition.application.service.model.result.CreatePCRResult
 import com.procurement.requisition.domain.extension.asString
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.handler.v2.model.response.CreatedPCRResponse

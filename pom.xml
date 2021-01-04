@@ -23,7 +23,7 @@
         <java.version>1.8</java.version>
 
         <!--Kotlin-->
-        <kotlin.version>1.4.10</kotlin.version>
+        <kotlin.version>1.4.21</kotlin.version>
         <kotlin.compiler.incremental>false</kotlin.compiler.incremental>
 
         <!--Docker-->
@@ -35,30 +35,30 @@
         <spring-cloud.version>Finchley.RELEASE</spring-cloud.version>
 
         <!--Database-->
-        <cassandra-driver.version>3.7.1</cassandra-driver.version>
+        <cassandra-driver.version>3.10.2</cassandra-driver.version>
 
         <!--Loggin-->
         <logstash.logback.encoder.version>5.3</logstash.logback.encoder.version>
 
         <!--Libs-->
         <springfox-swagger2.version>2.6.1</springfox-swagger2.version>
-        <equalsverifier.version>3.1.9</equalsverifier.version>
+        <equalsverifier.version>3.5</equalsverifier.version>
 
         <!--Test-->
-        <json-path.version>2.4.0</json-path.version>
-        <junit-jupiter.version>5.4.0</junit-jupiter.version>
-        <junit-platform.version>1.4.0</junit-platform.version>
+        <json-path.version>2.5.0</json-path.version>
+        <junit-jupiter.version>5.7.0</junit-jupiter.version>
+        <junit-platform.version>1.7.0</junit-platform.version>
         <mockito-kotlin.version>1.6.0</mockito-kotlin.version>
-        <mockito.version>2.25.1</mockito.version>
-        <pitest-maven.version>1.4.8</pitest-maven.version>
+        <mockito.version>3.6.28</mockito.version>
+        <pitest-maven.version>1.4.9</pitest-maven.version>
         <pitest-junit5-plugin.version>0.8</pitest-junit5-plugin.version>
-        <testcontainer-cassandra.version>1.11.2</testcontainer-cassandra.version>
+        <testcontainer-cassandra.version>1.15.0</testcontainer-cassandra.version>
 
         <!--Plugins-->
         <jacoco-maven-plugin.version>0.8.3</jacoco-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M1</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.0.0-M3</maven-failsafe-plugin.version>
         <versions-maven-plugin.version>2.7</versions-maven-plugin.version>
     </properties>

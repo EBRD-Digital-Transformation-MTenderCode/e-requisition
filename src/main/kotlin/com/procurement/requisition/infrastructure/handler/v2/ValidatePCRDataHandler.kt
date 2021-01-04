@@ -3,7 +3,7 @@ package com.procurement.requisition.infrastructure.handler.v2
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.validate.ValidatePCRService
+import com.procurement.requisition.application.service.ValidatePCRService
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.api.Action
 import com.procurement.requisition.infrastructure.handler.Actions

@@ -3,8 +3,8 @@ package com.procurement.requisition.infrastructure.handler.v1
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.check.lot.status.CheckLotAwardedService
-import com.procurement.requisition.application.service.check.lot.status.model.CheckLotAwardedCommand
+import com.procurement.requisition.application.service.CheckLotAwardedService
+import com.procurement.requisition.application.service.model.command.CheckLotAwardedCommand
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.api.Action
 import com.procurement.requisition.infrastructure.handler.Actions
@@ -18,6 +18,7 @@ import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asFailure
 import com.procurement.requisition.lib.functional.asSuccess
+import com.procurement.requisition.lib.functional.flatMap
 
 @CommandHandler
 class CheckLotAwardedHandler(

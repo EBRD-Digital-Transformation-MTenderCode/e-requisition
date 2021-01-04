@@ -3,8 +3,8 @@ package com.procurement.requisition.infrastructure.handler.v1
 import com.procurement.requisition.application.extension.trySerialization
 import com.procurement.requisition.application.service.Logger
 import com.procurement.requisition.application.service.Transform
-import com.procurement.requisition.application.service.check.lot.status.CheckLotsStatusService
-import com.procurement.requisition.application.service.check.lot.status.model.CheckLotsStatusCommand
+import com.procurement.requisition.application.service.CheckLotsStatusService
+import com.procurement.requisition.application.service.model.command.CheckLotsStatusCommand
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InternalServerError
 import com.procurement.requisition.infrastructure.api.Action

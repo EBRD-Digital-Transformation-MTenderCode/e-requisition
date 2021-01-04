@@ -83,6 +83,13 @@ sealed class JsonErrors(override val code: String, val path: Path = Path()) : Fa
             get() = "Array by path '${path.asString()}' is empty."
     }
 
+    class EmptyString(override val reason: Exception? = null) :
+        JsonErrors(code = "DR-11") {
+
+        override val description: String
+            get() = "Attribute '${path.asString()}' is an empty string"
+    }
+
     class DateTimeInvalid(val value: String, override val reason: Exception? = null) : JsonErrors(code = "DR-13") {
 
         override val description: String

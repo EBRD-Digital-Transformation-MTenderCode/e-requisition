@@ -2,6 +2,7 @@ package com.procurement.requisition.infrastructure.repository.pcr
 
 import com.datastax.driver.core.Session
 import com.procurement.requisition.application.repository.pcr.PCRRepository
+import com.procurement.requisition.application.repository.pcr.model.Credential
 import com.procurement.requisition.application.repository.pcr.model.TenderState
 import com.procurement.requisition.domain.failure.incident.DatabaseIncident
 import com.procurement.requisition.domain.model.Cpid
@@ -49,6 +50,13 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
                AND ${COLUMN_OCID}=?
         """
 
+        private const val GET_CREDENTIAL_CQL = """
+            SELECT $COLUMN_TOKEN, $COLUMN_OWNER
+              FROM ${KEYSPACE}.${TABLE_NAME}
+             WHERE ${COLUMN_CPID}=?
+               AND ${COLUMN_OCID}=?
+        """
+
         private const val GET_PCR_CQL = """
             SELECT ${COLUMN_JSON_DATA}
               FROM ${KEYSPACE}.${TABLE_NAME}
@@ -67,10 +75,31 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
             """
     }
 
+    private val preparedGetCredentialCQL = session.prepare(GET_CREDENTIAL_CQL)
     private val preparedGetPCRCQL = session.prepare(GET_PCR_CQL)
     private val preparedGetTenderStateCQL = session.prepare(GET_TENDER_STATE_CQL)
     private val preparedSaveNewPCRCQL = session.prepare(SAVE_NEW_PCR_CQL)
     private val preparedUpdatePCRCQL = session.prepare(UPDATE_PCR_CQL)
+
+    override fun getCredential(cpid: Cpid, ocid: Ocid): Result<Credential?, DatabaseIncident> =
+        preparedGetCredentialCQL.bind()
+            .apply {
+                setString(COLUMN_CPID, cpid.underlying)
+                setString(COLUMN_OCID, ocid.underlying)
+            }
+            .tryExecute(session)
+            .onFailure { return it }
+            .one()
+            ?.let { row ->
+                val token = row.getString(COLUMN_TOKEN)
+                    .let {
+                        Token.orNull(it)
+                            ?: return Result.failure(DatabaseIncident.Data(description = "Error of parsing token. Unknown value '$it'."))
+                    }
+                val owner = row.getString(COLUMN_OWNER)
+                Credential(token = token, owner = owner)
+            }
+            .asSuccess()
 
     override fun getPCR(cpid: Cpid, ocid: Ocid): Result<String?, DatabaseIncident> =
         preparedGetPCRCQL.bind()
@@ -113,19 +142,17 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
     override fun saveNew(
         cpid: Cpid,
         ocid: Ocid,
-        token: Token,
-        owner: String,
-        status: TenderStatus,
-        statusDetails: TenderStatusDetails,
+        credential: Credential,
+        state: TenderState,
         data: String
     ): Result<Boolean, DatabaseIncident> = preparedSaveNewPCRCQL.bind()
         .apply {
             setString(COLUMN_CPID, cpid.underlying)
             setString(COLUMN_OCID, ocid.underlying)
-            setString(COLUMN_TOKEN, token.underlying)
-            setString(COLUMN_OWNER, owner)
-            setString(COLUMN_STATUS, status.key)
-            setString(COLUMN_STATUS_DETAIL, statusDetails.key)
+            setString(COLUMN_TOKEN, credential.token.underlying)
+            setString(COLUMN_OWNER, credential.owner)
+            setString(COLUMN_STATUS, state.status.key)
+            setString(COLUMN_STATUS_DETAIL, state.statusDetails.key)
             setString(COLUMN_JSON_DATA, data)
         }
         .tryExecute(session)
@@ -134,15 +161,14 @@ class CassandraPCRRepository(private val session: Session) : PCRRepository {
     override fun update(
         cpid: Cpid,
         ocid: Ocid,
-        status: TenderStatus,
-        statusDetails: TenderStatusDetails,
+        state: TenderState,
         data: String
     ): Result<Boolean, DatabaseIncident> = preparedUpdatePCRCQL.bind()
         .apply {
             setString(COLUMN_CPID, cpid.underlying)
             setString(COLUMN_OCID, ocid.underlying)
-            setString(COLUMN_STATUS, status.key)
-            setString(COLUMN_STATUS_DETAIL, statusDetails.key)
+            setString(COLUMN_STATUS, state.status.key)
+            setString(COLUMN_STATUS_DETAIL, state.statusDetails.key)
             setString(COLUMN_JSON_DATA, data)
         }
         .tryExecute(session)
