@@ -105,7 +105,8 @@ data class ValidatePCRDataCommand(
             val description: String?,
             val requirementGroups: List<RequirementGroup>,
             val relatesTo: CriterionRelatesTo,
-            val relatedItem: String?
+            val relatedItem: String?,
+            val classification: Classification
         ) : EntityBase<String>() {
 
             data class RequirementGroup(

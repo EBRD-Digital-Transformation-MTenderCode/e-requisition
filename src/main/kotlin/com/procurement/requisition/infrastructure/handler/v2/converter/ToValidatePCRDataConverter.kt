@@ -285,6 +285,8 @@ fun ValidatePCRDataRequest.Tender.Criterion.convert(): Result<ValidatePCRDataCom
             requirementGroup.convert().onFailure { return it.repath(path = "/requirementGroups[$idx]") }
         }
 
+    val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
+
     return ValidatePCRDataCommand.Tender.Criterion(
         id = id,
         title = title,
@@ -292,6 +294,7 @@ fun ValidatePCRDataRequest.Tender.Criterion.convert(): Result<ValidatePCRDataCom
         relatesTo = relatesTo,
         relatedItem = relatedItem,
         requirementGroups = requirementGroups,
+        classification = classification
     ).asSuccess()
 }
 
