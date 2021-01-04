@@ -445,7 +445,7 @@ fun ValidatePCRDataRequest.Mdm.convert(): Result<ValidatePCRDataCommand.Mdm, Jso
 }
 
 /**
- * Mdm
+ * Mdm.Criterion
  */
 fun ValidatePCRDataRequest.Mdm.Criterion.convert(): Result<ValidatePCRDataCommand.Mdm.Criterion, JsonErrors> {
     val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
