@@ -1,7 +1,7 @@
 package com.procurement.requisition.infrastructure.repository.rule.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.procurement.requisition.application.repository.rule.model.MinSpecificWeightPriceRule
+import com.procurement.requisition.application.service.rule.model.MinSpecificWeightPriceRule
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess

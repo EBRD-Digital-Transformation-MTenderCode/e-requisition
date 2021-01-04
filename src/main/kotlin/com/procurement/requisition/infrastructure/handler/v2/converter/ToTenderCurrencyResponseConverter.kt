@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
-import com.procurement.requisition.application.service.get.tender.currency.model.GetTenderCurrencyResult
+import com.procurement.requisition.application.service.model.result.GetTenderCurrencyResult
 import com.procurement.requisition.infrastructure.handler.v2.model.response.GetTenderCurrencyResponse
 
 fun GetTenderCurrencyResult.convert(): GetTenderCurrencyResponse =

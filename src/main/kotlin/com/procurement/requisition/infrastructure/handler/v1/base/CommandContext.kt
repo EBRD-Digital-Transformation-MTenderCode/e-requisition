@@ -10,6 +10,7 @@ import com.procurement.requisition.infrastructure.handler.converter.asCpid
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
 import com.procurement.requisition.infrastructure.handler.converter.asSingleStageOcid
 import com.procurement.requisition.lib.functional.Result
+import com.procurement.requisition.lib.functional.flatMap
 import java.time.LocalDateTime
 
 class CommandContext(private val node: JsonNode) {

@@ -4,6 +4,7 @@ import com.procurement.requisition.application.service.Transform
 import com.procurement.requisition.domain.failure.incident.DatabaseIncident
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
+import com.procurement.requisition.lib.functional.flatMap
 
 inline fun <reified T> String.deserialization(transform: Transform): Result<T, Failure> =
     transform.tryDeserialization(this, T::class.java)

@@ -1,6 +1,6 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
-import com.procurement.requisition.application.service.find.pmm.model.FindProcurementMethodModalitiesResult
+import com.procurement.requisition.application.service.model.result.FindProcurementMethodModalitiesResult
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.infrastructure.handler.v2.model.response.FindProcurementMethodModalitiesResponse
 

@@ -1,7 +1,7 @@
 package com.procurement.requisition.infrastructure.handler.v2.model.request
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.procurement.requisition.application.service.validate.model.CheckLotsStateCommand
+import com.procurement.requisition.application.service.model.command.CheckLotsStateCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.OperationType

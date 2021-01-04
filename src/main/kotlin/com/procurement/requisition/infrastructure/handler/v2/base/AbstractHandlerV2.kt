@@ -8,6 +8,7 @@ import com.procurement.requisition.infrastructure.handler.base.AbstractHandler
 import com.procurement.requisition.infrastructure.api.version.ApiVersion
 import com.procurement.requisition.infrastructure.handler.model.CommandDescriptor
 import com.procurement.requisition.lib.functional.Result
+import com.procurement.requisition.lib.functional.flatMap
 
 abstract class AbstractHandlerV2 : AbstractHandler() {
 
