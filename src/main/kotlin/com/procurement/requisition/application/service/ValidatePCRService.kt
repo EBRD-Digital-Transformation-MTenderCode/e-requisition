@@ -1,6 +1,5 @@
 package com.procurement.requisition.application.service
 
-import com.procurement.requisition.application.service.rule.RulesService
 import com.procurement.requisition.application.service.SpecificWeightedPrice.Model.CriteriaMatrix
 import com.procurement.requisition.application.service.SpecificWeightedPrice.Model.Criterion
 import com.procurement.requisition.application.service.SpecificWeightedPrice.Model.RequirementGroup
@@ -10,6 +9,7 @@ import com.procurement.requisition.application.service.SpecificWeightedPrice.Ope
 import com.procurement.requisition.application.service.SpecificWeightedPrice.Operations.getAllRequirementsCombinations
 import com.procurement.requisition.application.service.error.ValidatePCRErrors
 import com.procurement.requisition.application.service.model.command.ValidatePCRDataCommand
+import com.procurement.requisition.application.service.rule.RulesService
 import com.procurement.requisition.domain.failure.incident.InvalidArgumentValueIncident
 import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.award.AwardCriteria
@@ -24,6 +24,7 @@ import com.procurement.requisition.domain.model.requirement.isDataTypeMatched
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality.REQUIRES_ELECTRONIC_CATALOGUE
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
+import com.procurement.requisition.domain.model.tender.criterion.CriterionCategory
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Validated
@@ -151,17 +152,36 @@ class ValidatePCRService(
         command.tender.criteria
             .forEachIndexed { criterionIdx, criterion ->
 
+                if (criterion.isExlusion())
+                    return ValidatePCRErrors.Criterion.DeniedExclusionCriteria("#/tender/criteria[$criterionIdx]")
+                        .asValidatedError()
+
+                if (criterion.isSelection())
+                    return ValidatePCRErrors.Criterion.DeniedSelectionCriteria("#/tender/criteria[$criterionIdx]")
+                        .asValidatedError()
+
+                if (criterion.isOther()) {
+                    val foundedCriterion = command.mdm.criteria.find { it.isOther() }
+                        ?:  return ValidatePCRErrors.Criterion.DeniedOtherCriteria("#/tender/criteria[$criterionIdx]")
+                            .asValidatedError()
+
+                    if (foundedCriterion.classification.scheme != criterion.classification.scheme)
+                        return ValidatePCRErrors.Criterion.DeniedOtherCriteria("#/tender/criteria[$criterionIdx]")
+                            .asValidatedError()
+
+                }
+
                 //VR.COM-17.1.31
-                if (criterion.relatesTo != null && criterion.relatedItem == null)
+                if (criterion.isRelatesToLotOrItem() && criterion.relatedItem == null)
                     return ValidatePCRErrors.Criterion.MissingRelatedItem("#/tender/criteria[$criterionIdx]")
                         .asValidatedError()
 
                 // VR.COM-17.1.15
-                if (criterion.relatesTo == null && criterion.relatedItem != null)
+                if (criterion.isRelatesToTender() && criterion.relatedItem != null)
                     return ValidatePCRErrors.Criterion.UnknownAttributeRelatedItem()
                         .asValidatedError()
 
-                if (criterion.relatesTo != null && criterion.relatedItem != null) {
+                if (criterion.relatedItem != null) {
                     // VR.COM-17.1.14
                     when (criterion.relatesTo) {
                         CriterionRelatesTo.ITEM -> if (criterion.relatedItem !in itemsById)
@@ -318,7 +338,7 @@ class ValidatePCRService(
         val lotsIds = command.tender.lots.map { it.id }
         val criteriaPackageByLot = getCriteriaPackageByLot(lotsIds, itemsWithRelatedLot, command.tender.criteria)
 
-        criteriaPackageByLot.forEach {  criteria ->
+        criteriaPackageByLot.forEach { criteria ->
             val matrix = buildRequirementsMatrix(criteria)
             val allRequirementsCombinations = getAllRequirementsCombinations(matrix)
             val minCoefficientForRequirements = getMinCoefficients(command.tender.conversions)
@@ -592,6 +612,38 @@ class ValidatePCRService(
             else
                 Validated.ok()
 
+        fun ValidatePCRDataCommand.Tender.Criterion.isRelatesToLotOrItem(): Boolean =
+            when (relatesTo) {
+                CriterionRelatesTo.LOT,
+                CriterionRelatesTo.ITEM -> true
+
+                CriterionRelatesTo.AWARD,
+                CriterionRelatesTo.TENDER,
+                CriterionRelatesTo.TENDERER -> false
+            }
+
+        fun ValidatePCRDataCommand.Tender.Criterion.isRelatesToTender(): Boolean =
+            when (relatesTo) {
+                CriterionRelatesTo.TENDER -> true
+
+                CriterionRelatesTo.AWARD,
+                CriterionRelatesTo.ITEM,
+                CriterionRelatesTo.LOT,
+                CriterionRelatesTo.TENDERER -> false
+            }
+
+        fun ValidatePCRDataCommand.Tender.Criterion.isExlusion(): Boolean =
+            this.classification.id.startsWith(CriterionCategory.EXCLUSION.key, true)
+
+        fun ValidatePCRDataCommand.Tender.Criterion.isSelection(): Boolean =
+            this.classification.id.startsWith(CriterionCategory.SELECTION.key, true)
+
+        fun ValidatePCRDataCommand.Tender.Criterion.isOther(): Boolean =
+            this.classification.id.startsWith(CriterionCategory.OTHER.key, true)
+
+        fun ValidatePCRDataCommand.Mdm.Criterion.isOther(): Boolean =
+            this.classification.id.startsWith(CriterionCategory.OTHER.key, true)
+
         fun calculateSpecificWeightPrice(
             requirementsCombination: Combination<Requirements>,
             minCoefficientForRequirements: Map<String, BigDecimal>
@@ -624,7 +676,7 @@ class ValidatePCRService(
             criteria: List<ValidatePCRDataCommand.Tender.Criterion>
         ): List<List<ValidatePCRDataCommand.Tender.Criterion>> {
 
-            val tenderCriteria = criteria.filter { it.relatesTo == null || it.relatesTo == CriterionRelatesTo.TENDER }
+            val tenderCriteria = criteria.filter { it.relatesTo == CriterionRelatesTo.TENDER }
 
             return lots.map { lotId ->
                 val lotCriteria = criteria.filter { it.relatedItem == lotId }
@@ -668,7 +720,7 @@ object SpecificWeightedPrice {
                     .map { it.id }
                     .let { RequirementGroup(Requirements(it)) }
 
-            fun toCriterion (criterion: ValidatePCRDataCommand.Tender.Criterion): Criterion =
+            fun toCriterion(criterion: ValidatePCRDataCommand.Tender.Criterion): Criterion =
                 criterion.requirementGroups
                     .map { toRequirementGroup(it) }
                     .let { Criterion(it) }

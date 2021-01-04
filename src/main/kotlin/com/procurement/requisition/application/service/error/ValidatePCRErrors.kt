@@ -62,7 +62,25 @@ sealed class ValidatePCRErrors(
         class InvalidRelatedItem(path: String, relatedItem: String) :
             Criterion(code = "VR.COM-17.1.14", description = "Invalid related item '$relatedItem'. Path: '$path'.")
 
-        class UnknownAttributeRelatedItem : Criterion(code = "VR.COM-17.1.15", description = "")
+        class UnknownAttributeRelatedItem : Criterion(
+            code = "VR.COM-17.1.15",
+            description = "Unexpected attribute 'relatedItem'."
+        )
+
+        class DeniedExclusionCriteria(path: String) : Criterion(
+            code = "VR.COM-17.1.41",
+            description = "Unexpected criteria ($path) from 'exclusion' group."
+        )
+
+        class DeniedSelectionCriteria(path: String) : Criterion(
+            code = "VR.COM-17.1.42",
+            description = "Unexpected criteria ($path) from 'selection' group."
+        )
+
+        class DeniedOtherCriteria(path: String) : Criterion(
+            code = "VR.COM-17.1.43",
+            description = "Unexpected criteria ($path) from 'other' group."
+        )
 
         class MissingRelatedItem(path: String) : Criterion(
             code = "VR.COM-17.1.31",
