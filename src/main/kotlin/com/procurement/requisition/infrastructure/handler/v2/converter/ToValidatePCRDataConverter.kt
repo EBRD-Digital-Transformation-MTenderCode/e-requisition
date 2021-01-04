@@ -11,6 +11,7 @@ import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
 import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.document.DocumentType
+import com.procurement.requisition.domain.model.requirement.EligibleEvidenceType
 import com.procurement.requisition.domain.model.requirement.ExpectedValue
 import com.procurement.requisition.domain.model.requirement.MaxValue
 import com.procurement.requisition.domain.model.requirement.MinValue
@@ -28,7 +29,7 @@ import com.procurement.requisition.lib.functional.Result.Companion.failure
 import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.mapIndexedOrEmpty
 
-fun ValidatePCRDataRequest.convert(): Result<ValidatePCRDataCommand, JsonErrors>  {
+fun ValidatePCRDataRequest.convert(): Result<ValidatePCRDataCommand, JsonErrors> {
     val tender = tender.convert()
         .onFailure { return it.repath(path = "/tender") }
 
@@ -322,6 +323,12 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.convert
     val dataType = dataType.asEnum(target = DynamicValue.DataType)
         .onFailure { return it.repath(path = "/dataType") }
 
+    val eligibleEvidences = eligibleEvidences
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "eligibleEvidences")) }
+        .mapIndexedOrEmpty { idx, eligibleEvidence ->
+            eligibleEvidence.convert().onFailure { return it.repath(path = "/eligibleEvidences[$idx]") }
+        }
+
     return ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement(
         id = id,
         title = title,
@@ -330,7 +337,8 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.convert
         dataType = dataType,
         expectedValue = expectedValue?.let { ExpectedValue(it) },
         minValue = minValue?.let { MinValue(it) },
-        maxValue = maxValue?.let { MaxValue(it) }
+        maxValue = maxValue?.let { MaxValue(it) },
+        eligibleEvidences = eligibleEvidences
     ).asSuccess()
 }
 
@@ -344,6 +352,23 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.Period.
     return ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.Period(
         startDate = startDate,
         endDate = endDate
+    ).asSuccess()
+}
+
+/**
+ * Requirement.eligibleEvidence
+ */
+fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence.convert():
+    Result<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence, JsonErrors> {
+    val type = type.asEnum(target = EligibleEvidenceType)
+        .onFailure { return it.repath(path = "/type") }
+
+    return ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence(
+        id = id,
+        title = title,
+        description = description,
+        type = type,
+        relatedDocument = relatedDocument
     ).asSuccess()
 }
 

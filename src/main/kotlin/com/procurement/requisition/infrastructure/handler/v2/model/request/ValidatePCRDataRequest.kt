@@ -181,11 +181,27 @@ data class ValidatePCRDataRequest(
 
                     @JsonInclude(JsonInclude.Include.NON_NULL)
                     @field:JsonProperty("maxValue") @param:JsonProperty("maxValue") val maxValue: DynamicValue? = null,
+
+                    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+                    @field:JsonProperty("eligibleEvidences") @param:JsonProperty("eligibleEvidences") val eligibleEvidences: List<EligibleEvidence>?
+
                 ) : EntityBase<String>() {
 
                     data class Period(
                         @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: String,
                         @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: String
+                    )
+
+                    data class EligibleEvidence(
+                        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                        @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
+                        @field:JsonProperty("type") @param:JsonProperty("type") val type: String,
+
+                        @JsonInclude(JsonInclude.Include.NON_NULL)
+                        @field:JsonProperty("description") @param:JsonProperty("description") val description: String,
+
+                        @JsonInclude(JsonInclude.Include.NON_NULL)
+                        @field:JsonProperty("relatedDocument") @param:JsonProperty("relatedDocument") val relatedDocument: String,
                     )
                 }
             }
