@@ -275,8 +275,9 @@ fun ValidatePCRDataRequest.Tender.Criterion.convert(): Result<ValidatePCRDataCom
     val title = title.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/title")) }
     val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
 
-    val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo)
-        ?.onFailure { return it.repath(path = "/relatesTo") }
+    val relatesTo = relatesTo.asEnum(target = CriterionRelatesTo)
+        .onFailure { return it.repath(path = "/relatesTo") }
+
     val requirementGroups = requirementGroups
         .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "requirementGroups")) }
         .mapIndexedOrEmpty { idx, requirementGroup ->

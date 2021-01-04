@@ -91,6 +91,7 @@
       {
         "id": "string",
         "title": "string",
+        "relatesTo": "lot",
         "requirementGroups": [
           {
             "id": "string",

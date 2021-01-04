@@ -147,8 +147,7 @@ data class ValidatePCRDataRequest(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
             @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>,
 
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: String?,
+            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: String,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?
