@@ -165,8 +165,16 @@ data class CreatedPCRResponse(
             @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: String?,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?
+            @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?,
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification?
         ) {
+            data class Classification(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String
+            )
+
             data class RequirementGroup(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 

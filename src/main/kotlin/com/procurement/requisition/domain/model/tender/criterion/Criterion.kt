@@ -10,5 +10,6 @@ data class Criterion(
     val description: String?,
     val requirementGroups: RequirementGroups,
     val relatesTo: CriterionRelatesTo?,
-    val relatedItem: String?
+    val relatedItem: String?,
+    val classification: CriterionClassification?
 ) : EntityBase<CriterionId>()

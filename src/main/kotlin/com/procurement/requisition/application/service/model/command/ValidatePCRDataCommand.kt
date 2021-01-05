@@ -137,8 +137,8 @@ data class ValidatePCRDataCommand(
                         val id: String,
                         val title: String,
                         val type: EligibleEvidenceType,
-                        val description: String,
-                        val relatedDocument: String,
+                        val description: String?,
+                        val relatedDocument: String?,
                     )
                 }
             }

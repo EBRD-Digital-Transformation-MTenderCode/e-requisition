@@ -12,6 +12,7 @@ import com.procurement.requisition.domain.model.tender.Value
 import com.procurement.requisition.domain.model.tender.conversion.Conversion
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.Coefficient
 import com.procurement.requisition.domain.model.tender.criterion.Criterion
+import com.procurement.requisition.domain.model.tender.criterion.CriterionClassification
 import com.procurement.requisition.domain.model.tender.item.Item
 import com.procurement.requisition.domain.model.tender.lot.Lot
 import com.procurement.requisition.domain.model.tender.lot.Variant
@@ -133,12 +134,18 @@ fun Criterion.convert() = CreatePCRResult.Tender.Criterion(
     relatesTo = relatesTo,
     relatedItem = relatedItem,
     requirementGroups = requirementGroups.map { it.convert() },
+    classification = classification?.convert()
 )
 
 fun RequirementGroup.convert() = CreatePCRResult.Tender.Criterion.RequirementGroup(
     id = id,
     description = description,
     requirements = requirements.toList(),
+)
+
+fun CriterionClassification.convert() = CreatePCRResult.Tender.Criterion.Classification(
+    id = id,
+    scheme = scheme
 )
 
 /**
