@@ -436,7 +436,7 @@ fun ValidatePCRDataRequest.Tender.Document.convert(): Result<ValidatePCRDataComm
  */
 fun ValidatePCRDataRequest.Mdm.convert(): Result<ValidatePCRDataCommand.Mdm, JsonErrors> {
     val criteria = criteria
-        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "criteria")) }
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "/criteria")) }
         .mapIndexedOrEmpty { idx, criterion ->
             criterion.convert().onFailure { return it.repath(path = "/criteria[$idx]") }
         }
