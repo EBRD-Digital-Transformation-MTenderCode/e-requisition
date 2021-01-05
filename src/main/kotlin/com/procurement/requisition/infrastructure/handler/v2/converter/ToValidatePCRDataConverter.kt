@@ -331,7 +331,7 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.convert
         .onFailure { return it.repath(path = "/dataType") }
 
     val eligibleEvidences = eligibleEvidences
-        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "eligibleEvidences")) }
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "/eligibleEvidences")) }
         .mapIndexedOrEmpty { idx, eligibleEvidence ->
             eligibleEvidence.convert().onFailure { return it.repath(path = "/eligibleEvidences[$idx]") }
         }
