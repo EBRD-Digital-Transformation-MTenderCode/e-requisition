@@ -82,6 +82,10 @@
         "description": "string",
         "relatedItem": "string",
         "relatesTo": "lot",
+        "classification": {
+          "id": "string",
+          "scheme": "CPV"
+        },
         "requirementGroups": [
           {
             "id": "string",

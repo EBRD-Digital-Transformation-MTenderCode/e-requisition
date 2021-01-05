@@ -93,6 +93,10 @@
         "id": "string",
         "title": "string",
         "relatesTo": "lot",
+        "classification": {
+          "id": "string",
+          "scheme": "CPV"
+        },
         "requirementGroups": [
           {
             "id": "string",

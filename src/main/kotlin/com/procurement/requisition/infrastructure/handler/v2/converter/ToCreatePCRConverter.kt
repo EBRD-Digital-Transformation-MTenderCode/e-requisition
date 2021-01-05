@@ -255,6 +255,8 @@ fun CreatePCRRequest.Tender.Criterion.convert(): Result<CreatePCRCommand.Tender.
             requirementGroup.convert().onFailure { return it.repath(path = "/requirementGroups[$idx]") }
         }
 
+    val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
+
     return CreatePCRCommand.Tender.Criterion(
         id = id,
         title = title,
@@ -262,7 +264,17 @@ fun CreatePCRRequest.Tender.Criterion.convert(): Result<CreatePCRCommand.Tender.
         relatesTo = relatesTo,
         relatedItem = relatedItem,
         requirementGroups = requirementGroups,
+        classification = classification
     ).asSuccess()
+}
+
+/**
+ * Classification
+ */
+fun CreatePCRRequest.Tender.Criterion.Classification.convert(): Result<CreatePCRCommand.Tender.Criterion.Classification, JsonErrors> {
+    val scheme = scheme.asEnum(target = ClassificationScheme)
+        .onFailure { return it.repath(path = "/scheme") }
+    return CreatePCRCommand.Tender.Criterion.Classification(id = id, scheme = scheme).asSuccess()
 }
 
 fun CreatePCRRequest.Tender.Criterion.RequirementGroup.convert(): Result<CreatePCRCommand.Tender.Criterion.RequirementGroup, JsonErrors> {
