@@ -9,6 +9,7 @@ import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
 import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.document.DocumentType
+import com.procurement.requisition.domain.model.requirement.EligibleEvidenceType
 import com.procurement.requisition.domain.model.requirement.ExpectedValue
 import com.procurement.requisition.domain.model.requirement.MaxValue
 import com.procurement.requisition.domain.model.requirement.MinValue
@@ -288,6 +289,12 @@ fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.convert():
     val dataType = dataType.asEnum(target = DynamicValue.DataType)
         .onFailure { return it.repath(path = "/dataType") }
 
+    val eligibleEvidences = eligibleEvidences
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "eligibleEvidences")) }
+        .mapIndexedOrEmpty { idx, eligibleEvidence ->
+            eligibleEvidence.convert().onFailure { return it.repath(path = "/eligibleEvidences[$idx]") }
+        }
+
     return CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement(
         id = id,
         title = title,
@@ -297,6 +304,7 @@ fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.convert():
         expectedValue = expectedValue?.let { ExpectedValue(it) },
         minValue = minValue?.let { MinValue(it) },
         maxValue = maxValue?.let { MaxValue(it) },
+        eligibleEvidences = eligibleEvidences
     ).asSuccess()
 }
 
@@ -310,6 +318,26 @@ fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.Period.conver
     return CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement.Period(
         startDate = startDate,
         endDate = endDate
+    ).asSuccess()
+}
+
+/**
+
+ * Requirement.eligibleEvidence
+
+ */
+
+fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence.convert():
+    Result<CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence, JsonErrors> {
+    val type = type.asEnum(target = EligibleEvidenceType)
+        .onFailure { return it.repath(path = "/type") }
+
+    return CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence(
+        id = id,
+        title = title,
+        description = description,
+        type = type,
+        relatedDocument = relatedDocument
     ).asSuccess()
 }
 

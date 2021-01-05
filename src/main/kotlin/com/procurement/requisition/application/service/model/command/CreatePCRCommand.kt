@@ -8,6 +8,7 @@ import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
 import com.procurement.requisition.domain.model.document.DocumentId
 import com.procurement.requisition.domain.model.document.DocumentType
+import com.procurement.requisition.domain.model.requirement.EligibleEvidenceType
 import com.procurement.requisition.domain.model.requirement.ExpectedValue
 import com.procurement.requisition.domain.model.requirement.MaxValue
 import com.procurement.requisition.domain.model.requirement.MinValue
@@ -126,11 +127,20 @@ data class CreatePCRCommand(
                     val expectedValue: ExpectedValue? = null,
                     val minValue: MinValue? = null,
                     val maxValue: MaxValue? = null,
+                    val eligibleEvidences: List<EligibleEvidence>
                 ) : EntityBase<String>() {
 
                     data class Period(
                         val startDate: LocalDateTime,
                         val endDate: LocalDateTime
+                    )
+
+                    data class EligibleEvidence(
+                        val id: String,
+                        val title: String,
+                        val type: EligibleEvidenceType,
+                        val description: String,
+                        val relatedDocument: String
                     )
                 }
             }
