@@ -2,6 +2,17 @@
   "pmd": "CF",
   "country": "string",
   "operationType": "createPcr",
+  "mdm": {
+    "criteria": [
+      {
+        "id": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string"
+        }
+      }
+    ]
+  },
   "tender": {
     "title": "string",
     "description": "string",
@@ -91,6 +102,11 @@
       {
         "id": "string",
         "title": "string",
+        "relatesTo": "lot",
+        "classification": {
+          "id": "string",
+          "scheme": "CPV"
+        },
         "requirementGroups": [
           {
             "id": "string",
