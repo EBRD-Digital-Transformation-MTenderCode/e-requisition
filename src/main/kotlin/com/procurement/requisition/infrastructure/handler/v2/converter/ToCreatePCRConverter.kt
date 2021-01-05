@@ -1,7 +1,7 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
-import com.procurement.requisition.application.service.model.command.CreatePCRCommand
 import com.procurement.requisition.application.service.model.StateFE
+import com.procurement.requisition.application.service.model.command.CreatePCRCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.DynamicValue
@@ -245,9 +245,9 @@ val allowedRelatesTo = CriterionRelatesTo.allowedElements
     .toSet()
 
 fun CreatePCRRequest.Tender.Criterion.convert(): Result<CreatePCRCommand.Tender.Criterion, JsonErrors> {
-    val relatesTo =
-        relatesTo?.asEnum(target = CriterionRelatesTo, allowedElements = allowedRelatesTo)
-            ?.onFailure { return it.repath(path = "/relatesTo") }
+    val relatesTo = relatesTo.asEnum(target = CriterionRelatesTo, allowedElements = allowedRelatesTo)
+            .onFailure { return it.repath(path = "/relatesTo") }
+
     val requirementGroups = requirementGroups
         .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "requirementGroups")) }
         .mapIndexedOrEmpty { idx, requirementGroup ->

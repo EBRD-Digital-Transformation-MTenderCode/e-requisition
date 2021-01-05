@@ -107,7 +107,7 @@ data class CreatePCRCommand(
             val title: String,
             val description: String?,
             val requirementGroups: List<RequirementGroup>,
-            val relatesTo: CriterionRelatesTo?,
+            val relatesTo: CriterionRelatesTo,
             val relatedItem: CriterionRelatedItem?
         ) : EntityBase<String>() {
 
