@@ -149,26 +149,22 @@ class ValidatePCRService(
         val isCriteriaNeed = isCriteriaNeed(command.tender.awardCriteria)
         if (isCriteriaNeed) validateCriteriaExistence(command.tender.criteria).onFailure { return it }
 
+
+        val mdmCriteriaByClassificationId = command.mdm.criteria.associateBy { it.classification.id }
         command.tender.criteria
             .forEachIndexed { criterionIdx, criterion ->
 
-                if (criterion.isExlusion())
-                    return ValidatePCRErrors.Criterion.DeniedExclusionCriteria("#/tender/criteria[$criterionIdx]")
-                        .asValidatedError()
-
-                if (criterion.isSelection())
-                    return ValidatePCRErrors.Criterion.DeniedSelectionCriteria("#/tender/criteria[$criterionIdx]")
-                        .asValidatedError()
-
                 if (criterion.isOther()) {
-                    val foundedCriterion = command.mdm.criteria.find { it.isOther() }
-                        ?:  return ValidatePCRErrors.Criterion.DeniedOtherCriteria("#/tender/criteria[$criterionIdx]")
+                    val foundedCriterion = mdmCriteriaByClassificationId[criterion.classification.id]
+                        ?:  return ValidatePCRErrors.Criterion.CriteriaClassificationIdMismatch("#/tender/criteria[$criterionIdx]")
                             .asValidatedError()
 
                     if (foundedCriterion.classification.scheme != criterion.classification.scheme)
-                        return ValidatePCRErrors.Criterion.DeniedOtherCriteria("#/tender/criteria[$criterionIdx]")
+                        return ValidatePCRErrors.Criterion.CriteriaClassificationSchemeMismatch("#/tender/criteria[$criterionIdx]")
                             .asValidatedError()
-
+                } else {
+                    return ValidatePCRErrors.Criterion.MissingOtherCriteria("#/tender/criteria[$criterionIdx]")
+                        .asValidatedError()
                 }
 
                 //VR.COM-17.1.31
@@ -632,16 +628,7 @@ class ValidatePCRService(
                 CriterionRelatesTo.TENDERER -> false
             }
 
-        fun ValidatePCRDataCommand.Tender.Criterion.isExlusion(): Boolean =
-            this.classification.id.startsWith(CriterionCategory.EXCLUSION.key, true)
-
-        fun ValidatePCRDataCommand.Tender.Criterion.isSelection(): Boolean =
-            this.classification.id.startsWith(CriterionCategory.SELECTION.key, true)
-
         fun ValidatePCRDataCommand.Tender.Criterion.isOther(): Boolean =
-            this.classification.id.startsWith(CriterionCategory.OTHER.key, true)
-
-        fun ValidatePCRDataCommand.Mdm.Criterion.isOther(): Boolean =
             this.classification.id.startsWith(CriterionCategory.OTHER.key, true)
 
         fun calculateSpecificWeightPrice(

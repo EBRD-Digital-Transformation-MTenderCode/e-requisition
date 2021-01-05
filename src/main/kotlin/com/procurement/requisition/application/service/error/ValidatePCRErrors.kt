@@ -67,19 +67,19 @@ sealed class ValidatePCRErrors(
             description = "Unexpected attribute 'relatedItem'."
         )
 
-        class DeniedExclusionCriteria(path: String) : Criterion(
+        class MissingOtherCriteria(path: String) : Criterion(
             code = "VR.COM-17.1.41",
-            description = "Unexpected criteria ($path) from 'exclusion' group."
+            description = "Criteria ($path) must be from 'other' category."
         )
 
-        class DeniedSelectionCriteria(path: String) : Criterion(
+        class CriteriaClassificationIdMismatch(path: String) : Criterion(
             code = "VR.COM-17.1.42",
-            description = "Unexpected criteria ($path) from 'selection' group."
+            description = "Unexpected classification id in criteria ($path)."
         )
 
-        class DeniedOtherCriteria(path: String) : Criterion(
+        class CriteriaClassificationSchemeMismatch(path: String) : Criterion(
             code = "VR.COM-17.1.43",
-            description = "Unexpected criteria ($path) from 'other' group."
+            description = "Unexpected classification scheme in criteria ($path)."
         )
 
         class MissingRelatedItem(path: String) : Criterion(
