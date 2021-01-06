@@ -64,6 +64,7 @@ private val allowedOperationType = OperationType.allowedElements
         when (it) {
             OperationType.SUBMIT_BID_IN_PCR -> true
 
+            OperationType.PCR_PROTOCOL,
             OperationType.CREATE_PCR,
             OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,
             OperationType.TENDER_PERIOD_END_IN_PCR -> false
