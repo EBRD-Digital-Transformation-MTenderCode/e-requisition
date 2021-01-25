@@ -147,8 +147,12 @@ data class CreatePCRCommand(
                         val title: String,
                         val type: EligibleEvidenceType,
                         val description: String?,
-                        val relatedDocument: String?
-                    )
+                        val relatedDocument: DocumentReference?
+                    ) {
+                        data class DocumentReference(
+                            val id: DocumentId,
+                        )
+                    }
                 }
             }
         }
