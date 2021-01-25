@@ -6,8 +6,10 @@ import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.EntityBase
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
+import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.document.DocumentId
 import com.procurement.requisition.domain.model.document.DocumentType
+import com.procurement.requisition.domain.model.requirement.EligibleEvidenceType
 import com.procurement.requisition.domain.model.requirement.ExpectedValue
 import com.procurement.requisition.domain.model.requirement.MaxValue
 import com.procurement.requisition.domain.model.requirement.MinValue
@@ -107,9 +109,15 @@ data class CreatePCRCommand(
             val title: String,
             val description: String?,
             val requirementGroups: List<RequirementGroup>,
-            val relatesTo: CriterionRelatesTo?,
-            val relatedItem: CriterionRelatedItem?
+            val relatesTo: CriterionRelatesTo,
+            val relatedItem: CriterionRelatedItem?,
+            val classification: Classification,
         ) : EntityBase<String>() {
+
+            data class Classification(
+                val id: String,
+                val scheme: ClassificationScheme
+            )
 
             data class RequirementGroup(
                 override val id: String,
@@ -126,11 +134,20 @@ data class CreatePCRCommand(
                     val expectedValue: ExpectedValue? = null,
                     val minValue: MinValue? = null,
                     val maxValue: MaxValue? = null,
+                    val eligibleEvidences: List<EligibleEvidence>
                 ) : EntityBase<String>() {
 
                     data class Period(
                         val startDate: LocalDateTime,
                         val endDate: LocalDateTime
+                    )
+
+                    data class EligibleEvidence(
+                        val id: String,
+                        val title: String,
+                        val type: EligibleEvidenceType,
+                        val description: String?,
+                        val relatedDocument: String?
                     )
                 }
             }

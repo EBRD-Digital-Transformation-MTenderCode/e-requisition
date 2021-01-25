@@ -85,6 +85,10 @@
         "description": "string",
         "relatedItem": "string",
         "relatesTo": "lot",
+        "classification": {
+          "id": "string",
+          "scheme": "CPV"
+        },
         "requirementGroups": [
           {
             "id": "string",
@@ -99,7 +103,16 @@
                   "endDate": "2020-10-19T10:22:42Z"
                 },
                 "dataType": "integer",
-                "expectedValue": 10
+                "expectedValue": 10,
+                "eligibleEvidences": [
+                  {
+                    "id": "string",
+                    "title": "string",
+                    "description": "string",
+                    "type": "reference",
+                    "relatedDocument": "string"
+                  }
+                ]
               },
               {
                 "id": "string",
@@ -110,7 +123,16 @@
                   "endDate": "2020-10-19T10:22:42Z"
                 },
                 "dataType": "number",
-                "expectedValue": 10.21
+                "expectedValue": 10.21,
+                "eligibleEvidences": [
+                  {
+                    "id": "string",
+                    "title": "string",
+                    "description": "string",
+                    "type": "reference",
+                    "relatedDocument": "string"
+                  }
+                ]
               },
               {
                 "id": "string",
@@ -122,7 +144,9 @@
                 },
                 "dataType": "integer",
                 "minValue": 1,
-                "maxValue": 5
+                "maxValue": 5,
+                "status": "active",
+                "datePublished": "2021-01-05T13:55:12Z"
               }
             ]
           }

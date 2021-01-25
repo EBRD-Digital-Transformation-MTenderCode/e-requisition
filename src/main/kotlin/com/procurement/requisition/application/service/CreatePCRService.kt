@@ -1,9 +1,9 @@
 package com.procurement.requisition.application.service
 
+import com.procurement.requisition.application.service.converter.convertToCreatedPCR
+import com.procurement.requisition.application.service.model.StateFE
 import com.procurement.requisition.application.service.model.command.CreatePCRCommand
 import com.procurement.requisition.application.service.model.result.CreatePCRResult
-import com.procurement.requisition.application.service.model.StateFE
-import com.procurement.requisition.application.service.converter.convertToCreatedPCR
 import com.procurement.requisition.domain.extension.nowDefaultUTC
 import com.procurement.requisition.domain.failure.incident.InvalidArgumentValueIncident
 import com.procurement.requisition.domain.model.Cpid
@@ -25,6 +25,7 @@ import com.procurement.requisition.domain.model.requirement.RequirementGroup
 import com.procurement.requisition.domain.model.requirement.RequirementGroupId
 import com.procurement.requisition.domain.model.requirement.RequirementGroups
 import com.procurement.requisition.domain.model.requirement.RequirementId
+import com.procurement.requisition.domain.model.requirement.RequirementStatus
 import com.procurement.requisition.domain.model.requirement.Requirements
 import com.procurement.requisition.domain.model.requirement.generateRequirementId
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModalities
@@ -42,6 +43,7 @@ import com.procurement.requisition.domain.model.tender.conversion.coefficient.Co
 import com.procurement.requisition.domain.model.tender.conversion.coefficient.Coefficients
 import com.procurement.requisition.domain.model.tender.criterion.Criteria
 import com.procurement.requisition.domain.model.tender.criterion.Criterion
+import com.procurement.requisition.domain.model.tender.criterion.CriterionClassification
 import com.procurement.requisition.domain.model.tender.criterion.CriterionId
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatedItem
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
@@ -247,6 +249,12 @@ fun criteria(
             title = criterion.title,
             source = CriterionSource.TENDERER,
             description = criterion.description,
+            classification = criterion.classification.let { classification ->
+              CriterionClassification(
+                  id = classification.id,
+                  scheme = classification.scheme
+              )
+            },
             requirementGroups = criterion.requirementGroups
                 .map { requirementGroup ->
                     RequirementGroup(
@@ -269,6 +277,17 @@ fun criteria(
                                     expectedValue = requirement.expectedValue,
                                     minValue = requirement.minValue,
                                     maxValue = requirement.maxValue,
+                                    eligibleEvidences = requirement.eligibleEvidences.map { eligibleEvidence ->
+                                        Requirement.EligibleEvidence(
+                                            id = eligibleEvidence.id,
+                                            title = eligibleEvidence.title,
+                                            type = eligibleEvidence.type,
+                                            description = eligibleEvidence.description,
+                                            relatedDocument = eligibleEvidence.relatedDocument
+                                        )
+                                    },
+                                    status = RequirementStatus.ACTIVE, // FR.COM-17.2.46
+                                    datePublished = createPCR.date // FR.COM-17.2.47
                                 )
                             }
                             .let { Requirements(it) },

@@ -150,12 +150,18 @@ data class CreatePCRRequest(
             @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
             @field:JsonProperty("requirementGroups") @param:JsonProperty("requirementGroups") val requirementGroups: List<RequirementGroup>,
 
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: String?,
+            @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: String,
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?
+            @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?,
+
+            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
         ) {
+            data class Classification(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String
+            )
+
             data class RequirementGroup(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 
@@ -185,11 +191,27 @@ data class CreatePCRRequest(
 
                     @JsonInclude(JsonInclude.Include.NON_NULL)
                     @field:JsonProperty("maxValue") @param:JsonProperty("maxValue") val maxValue: DynamicValue? = null,
+
+                    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+                    @field:JsonProperty("eligibleEvidences") @param:JsonProperty("eligibleEvidences") val eligibleEvidences: List<EligibleEvidence>?
+
                 ) : EntityBase<String>() {
 
                     data class Period(
                         @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: String,
                         @field:JsonProperty("endDate") @param:JsonProperty("endDate") val endDate: String
+                    )
+
+                    data class EligibleEvidence(
+                        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+                        @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
+                        @field:JsonProperty("type") @param:JsonProperty("type") val type: String,
+
+                        @JsonInclude(JsonInclude.Include.NON_NULL)
+                        @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
+
+                        @JsonInclude(JsonInclude.Include.NON_NULL)
+                        @field:JsonProperty("relatedDocument") @param:JsonProperty("relatedDocument") val relatedDocument: String?
                     )
                 }
             }

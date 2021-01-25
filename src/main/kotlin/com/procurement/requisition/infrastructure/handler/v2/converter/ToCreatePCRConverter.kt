@@ -1,7 +1,7 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
-import com.procurement.requisition.application.service.model.command.CreatePCRCommand
 import com.procurement.requisition.application.service.model.StateFE
+import com.procurement.requisition.application.service.model.command.CreatePCRCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.DynamicValue
@@ -9,6 +9,7 @@ import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
 import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.document.DocumentType
+import com.procurement.requisition.domain.model.requirement.EligibleEvidenceType
 import com.procurement.requisition.domain.model.requirement.ExpectedValue
 import com.procurement.requisition.domain.model.requirement.MaxValue
 import com.procurement.requisition.domain.model.requirement.MinValue
@@ -245,14 +246,16 @@ val allowedRelatesTo = CriterionRelatesTo.allowedElements
     .toSet()
 
 fun CreatePCRRequest.Tender.Criterion.convert(): Result<CreatePCRCommand.Tender.Criterion, JsonErrors> {
-    val relatesTo =
-        relatesTo?.asEnum(target = CriterionRelatesTo, allowedElements = allowedRelatesTo)
-            ?.onFailure { return it.repath(path = "/relatesTo") }
+    val relatesTo = relatesTo.asEnum(target = CriterionRelatesTo, allowedElements = allowedRelatesTo)
+            .onFailure { return it.repath(path = "/relatesTo") }
+
     val requirementGroups = requirementGroups
         .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "requirementGroups")) }
         .mapIndexedOrEmpty { idx, requirementGroup ->
             requirementGroup.convert().onFailure { return it.repath(path = "/requirementGroups[$idx]") }
         }
+
+    val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
 
     return CreatePCRCommand.Tender.Criterion(
         id = id,
@@ -261,7 +264,17 @@ fun CreatePCRRequest.Tender.Criterion.convert(): Result<CreatePCRCommand.Tender.
         relatesTo = relatesTo,
         relatedItem = relatedItem,
         requirementGroups = requirementGroups,
+        classification = classification
     ).asSuccess()
+}
+
+/**
+ * Classification
+ */
+fun CreatePCRRequest.Tender.Criterion.Classification.convert(): Result<CreatePCRCommand.Tender.Criterion.Classification, JsonErrors> {
+    val scheme = scheme.asEnum(target = ClassificationScheme)
+        .onFailure { return it.repath(path = "/scheme") }
+    return CreatePCRCommand.Tender.Criterion.Classification(id = id, scheme = scheme).asSuccess()
 }
 
 fun CreatePCRRequest.Tender.Criterion.RequirementGroup.convert(): Result<CreatePCRCommand.Tender.Criterion.RequirementGroup, JsonErrors> {
@@ -288,6 +301,12 @@ fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.convert():
     val dataType = dataType.asEnum(target = DynamicValue.DataType)
         .onFailure { return it.repath(path = "/dataType") }
 
+    val eligibleEvidences = eligibleEvidences
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "eligibleEvidences")) }
+        .mapIndexedOrEmpty { idx, eligibleEvidence ->
+            eligibleEvidence.convert().onFailure { return it.repath(path = "/eligibleEvidences[$idx]") }
+        }
+
     return CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement(
         id = id,
         title = title,
@@ -297,6 +316,7 @@ fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.convert():
         expectedValue = expectedValue?.let { ExpectedValue(it) },
         minValue = minValue?.let { MinValue(it) },
         maxValue = maxValue?.let { MaxValue(it) },
+        eligibleEvidences = eligibleEvidences
     ).asSuccess()
 }
 
@@ -310,6 +330,24 @@ fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.Period.conver
     return CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement.Period(
         startDate = startDate,
         endDate = endDate
+    ).asSuccess()
+}
+
+/**
+ * Requirement.eligibleEvidence
+ */
+
+fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence.convert():
+    Result<CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence, JsonErrors> {
+    val type = type.asEnum(target = EligibleEvidenceType)
+        .onFailure { return it.repath(path = "/type") }
+
+    return CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence(
+        id = id,
+        title = title,
+        description = description,
+        type = type,
+        relatedDocument = relatedDocument
     ).asSuccess()
 }
 

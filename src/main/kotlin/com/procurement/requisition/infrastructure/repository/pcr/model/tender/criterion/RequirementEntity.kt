@@ -6,15 +6,18 @@ import com.procurement.requisition.domain.extension.asString
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.DynamicValue
+import com.procurement.requisition.domain.model.requirement.EligibleEvidenceType
 import com.procurement.requisition.domain.model.requirement.ExpectedValue
 import com.procurement.requisition.domain.model.requirement.MaxValue
 import com.procurement.requisition.domain.model.requirement.MinValue
 import com.procurement.requisition.domain.model.requirement.Requirement
+import com.procurement.requisition.domain.model.requirement.RequirementStatus
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
 import com.procurement.requisition.infrastructure.handler.converter.asString
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
+import com.procurement.requisition.lib.mapOrEmpty
 
 data class RequirementEntity(
     @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
@@ -36,7 +39,29 @@ data class RequirementEntity(
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @field:JsonProperty("maxValue") @param:JsonProperty("maxValue") val maxValue: DynamicValue?,
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @field:JsonProperty("eligibleEvidences") @param:JsonProperty("eligibleEvidences") val eligibleEvidences: List<EligibleEvidence>?,
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @field:JsonProperty("status") @param:JsonProperty("status") val status: String?,
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @field:JsonProperty("datePublished") @param:JsonProperty("datePublished") val datePublished: String?
+
 ) {
+
+    data class EligibleEvidence(
+        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+        @field:JsonProperty("title") @param:JsonProperty("title") val title: String,
+        @field:JsonProperty("type") @param:JsonProperty("type") val type: String,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("relatedDocument") @param:JsonProperty("relatedDocument") val relatedDocument: String?
+    )
 
     data class Period(
         @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: String,
@@ -54,7 +79,18 @@ fun Requirement.serialization() = RequirementEntity(
     dataType = dataType.asString(),
     expectedValue = expectedValue?.value,
     minValue = minValue?.value,
-    maxValue = maxValue?.value
+    maxValue = maxValue?.value,
+    eligibleEvidences = eligibleEvidences.map { eligibleEvidence ->
+        RequirementEntity.EligibleEvidence(
+            id = eligibleEvidence.id,
+            title = eligibleEvidence.title,
+            type = eligibleEvidence.type.asString(),
+            description = eligibleEvidence.description,
+            relatedDocument = eligibleEvidence.relatedDocument
+        )
+    },
+    status = status?.asString(),
+    datePublished = datePublished?.asString()
 )
 
 fun RequirementEntity.deserialization(): Result<Requirement, JsonErrors> {
@@ -62,6 +98,16 @@ fun RequirementEntity.deserialization(): Result<Requirement, JsonErrors> {
 
     val dataType = dataType.asEnum(target = DynamicValue.DataType)
         .onFailure { return it.repath(path = "/dataType") }
+
+    val eligibleEvidences = eligibleEvidences.mapOrEmpty {
+        it.deserialization().onFailure { return it.repath(path = "/eligibleEvidences") }
+    }
+
+    val status = status?.asEnum(target = RequirementStatus)
+        ?.onFailure { return it.repath(path = "/status") }
+
+    val datePublished = datePublished?.asLocalDateTime()
+        ?.onFailure { return it.repath(path = "/status") }
 
     return Requirement(
         id = id,
@@ -71,7 +117,10 @@ fun RequirementEntity.deserialization(): Result<Requirement, JsonErrors> {
         dataType = dataType,
         expectedValue = expectedValue?.let { ExpectedValue(it) },
         minValue = minValue?.let { MinValue(it) },
-        maxValue = maxValue?.let { MaxValue(it) }
+        maxValue = maxValue?.let { MaxValue(it) },
+        eligibleEvidences = eligibleEvidences,
+        status = status,
+        datePublished = datePublished
     ).asSuccess()
 }
 
@@ -79,4 +128,19 @@ fun RequirementEntity.Period.deserialization(): Result<Requirement.Period, JsonE
     val startDate = startDate.asLocalDateTime().onFailure { return it.repath(path = "/startDate") }
     val endDate = endDate.asLocalDateTime().onFailure { return it.repath(path = "/endDate") }
     return Requirement.Period(startDate = startDate, endDate = endDate).asSuccess()
+}
+
+fun RequirementEntity.EligibleEvidence.deserialization(): Result<Requirement.EligibleEvidence, JsonErrors> {
+
+    val type = type.asEnum(target = EligibleEvidenceType)
+        .onFailure { return it.repath(path = "/type") }
+
+    return Requirement.EligibleEvidence(
+        id = id,
+        title = title,
+        type = type,
+        description = description,
+        relatedDocument = relatedDocument
+    ).asSuccess()
+
 }

@@ -53,6 +53,7 @@ class CreateRequestsForEvPanelsService(
         source = CriterionSource.PROCURING_ENTITY,
         relatesTo = CriterionRelatesTo.AWARD,
         relatedItem = null,
+        classification = null,
         requirementGroups = RequirementGroups(
             RequirementGroup(
                 id = RequirementGroupId.generate(),
@@ -63,7 +64,10 @@ class CreateRequestsForEvPanelsService(
                         title = "",
                         dataType = DynamicValue.DataType.BOOLEAN,
                         period = null,
-                        description = null
+                        description = null,
+                        eligibleEvidences = emptyList(),
+                        status = null,
+                        datePublished = null
                     )
                 )
             )

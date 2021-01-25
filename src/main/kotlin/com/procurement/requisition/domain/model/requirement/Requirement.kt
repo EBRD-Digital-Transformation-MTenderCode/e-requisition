@@ -13,11 +13,22 @@ data class Requirement(
     val expectedValue: ExpectedValue? = null,
     val minValue: MinValue? = null,
     val maxValue: MaxValue? = null,
+    val eligibleEvidences: List<EligibleEvidence>,
+    val status: RequirementStatus?,
+    val datePublished: LocalDateTime?
 ) : EntityBase<RequirementId>() {
 
     data class Period(
         val startDate: LocalDateTime,
         val endDate: LocalDateTime
+    )
+
+    data class EligibleEvidence(
+        val id: String,
+        val title: String,
+        val type: EligibleEvidenceType,
+        val description: String?,
+        val relatedDocument: String?
     )
 
     companion object {

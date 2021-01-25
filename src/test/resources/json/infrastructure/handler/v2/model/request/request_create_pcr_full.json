@@ -82,6 +82,10 @@
         "description": "string",
         "relatedItem": "string",
         "relatesTo": "lot",
+        "classification": {
+          "id": "string",
+          "scheme": "CPV"
+        },
         "requirementGroups": [
           {
             "id": "string",
@@ -108,7 +112,16 @@
                 },
                 "dataType": "integer",
                 "minValue": 1,
-                "maxValue": 5
+                "maxValue": 5,
+                "eligibleEvidences": [
+                  {
+                    "id": "string",
+                    "title": "string",
+                    "description": "string",
+                    "type": "reference",
+                    "relatedDocument": "string"
+                  }
+                ]
               }
             ]
           }
