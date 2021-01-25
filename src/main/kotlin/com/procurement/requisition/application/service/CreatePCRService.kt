@@ -13,6 +13,7 @@ import com.procurement.requisition.domain.model.Period
 import com.procurement.requisition.domain.model.Stage
 import com.procurement.requisition.domain.model.Token
 import com.procurement.requisition.domain.model.document.Document
+import com.procurement.requisition.domain.model.document.DocumentReference
 import com.procurement.requisition.domain.model.document.Documents
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcess
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessId
@@ -20,6 +21,7 @@ import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessS
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcesses
 import com.procurement.requisition.domain.model.relatedprocesses.Relationship
 import com.procurement.requisition.domain.model.relatedprocesses.Relationships
+import com.procurement.requisition.domain.model.requirement.EligibleEvidence
 import com.procurement.requisition.domain.model.requirement.Requirement
 import com.procurement.requisition.domain.model.requirement.RequirementGroup
 import com.procurement.requisition.domain.model.requirement.RequirementGroupId
@@ -278,12 +280,17 @@ fun criteria(
                                     minValue = requirement.minValue,
                                     maxValue = requirement.maxValue,
                                     eligibleEvidences = requirement.eligibleEvidences.map { eligibleEvidence ->
-                                        Requirement.EligibleEvidence(
+                                        EligibleEvidence(
                                             id = eligibleEvidence.id,
                                             title = eligibleEvidence.title,
                                             type = eligibleEvidence.type,
                                             description = eligibleEvidence.description,
                                             relatedDocument = eligibleEvidence.relatedDocument
+                                                ?.let { relatedDocument ->
+                                                    DocumentReference(
+                                                        id = relatedDocument.id
+                                                    )
+                                                }
                                         )
                                     },
                                     status = RequirementStatus.ACTIVE, // FR.COM-17.2.46

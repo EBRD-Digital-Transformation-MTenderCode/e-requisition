@@ -119,7 +119,9 @@
                     "title": "string",
                     "description": "string",
                     "type": "reference",
-                    "relatedDocument": "string"
+                    "relatedDocument": {
+                      "id": "string"
+                    }
                   }
                 ]
               }

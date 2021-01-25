@@ -342,6 +342,9 @@ fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.EligibleEvide
     val type = type.asEnum(target = EligibleEvidenceType)
         .onFailure { return it.repath(path = "/type") }
 
+    val relatedDocument = relatedDocument?.convert()
+        ?.onFailure { return it.repath(path = "/relatedDocument") }
+
     return CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence(
         id = id,
         title = title,
@@ -351,6 +354,14 @@ fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.EligibleEvide
     ).asSuccess()
 }
 
+fun CreatePCRRequest.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence.DocumentReference.convert():
+    Result<CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence.DocumentReference, JsonErrors> {
+    val id = id.asDocumentId().onFailure { return it.repath(path = "/id") }
+
+    return CreatePCRCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence.DocumentReference(
+        id = id
+    ).asSuccess()
+}
 /**
  * Conversion
  */

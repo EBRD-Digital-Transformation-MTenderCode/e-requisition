@@ -23,14 +23,6 @@ data class Requirement(
         val endDate: LocalDateTime
     )
 
-    data class EligibleEvidence(
-        val id: String,
-        val title: String,
-        val type: EligibleEvidenceType,
-        val description: String?,
-        val relatedDocument: String?
-    )
-
     companion object {
         fun hasOnlyExpectedValue(expectedValue: ExpectedValue?, minValue: MinValue?, maxValue: MaxValue?): Boolean =
             expectedValue.isPresent && minValue.isNotPresent && maxValue.isNotPresent

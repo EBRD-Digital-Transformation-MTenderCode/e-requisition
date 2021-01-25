@@ -6,12 +6,15 @@ import com.procurement.requisition.domain.extension.asString
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.DynamicValue
+import com.procurement.requisition.domain.model.document.DocumentReference
+import com.procurement.requisition.domain.model.requirement.EligibleEvidence
 import com.procurement.requisition.domain.model.requirement.EligibleEvidenceType
 import com.procurement.requisition.domain.model.requirement.ExpectedValue
 import com.procurement.requisition.domain.model.requirement.MaxValue
 import com.procurement.requisition.domain.model.requirement.MinValue
 import com.procurement.requisition.domain.model.requirement.Requirement
 import com.procurement.requisition.domain.model.requirement.RequirementStatus
+import com.procurement.requisition.infrastructure.handler.converter.asDocumentId
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
 import com.procurement.requisition.infrastructure.handler.converter.asString
@@ -60,8 +63,12 @@ data class RequirementEntity(
         @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("relatedDocument") @param:JsonProperty("relatedDocument") val relatedDocument: String?
-    )
+        @field:JsonProperty("relatedDocument") @param:JsonProperty("relatedDocument") val relatedDocument: DocumentReference?
+    ) {
+        data class DocumentReference(
+            @field:JsonProperty("id") @param:JsonProperty("id") val id: String
+        )
+    }
 
     data class Period(
         @field:JsonProperty("startDate") @param:JsonProperty("startDate") val startDate: String,
@@ -80,18 +87,25 @@ fun Requirement.serialization() = RequirementEntity(
     expectedValue = expectedValue?.value,
     minValue = minValue?.value,
     maxValue = maxValue?.value,
-    eligibleEvidences = eligibleEvidences.map { eligibleEvidence ->
-        RequirementEntity.EligibleEvidence(
-            id = eligibleEvidence.id,
-            title = eligibleEvidence.title,
-            type = eligibleEvidence.type.asString(),
-            description = eligibleEvidence.description,
-            relatedDocument = eligibleEvidence.relatedDocument
-        )
-    },
+    eligibleEvidences = eligibleEvidences.map { it.serialization() },
     status = status?.asString(),
     datePublished = datePublished?.asString()
 )
+
+fun EligibleEvidence.serialization() =
+    RequirementEntity.EligibleEvidence(
+        id = this.id,
+        title = this.title,
+        type = this.type.asString(),
+        description = this.description,
+        relatedDocument = this.relatedDocument?.serialization()
+    )
+
+fun DocumentReference.serialization() =
+    RequirementEntity.EligibleEvidence.DocumentReference(
+        id = this.id.underlying
+    )
+
 
 fun RequirementEntity.deserialization(): Result<Requirement, JsonErrors> {
     val period = period?.deserialization()?.onFailure { return it.repath(path = "/period") }
@@ -130,12 +144,15 @@ fun RequirementEntity.Period.deserialization(): Result<Requirement.Period, JsonE
     return Requirement.Period(startDate = startDate, endDate = endDate).asSuccess()
 }
 
-fun RequirementEntity.EligibleEvidence.deserialization(): Result<Requirement.EligibleEvidence, JsonErrors> {
+fun RequirementEntity.EligibleEvidence.deserialization(): Result<EligibleEvidence, JsonErrors> {
 
     val type = type.asEnum(target = EligibleEvidenceType)
         .onFailure { return it.repath(path = "/type") }
 
-    return Requirement.EligibleEvidence(
+    val relatedDocument = relatedDocument?.deserialization()
+        ?.onFailure { return it.repath(path = "/relatedDocument") }
+
+    return EligibleEvidence(
         id = id,
         title = title,
         type = type,
@@ -143,4 +160,10 @@ fun RequirementEntity.EligibleEvidence.deserialization(): Result<Requirement.Eli
         relatedDocument = relatedDocument
     ).asSuccess()
 
+}
+
+fun RequirementEntity.EligibleEvidence.DocumentReference.deserialization(): Result<DocumentReference, JsonErrors> {
+    val id = id.asDocumentId().onFailure { return it.repath(path = "/id") }
+
+    return DocumentReference(id = id).asSuccess()
 }
