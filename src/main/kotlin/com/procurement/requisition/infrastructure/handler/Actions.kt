@@ -6,9 +6,9 @@ import com.procurement.requisition.lib.enumerator.EnumElementProvider
 enum class Actions(override val key: String, override val kind: Action.Kind) : EnumElementProvider.Element, Action {
 
     CHECK_ACCESS_TO_TENDER(key = "checkAccessToTender", kind = Action.Kind.QUERY),
-    CHECK_LOT_AWARDED(key = "checkLotAwarded", kind = Action.Kind.QUERY),
     CHECK_LOTS_STATE(key = "checkLotsState", kind = Action.Kind.QUERY),
     CHECK_LOTS_STATUS(key = "checkLotsStatus", kind = Action.Kind.QUERY),
+    CHECK_LOT_AWARDED(key = "checkLotAwarded", kind = Action.Kind.QUERY),
     CHECK_TENDER_STATE(key = "checkTenderState", kind = Action.Kind.QUERY),
     CREATE_PCR(key = "createPcr", kind = Action.Kind.COMMAND),
     CREATE_RELATION_TO_CONTRACT_PROCESS_STAGE(key = "createRelationToContractProcessStage", kind = Action.Kind.COMMAND),
@@ -18,6 +18,7 @@ enum class Actions(override val key: String, override val kind: Action.Kind) : E
     FIND_PROCUREMENT_METHOD_MODALITIES(key = "findProcurementMethodModalities", kind = Action.Kind.QUERY),
     GET_ACTIVE_LOTS(key = "getActiveLots", kind = Action.Kind.QUERY),
     GET_AWARD_CRITERIA_AND_CONVERSIONS(key = "getAwardCriteriaAndConversions", kind = Action.Kind.QUERY),
+    GET_CRITERIA_FOR_TENDERER(key = "getCriteriaForTenderer", kind = Action.Kind.QUERY),
     GET_CURRENCY(key = "getCurrency", kind = Action.Kind.QUERY),
     GET_LOTS_AUCTION(key = "getLotsAuction", kind = Action.Kind.QUERY),
     GET_TENDER_OWNER(key = "getTenderOwner", kind = Action.Kind.QUERY),
