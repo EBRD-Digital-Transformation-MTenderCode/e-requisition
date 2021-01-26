@@ -53,10 +53,12 @@ fun relationship(operationType: OperationType): Result<Relationship, InvalidArgu
     when (operationType) {
         OperationType.CREATE_PCR -> Relationship.X_PRE_AWARD_CATALOG_REQUEST.asSuccess()
 
+        OperationType.COMPLETE_SOURCING,
         OperationType.PCR_PROTOCOL,
         OperationType.SUBMIT_BID_IN_PCR,
         OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,
-        OperationType.TENDER_PERIOD_END_IN_PCR -> InvalidArgumentValueIncident(
+        OperationType.TENDER_PERIOD_END_IN_PCR,
+        OperationType.WITHDRAW_PCR_PROTOCOL -> InvalidArgumentValueIncident(
             name = "operationType",
             value = operationType,
             expectedValue = listOf(Relationship.X_PRE_AWARD_CATALOG_REQUEST)
