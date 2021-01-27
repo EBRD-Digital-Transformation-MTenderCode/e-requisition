@@ -11,6 +11,7 @@ import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
 import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.document.DocumentType
+import com.procurement.requisition.domain.model.requirement.EligibleEvidenceType
 import com.procurement.requisition.domain.model.requirement.ExpectedValue
 import com.procurement.requisition.domain.model.requirement.MaxValue
 import com.procurement.requisition.domain.model.requirement.MinValue
@@ -28,18 +29,22 @@ import com.procurement.requisition.lib.functional.Result.Companion.failure
 import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.mapIndexedOrEmpty
 
-fun ValidatePCRDataRequest.convert(): Result<ValidatePCRDataCommand, JsonErrors>  {
+fun ValidatePCRDataRequest.convert(): Result<ValidatePCRDataCommand, JsonErrors> {
     val tender = tender.convert()
         .onFailure { return it.repath(path = "/tender") }
 
     val pmd = pmd
         .asEnum(target = ProcurementMethodDetails, allowedElements = allowedProcurementMethodDetails)
         .onFailure { return it.repath(path = "/pmd") }
+
     val operationType = operationType
         .asEnum(target = OperationType, allowedElements = allowedOperationType)
         .onFailure { return it.repath(path = "/operationType") }
 
-    return ValidatePCRDataCommand(tender, country, pmd, operationType).asSuccess()
+    val mdm = mdm.convert()
+        .onFailure { return it.repath(path = "/mdm") }
+
+    return ValidatePCRDataCommand(tender, country, pmd, operationType, mdm).asSuccess()
 }
 
 private val allowedProcurementMethodDetails = ProcurementMethodDetails.allowedElements
@@ -74,6 +79,7 @@ private val allowedOperationType = OperationType.allowedElements
         when (it) {
             OperationType.CREATE_PCR -> true
 
+            OperationType.PCR_PROTOCOL,
             OperationType.SUBMIT_BID_IN_PCR,
             OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,
             OperationType.TENDER_PERIOD_END_IN_PCR -> false
@@ -275,13 +281,16 @@ fun ValidatePCRDataRequest.Tender.Criterion.convert(): Result<ValidatePCRDataCom
     val title = title.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/title")) }
     val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
 
-    val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo)
-        ?.onFailure { return it.repath(path = "/relatesTo") }
+    val relatesTo = relatesTo.asEnum(target = CriterionRelatesTo)
+        .onFailure { return it.repath(path = "/relatesTo") }
+
     val requirementGroups = requirementGroups
         .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "requirementGroups")) }
         .mapIndexedOrEmpty { idx, requirementGroup ->
             requirementGroup.convert().onFailure { return it.repath(path = "/requirementGroups[$idx]") }
         }
+
+    val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
 
     return ValidatePCRDataCommand.Tender.Criterion(
         id = id,
@@ -290,6 +299,7 @@ fun ValidatePCRDataRequest.Tender.Criterion.convert(): Result<ValidatePCRDataCom
         relatesTo = relatesTo,
         relatedItem = relatedItem,
         requirementGroups = requirementGroups,
+        classification = classification
     ).asSuccess()
 }
 
@@ -321,6 +331,12 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.convert
     val dataType = dataType.asEnum(target = DynamicValue.DataType)
         .onFailure { return it.repath(path = "/dataType") }
 
+    val eligibleEvidences = eligibleEvidences
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "/eligibleEvidences")) }
+        .mapIndexedOrEmpty { idx, eligibleEvidence ->
+            eligibleEvidence.convert().onFailure { return it.repath(path = "/eligibleEvidences[$idx]") }
+        }
+
     return ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement(
         id = id,
         title = title,
@@ -329,7 +345,8 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.convert
         dataType = dataType,
         expectedValue = expectedValue?.let { ExpectedValue(it) },
         minValue = minValue?.let { MinValue(it) },
-        maxValue = maxValue?.let { MaxValue(it) }
+        maxValue = maxValue?.let { MaxValue(it) },
+        eligibleEvidences = eligibleEvidences
     ).asSuccess()
 }
 
@@ -343,6 +360,23 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.Period.
     return ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.Period(
         startDate = startDate,
         endDate = endDate
+    ).asSuccess()
+}
+
+/**
+ * Requirement.eligibleEvidence
+ */
+fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence.convert():
+    Result<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence, JsonErrors> {
+    val type = type.asEnum(target = EligibleEvidenceType)
+        .onFailure { return it.repath(path = "/type") }
+
+    return ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence(
+        id = id,
+        title = title,
+        description = description,
+        type = type,
+        relatedDocument = relatedDocument
     ).asSuccess()
 }
 
@@ -395,4 +429,27 @@ fun ValidatePCRDataRequest.Tender.Document.convert(): Result<ValidatePCRDataComm
         description = description,
         relatedLots = relatedLots
     ).asSuccess()
+}
+
+
+/**
+ * Mdm
+ */
+fun ValidatePCRDataRequest.Mdm.convert(): Result<ValidatePCRDataCommand.Mdm, JsonErrors> {
+    val criteria = criteria
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "/criteria")) }
+        .mapIndexedOrEmpty { idx, criterion ->
+            criterion.convert().onFailure { return it.repath(path = "/criteria[$idx]") }
+        }
+
+    return ValidatePCRDataCommand.Mdm(criteria = criteria).asSuccess()
+}
+
+/**
+ * Mdm.Criterion
+ */
+fun ValidatePCRDataRequest.Mdm.Criterion.convert(): Result<ValidatePCRDataCommand.Mdm.Criterion, JsonErrors> {
+    val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
+
+    return ValidatePCRDataCommand.Mdm.Criterion(id = id, classification = classification).asSuccess()
 }

@@ -128,7 +128,8 @@ data class CreatePCRResult(
             val description: String?,
             val requirementGroups: List<RequirementGroup>,
             val relatesTo: CriterionRelatesTo?,
-            val relatedItem: String?
+            val relatedItem: String?,
+            val classification: Classification?,
         ) {
 
             data class RequirementGroup(
@@ -136,6 +137,12 @@ data class CreatePCRResult(
                 val description: String?,
                 val requirements: List<Requirement>
             )
+
+            data class Classification(
+                val id: String,
+                val scheme: ClassificationScheme
+            )
+
         }
 
         data class Conversion(

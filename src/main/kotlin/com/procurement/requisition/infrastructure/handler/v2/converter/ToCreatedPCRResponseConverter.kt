@@ -131,12 +131,18 @@ fun CreatePCRResult.Tender.Criterion.convert() = CreatedPCRResponse.Tender.Crite
     relatesTo = relatesTo?.asString(),
     relatedItem = relatedItem,
     requirementGroups = requirementGroups.map { it.convert() },
+    classification = classification?.convert()
 )
 
 fun CreatePCRResult.Tender.Criterion.RequirementGroup.convert() = CreatedPCRResponse.Tender.Criterion.RequirementGroup(
     id = id.underlying,
     description = description,
     requirements = requirements.map { it.serialization() },
+)
+
+fun CreatePCRResult.Tender.Criterion.Classification.convert() = CreatedPCRResponse.Tender.Criterion.Classification(
+    id = id,
+    scheme = scheme.asString(),
 )
 
 /**
