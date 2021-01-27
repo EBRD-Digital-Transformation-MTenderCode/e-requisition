@@ -9,6 +9,7 @@ import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
 import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.document.DocumentType
+import com.procurement.requisition.domain.model.requirement.EligibleEvidenceType
 import com.procurement.requisition.domain.model.requirement.ExpectedValue
 import com.procurement.requisition.domain.model.requirement.MaxValue
 import com.procurement.requisition.domain.model.requirement.MinValue
@@ -25,7 +26,8 @@ data class ValidatePCRDataCommand(
     val tender: Tender,
     val country: String,
     val pmd: ProcurementMethodDetails,
-    val operationType: OperationType
+    val operationType: OperationType,
+    val mdm: Mdm
 ) {
 
     data class Tender(
@@ -103,8 +105,9 @@ data class ValidatePCRDataCommand(
             val title: String,
             val description: String?,
             val requirementGroups: List<RequirementGroup>,
-            val relatesTo: CriterionRelatesTo?,
-            val relatedItem: String?
+            val relatesTo: CriterionRelatesTo,
+            val relatedItem: String?,
+            val classification: Classification
         ) : EntityBase<String>() {
 
             data class RequirementGroup(
@@ -122,11 +125,20 @@ data class ValidatePCRDataCommand(
                     val expectedValue: ExpectedValue? = null,
                     val minValue: MinValue? = null,
                     val maxValue: MaxValue? = null,
+                    val eligibleEvidences: List<EligibleEvidence>,
                 ) : EntityBase<String>() {
 
                     data class Period(
                         val startDate: LocalDateTime,
                         val endDate: LocalDateTime
+                    )
+
+                    data class EligibleEvidence(
+                        val id: String,
+                        val title: String,
+                        val type: EligibleEvidenceType,
+                        val description: String?,
+                        val relatedDocument: String?,
                     )
                 }
             }
@@ -155,6 +167,15 @@ data class ValidatePCRDataCommand(
             val description: String?,
             val relatedLots: List<String>
         ) : EntityBase<String>()
+    }
+
+    data class Mdm(
+        val criteria: List<Criterion>,
+    ) {
+        data class Criterion(
+            val id: String,
+            val classification: Classification,
+        )
     }
 
     data class Classification(

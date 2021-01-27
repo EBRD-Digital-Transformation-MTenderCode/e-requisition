@@ -62,6 +62,7 @@ private val allowedOperationType = OperationType.allowedElements
     .asSequence()
     .filter {
         when (it) {
+            OperationType.PCR_PROTOCOL,
             OperationType.SUBMIT_BID_IN_PCR -> true
 
             OperationType.CREATE_PCR,
@@ -74,12 +75,15 @@ private val allowedOperationType = OperationType.allowedElements
 fun CheckLotsStateRequest.convert(): Result<CheckLotsStateCommand, JsonErrors> {
     val cpid = cpid.asCpid().onFailure { return it.repath(path = "/cpid") }
     val ocid = ocid.asSingleStageOcid().onFailure { return it.repath(path = "/ocid") }
+
     val pmd = pmd
         .asEnum(target = ProcurementMethodDetails, allowedElements = allowedProcurementMethodDetails)
         .onFailure { return it.repath(path = "/pmd") }
+
     val operationType = operationType
         .asEnum(target = OperationType, allowedElements = allowedOperationType)
         .onFailure { return it.repath(path = "/operationType") }
+
     val tender = tender.convert().onFailure { return it.repath(path = "/tender") }
     return CheckLotsStateCommand(
         cpid = cpid,

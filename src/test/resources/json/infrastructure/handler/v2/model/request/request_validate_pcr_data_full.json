@@ -2,6 +2,17 @@
   "pmd": "CF",
   "country": "string",
   "operationType": "createPcr",
+  "mdm": {
+    "criteria": [
+      {
+        "id": "string",
+        "classification": {
+          "id": "string",
+          "scheme": "string"
+        }
+      }
+    ]
+  },
   "tender": {
     "title": "string",
     "description": "string",
@@ -124,6 +135,10 @@
         "description": "string",
         "relatedItem": "string",
         "relatesTo": "lot",
+        "classification": {
+          "id": "string",
+          "scheme": "CPV"
+        },
         "requirementGroups": [
           {
             "id": "string",
@@ -150,7 +165,14 @@
                 },
                 "dataType": "integer",
                 "minValue": 1,
-                "maxValue": 5
+                "maxValue": 5,
+                "eligibleEvidences": [
+                  {
+                    "id": "string",
+                    "title": "string",
+                    "type": "reference"
+                  }
+                ]
               }
             ]
           }

@@ -29,7 +29,10 @@ data class CriterionEntity(
     @field:JsonProperty("relatesTo") @param:JsonProperty("relatesTo") val relatesTo: String?,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?
+    @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?,
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: ClassificationEntity?
 )
 
 fun Criterion.serialization() = CriterionEntity(
@@ -40,20 +43,27 @@ fun Criterion.serialization() = CriterionEntity(
     relatesTo = relatesTo?.asString(),
     relatedItem = relatedItem,
     requirementGroups = requirementGroups.map { it.serialization() },
+    classification = classification?.mappingToEntity()
 )
 
 fun CriterionEntity.deserialization(): Result<Criterion, JsonErrors> {
     val id = id.asCriterionId().onFailure { return it.repath(path = "/id") }
+
     val source = source.asEnum(target = CriterionSource)
         .onFailure { return it.repath(path = "/source") }
+
     val relatesTo = relatesTo?.asEnum(target = CriterionRelatesTo)
         ?.onFailure { return it.repath(path = "/relatesTo") }
+
     val requirementGroups = requirementGroups
         .failureIfEmpty { return Result.failure(JsonErrors.EmptyArray().repath(path = "/requirementGroups")) }
         .mapIndexedOrEmpty { idx, requirementGroup ->
             requirementGroup.deserialization().onFailure { return it.repath(path = "/requirementGroups[$idx]") }
         }
         .let { RequirementGroups(it) }
+
+    val classification = classification?.mappingToDomain()
+        ?.onFailure { return Result.failure(JsonErrors.EmptyArray().repath(path = "/classification")) }
 
     return Criterion(
         id = id,
@@ -63,5 +73,6 @@ fun CriterionEntity.deserialization(): Result<Criterion, JsonErrors> {
         relatesTo = relatesTo,
         relatedItem = relatedItem,
         requirementGroups = requirementGroups,
+        classification = classification
     ).asSuccess()
 }

@@ -13,6 +13,9 @@ data class Requirement(
     val expectedValue: ExpectedValue? = null,
     val minValue: MinValue? = null,
     val maxValue: MaxValue? = null,
+    val eligibleEvidences: List<EligibleEvidence>,
+    val status: RequirementStatus?,
+    val datePublished: LocalDateTime?
 ) : EntityBase<RequirementId>() {
 
     data class Period(
