@@ -15,6 +15,20 @@ import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.mapIndexedOrEmpty
 
+val allowedOperationTypes = OperationType.allowedElements
+    .filter {
+        when (it) {
+            OperationType.COMPLETE_SOURCING,
+            OperationType.PCR_PROTOCOL,
+            OperationType.WITHDRAW_PCR_PROTOCOL -> true
+
+            OperationType.CREATE_PCR,
+            OperationType.SUBMIT_BID_IN_PCR,
+            OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,
+            OperationType.TENDER_PERIOD_END_IN_PCR -> false
+        }
+    }.toSet()
+
 fun SetLotsStateRequest.convert(): Result<SetLotsStateCommand, JsonErrors> {
     val cpid = cpid.asCpid().onFailure { return it.repath(path = "/cpid") }
     val ocid = ocid.asSingleStageOcid().onFailure { return it.repath(path = "/ocid") }
@@ -22,7 +36,7 @@ fun SetLotsStateRequest.convert(): Result<SetLotsStateCommand, JsonErrors> {
         .asEnum(target = ProcurementMethodDetails)
         .onFailure { return it.repath(path = "/pmd") }
     val operationType = operationType
-        .asEnum(target = OperationType)
+        .asEnum(target = OperationType, allowedElements = allowedOperationTypes)
         .onFailure { return it.repath(path = "/operationType") }
     val tender = tender.convert()
         .onFailure { return it.repath(path = "/tender") }
