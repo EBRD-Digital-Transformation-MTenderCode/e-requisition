@@ -16,11 +16,20 @@ import com.procurement.requisition.lib.mapIndexedOrEmpty
 class ValidLotStatesRuleEntity(states: List<LotStatusEntity>) : List<ValidLotStatesRuleEntity.LotStatusEntity> by states {
 
     class LotStatusEntity(
-        @field:JsonProperty("status") @param:JsonProperty("status") val status: String,
+        @field:JsonProperty("status") @param:JsonProperty("status") val status: Status,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: String?
-    )
+        @field:JsonProperty("statusDetails") @param:JsonProperty("statusDetails") val statusDetails: StatusDetails?
+    ) {
+        class Status(
+            @field:JsonProperty("value") @param:JsonProperty("value") val value: String,
+        )
+
+        class StatusDetails(
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @field:JsonProperty("value") @param:JsonProperty("value") val value: String?
+        )
+    }
 }
 
 fun ValidLotStatesRuleEntity.convert(): Result<ValidLotStatesRule, JsonErrors> =
@@ -31,8 +40,20 @@ fun ValidLotStatesRuleEntity.convert(): Result<ValidLotStatesRule, JsonErrors> =
         .let { ValidLotStatesRule(it).asSuccess() }
 
 fun ValidLotStatesRuleEntity.LotStatusEntity.convert(): Result<ValidLotStatesRule.State, JsonErrors> {
-    val status = status.asEnum(target = LotStatus).onFailure { return it.repath(path = "/status") }
-    val statusDetails = statusDetails?.asEnum(target = LotStatusDetails)
-        ?.onFailure { return it.repath(path = "/statusDetails") }
-    return ValidLotStatesRule.State(status = status, statusDetails = statusDetails).asSuccess()
+    val status = status.value
+        .asEnum(target = LotStatus)
+        .onFailure { return it.repath(path = "/status") }
+        .let { ValidLotStatesRule.State.Status(it) }
+
+    val statusDetails = statusDetails
+        ?.let { statusDetails ->
+            statusDetails.value?.asEnum(target = LotStatusDetails)
+                ?.onFailure { return it.repath(path = "/statusDetails") }
+                .let { ValidLotStatesRule.State.StatusDetails(it) }
+        }
+
+    return ValidLotStatesRule.State(
+        status = status,
+        statusDetails = statusDetails
+    ).asSuccess()
 }
