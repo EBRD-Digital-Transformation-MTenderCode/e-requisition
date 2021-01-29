@@ -16,6 +16,7 @@ import com.procurement.requisition.infrastructure.handler.v2.model.request.GetOc
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
+import com.procurement.requisition.lib.functional.flatMap
 
 @CommandHandler
 class GetOcidFromRelatedProcessHandler(
@@ -34,10 +35,13 @@ class GetOcidFromRelatedProcessHandler(
         getOcidFromRelatedProcessService.get(command)
             .onFailure { return failure(it.reason) }
 
-        return ApiResponseV2.Success(version = descriptor.version, id = descriptor.id, result = null)
-            .trySerialization(transform)
-            .mapFailure { failure ->
-                InternalServerError(description = failure.description, reason = failure.reason)
+        return getOcidFromRelatedProcessService.get(command)
+            .flatMap { result ->
+                ApiResponseV2.Success(version = descriptor.version, id = descriptor.id, result = result.convert())
+                    .trySerialization(transform)
+                    .mapFailure { failure ->
+                        InternalServerError(description = failure.description, reason = failure.reason)
+                    }
             }
     }
 }
