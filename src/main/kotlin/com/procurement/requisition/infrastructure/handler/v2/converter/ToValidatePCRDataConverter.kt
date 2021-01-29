@@ -1,11 +1,11 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
+import com.procurement.requisition.application.service.model.OperationType
 import com.procurement.requisition.application.service.model.command.ValidatePCRDataCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.MainProcurementCategory
-import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails

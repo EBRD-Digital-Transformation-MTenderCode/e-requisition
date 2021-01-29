@@ -8,7 +8,7 @@ import com.datastax.driver.core.Session
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import com.nhaarman.mockito_kotlin.spy
 import com.procurement.requisition.application.repository.rule.RulesRepository
-import com.procurement.requisition.domain.model.OperationType
+import com.procurement.requisition.application.service.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.infrastructure.repository.CassandraTestContainer
 import com.procurement.requisition.infrastructure.repository.DatabaseTestConfiguration

@@ -1,9 +1,9 @@
 package com.procurement.requisition.application.service.model.command
 
+import com.procurement.requisition.application.service.model.OperationType
 import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.EntityBase
 import com.procurement.requisition.domain.model.MainProcurementCategory
-import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails

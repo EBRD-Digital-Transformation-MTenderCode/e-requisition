@@ -1,11 +1,11 @@
 package com.procurement.requisition.application.service
 
+import com.procurement.requisition.application.service.model.OperationType
 import com.procurement.requisition.application.service.model.command.CreateRelationCommand
 import com.procurement.requisition.application.service.model.result.CreateRelationResult
 import com.procurement.requisition.domain.failure.incident.InvalidArgumentValueIncident
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
-import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcess
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessId
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessScheme
