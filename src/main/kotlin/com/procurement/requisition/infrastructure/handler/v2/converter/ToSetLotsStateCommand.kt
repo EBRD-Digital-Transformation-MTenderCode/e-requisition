@@ -15,7 +15,7 @@ import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.mapIndexedOrEmpty
 
-val allowedOperationTypes = OperationType.allowedElements
+private val allowedOperationTypes = OperationType.allowedElements
     .filter {
         when (it) {
             OperationType.COMPLETE_SOURCING,
