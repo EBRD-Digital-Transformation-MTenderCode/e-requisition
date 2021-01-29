@@ -47,7 +47,7 @@ internal class EnumSubsetElementProviderTest {
         val subsetWithDeprecatedElement = listOf(Subset.DEPRECATED)
 
         val actual = subsetWithDeprecatedElement.keysAsStrings()
-        val expected = "[deprecated (Deprecated)]"
+        val expected = listOf("deprecated (Deprecated)")
 
         assertEquals(expected, actual)
     }
