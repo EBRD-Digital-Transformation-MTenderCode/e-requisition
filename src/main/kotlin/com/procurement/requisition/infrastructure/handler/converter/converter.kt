@@ -21,6 +21,8 @@ import com.procurement.requisition.domain.model.tender.target.TargetId
 import com.procurement.requisition.domain.model.tender.target.observation.ObservationId
 import com.procurement.requisition.lib.enumerator.EnumElementProvider
 import com.procurement.requisition.lib.enumerator.EnumElementProvider.Companion.keysAsStrings
+import com.procurement.requisition.lib.enumerator.EnumSubsetElementProvider
+import com.procurement.requisition.lib.enumerator.EnumSubsetElementProvider.Companion.keysAsStrings
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
 import com.procurement.requisition.lib.functional.asSuccess
@@ -34,6 +36,16 @@ fun <T> String.asEnum(
     ?.takeIf { it in allowedElements }
     ?.asSuccess()
     ?: failure(JsonErrors.UnknownValue(expectedValues = allowedElements.keysAsStrings(), actualValue = this))
+
+fun <T, R> String.asEnum(
+    target: EnumSubsetElementProvider<T, R>,
+): Result<T, JsonErrors.UnknownValue> where R : Enum<R>,
+                                            R : EnumElementProvider.Element,
+                                            T : Enum<T>,
+                                            T : EnumSubsetElementProvider.Element<R> =
+    target.orNull(this)
+    ?.asSuccess()
+    ?: failure(JsonErrors.UnknownValue(expectedValues = target.allowedElements.keysAsStrings(), actualValue = this))
 
 fun <T> T.asStringOrNull(): String? where T : Enum<T>,
                                           T : EnumElementProvider.Element = takeIf { !it.isNeutralElement }?.key
