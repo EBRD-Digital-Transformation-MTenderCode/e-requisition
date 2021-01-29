@@ -18,7 +18,7 @@ sealed class GetOcidFromRelatedProcessErrors(
             description = "PCR by cpid '${cpid.underlying}' and ocid '${ocid.underlying}' is not found."
         )
 
-    class AppropriateRelationshipNotFound(relationShip: Relationship) :
+    class RelationshipNotFound(relationShip: Relationship) :
         GetOcidFromRelatedProcessErrors(
             code = "VR.COM-17.15.2",
             description = "No relatedProcesses with relationship '$relationShip' found."
