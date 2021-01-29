@@ -1,6 +1,7 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
 import com.procurement.requisition.application.service.model.OperationType
+import com.procurement.requisition.application.service.model.OperationTypeGetOcidFromRelatedProcess
 import com.procurement.requisition.application.service.model.command.GetOcidFromRelatedProcessCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
@@ -29,7 +30,7 @@ private val allowedOperationTypes = OperationType.allowedElements
 fun GetOcidFromRelatedProcessRequest.convert(): Result<GetOcidFromRelatedProcessCommand, JsonErrors> {
     val cpid = cpid.asCpid().onFailure { return it.repath(path = "/cpid") }
     val ocid = ocid.asSingleStageOcid().onFailure { return it.repath(path = "/ocid") }
-    val operationType = operationType.asEnum(target = OperationType, allowedElements = allowedOperationTypes)
+    val operationType = operationType.asEnum(OperationTypeGetOcidFromRelatedProcess)
         .onFailure { return it.repath(path = "/operationType") }
 
     return GetOcidFromRelatedProcessCommand(cpid = cpid, ocid = ocid, operationType = operationType)
