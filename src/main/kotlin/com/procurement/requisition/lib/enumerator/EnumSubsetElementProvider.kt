@@ -4,13 +4,6 @@ abstract class EnumSubsetElementProvider<T, R>(val info: EnumInfo<T>) where R : 
                                                                             R : EnumElementProvider.Element,
                                                                             T : Enum<T>,
                                                                             T : EnumSubsetElementProvider.Element<R> {
-
-    @Target(AnnotationTarget.PROPERTY)
-    annotation class DeprecatedElement
-
-    @Target(AnnotationTarget.PROPERTY)
-    annotation class ExcludedElement
-
     interface Element<R> where R : Enum<R>, R : EnumElementProvider.Element {
         val base: R
         val isNeutralElement: Boolean
@@ -31,8 +24,8 @@ abstract class EnumSubsetElementProvider<T, R>(val info: EnumInfo<T>) where R : 
                                                                      T : Element<R> = this
             .map { element -> element.base.key + if (element.base.isDeprecated()) " (Deprecated)" else "" }
 
-        private fun <E : Enum<E>> Enum<E>.isNotExcluded(): Boolean = this.findAnnotation<ExcludedElement, E>() == null
-        private fun <E : Enum<E>> Enum<E>.isDeprecated(): Boolean = this.findAnnotation<DeprecatedElement, E>() != null
+        private fun <E : Enum<E>> Enum<E>.isNotExcluded(): Boolean = this.findAnnotation<EnumElementProvider.ExcludedElement, E>() == null
+        private fun <E : Enum<E>> Enum<E>.isDeprecated(): Boolean = this.findAnnotation<EnumElementProvider.DeprecatedElement, E>() != null
         private inline fun <reified A : Annotation, E : Enum<E>> Enum<E>.findAnnotation(): A? = this::class.java
             .declaredFields
             .find { field -> field.name == this.name }
