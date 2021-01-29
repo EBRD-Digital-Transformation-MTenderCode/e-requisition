@@ -5,6 +5,7 @@ import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
 enum class Actions(override val key: String, override val kind: Action.Kind) : EnumElementProvider.Element, Action {
 
+    GET_OCID_FROM_RELATED_PROCESS(key = "getOcidFromRelatedProcess", kind = Action.Kind.COMMAND),
     CHECK_ACCESS_TO_TENDER(key = "checkAccessToTender", kind = Action.Kind.QUERY),
     CHECK_LOTS_STATE(key = "checkLotsState", kind = Action.Kind.QUERY),
     CHECK_LOTS_STATUS(key = "checkLotsStatus", kind = Action.Kind.QUERY),
