@@ -1,12 +1,15 @@
 package com.procurement.requisition.application.service.model
 
-import com.procurement.requisition.lib.enumerator.EnumSubsetElementProvider
+import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
-enum class OperationTypeGetOcidFromRelatedProcess(override val base: OperationType) : EnumSubsetElementProvider.Element<OperationType> {
+enum class OperationTypeGetOcidFromRelatedProcess(val base: OperationType) : EnumElementProvider.Element {
 
     COMPLETE_SOURCING(OperationType.COMPLETE_SOURCING);
 
-    companion object : EnumSubsetElementProvider<OperationTypeGetOcidFromRelatedProcess, OperationType>(info = info())
+    override val key: String
+        get() = base.key
+
+    companion object : EnumElementProvider<OperationTypeGetOcidFromRelatedProcess>(info = info())
 }
 
 
