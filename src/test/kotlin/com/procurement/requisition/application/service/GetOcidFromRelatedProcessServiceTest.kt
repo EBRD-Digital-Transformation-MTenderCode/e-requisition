@@ -2,7 +2,6 @@ package com.procurement.requisition.application.service
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import com.procurement.requisition.application.service.model.OperationTypeGetOcidFromRelatedProcess
 import com.procurement.requisition.application.service.model.command.GetOcidFromRelatedProcessCommand
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
@@ -47,7 +46,7 @@ internal class GetOcidFromRelatedProcessServiceTest {
     companion object {
         val CPID = Cpid.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892")!!
         val OCID = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892-EV-1580458791896")!!
-        val OPERATION_TYPE = OperationTypeGetOcidFromRelatedProcess.COMPLETE_SOURCING
+        val OPERATION_TYPE = GetOcidFromRelatedProcessCommand.OperationType.COMPLETE_SOURCING
 
         @JvmStatic
         fun incorrectRelationships() = listOf(

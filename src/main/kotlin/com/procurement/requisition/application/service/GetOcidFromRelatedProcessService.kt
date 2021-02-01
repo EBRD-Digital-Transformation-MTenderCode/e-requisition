@@ -1,7 +1,6 @@
 package com.procurement.requisition.application.service
 
 import com.procurement.requisition.application.service.error.GetOcidFromRelatedProcessErrors
-import com.procurement.requisition.application.service.model.OperationTypeGetOcidFromRelatedProcess
 import com.procurement.requisition.application.service.model.command.GetOcidFromRelatedProcessCommand
 import com.procurement.requisition.application.service.model.result.GetOcidFromRelatedProcessResult
 import com.procurement.requisition.domain.model.Ocid
@@ -35,9 +34,9 @@ class GetOcidFromRelatedProcessService(
         return Result.success(GetOcidFromRelatedProcessResult(relatedProcessOcid))
     }
 
-    private fun getAppropriateRelationship(operationType: OperationTypeGetOcidFromRelatedProcess): Relationship =
+    private fun getAppropriateRelationship(operationType: GetOcidFromRelatedProcessCommand.OperationType): Relationship =
         when (operationType) {
-            OperationTypeGetOcidFromRelatedProcess.COMPLETE_SOURCING -> Relationship.X_FRAMEWORK
+            GetOcidFromRelatedProcessCommand.OperationType.COMPLETE_SOURCING -> Relationship.X_FRAMEWORK
         }
 
     private fun containsRelationship(relatedProcess: RelatedProcess, relationship: Relationship) =
