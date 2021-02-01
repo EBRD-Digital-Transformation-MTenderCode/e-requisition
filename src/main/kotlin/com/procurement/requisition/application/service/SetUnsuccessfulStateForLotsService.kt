@@ -49,7 +49,7 @@ class SetUnsuccessfulStateForLotsService(
         return updatedLots.convert(receivedLotIds).asSuccess()
     }
 
-    fun checkLotIds(
+    private fun checkLotIds(
         receivedLotIds: Set<LotId>,
         storedLotIds: Set<LotId>
     ): Validated<SetUnsuccessfulStateForLotsErrors.UnknownLot> {
@@ -60,7 +60,7 @@ class SetUnsuccessfulStateForLotsService(
             Validated.ok()
     }
 
-    fun List<Lot>.setState(ids: Set<LotId>) = this
+    private fun List<Lot>.setState(ids: Set<LotId>) = this
         .map { lot ->
             if (lot.id in ids) {
                 lot.copy(
@@ -72,7 +72,7 @@ class SetUnsuccessfulStateForLotsService(
         }
         .let { Lots(it) }
 
-    fun List<Lot>.convert(updatedLotIds: Set<LotId>) = SetUnsuccessfulStateForLotsResult(
+    private fun List<Lot>.convert(updatedLotIds: Set<LotId>) = SetUnsuccessfulStateForLotsResult(
         tender = SetUnsuccessfulStateForLotsResult.Tender(
             lots = this
                 .asSequence()
