@@ -17,6 +17,9 @@ data class GetOcidFromRelatedProcessCommand(
         override val key: String
             get() = base.key
 
+        override val deprecated: Boolean
+            get() = base.deprecated
+
         companion object : EnumElementProvider<OperationType>(info = info())
     }
 }
