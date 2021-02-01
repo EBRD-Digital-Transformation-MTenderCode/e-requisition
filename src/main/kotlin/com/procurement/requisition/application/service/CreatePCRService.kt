@@ -122,11 +122,11 @@ class CreatePCRService(
             documents = documents(command, lotsMapping),
             value = value(command)
         )
+        val ocid: Ocid = Ocid.SingleStage.generate(cpid = command.cpid, stage = Stage.PC, timestamp = nowDefaultUTC())
 
-        val relatedProcesses = relatedProcesses(command, uriProperties)
+        val relatedProcesses = relatedProcesses(command, uriProperties, ocid)
         val electronicAuctions = command.tender.electronicAuctions?.relatedIds(lotsMapping)
 
-        val ocid: Ocid = Ocid.SingleStage.generate(cpid = command.cpid, stage = Stage.PC, timestamp = nowDefaultUTC())
         val pcr = PCR(
             cpid = command.cpid,
             ocid = ocid,
@@ -303,7 +303,7 @@ fun criteria(
                 .let { RequirementGroups(it) },
             relatesTo = criterion.relatesTo,
             relatedItem = criterion.relatesTo
-                ?.let { relatesTo ->
+                .let { relatesTo ->
                     criteriaRelatedItem(
                         relatesTo = relatesTo,
                         relatedItem = criterion.relatedItem!!,
@@ -407,14 +407,26 @@ fun value(createPCR: CreatePCRCommand) = createPCR.tender.value
         )
     }
 
-fun relatedProcesses(createPCR: CreatePCRCommand, uriProperties: UriProperties) = RelatedProcesses(
-    RelatedProcess(
+fun relatedProcesses(createPCR: CreatePCRCommand, uriProperties: UriProperties, ocid: Ocid): RelatedProcesses {
+    val relatedProcessFA = RelatedProcess(
         id = RelatedProcessId.generate(),
         scheme = RelatedProcessScheme.OCID,
         identifier = createPCR.cpid.underlying,
         relationship = Relationships(Relationship.PARENT),
         uri = uri(uriProperties.tender, createPCR.cpid),
     )
-)
+
+    val relatedProcessFE = RelatedProcess(
+        id = RelatedProcessId.generate(),
+        scheme = RelatedProcessScheme.OCID,
+        identifier = ocid.underlying,
+        relationship = Relationships(Relationship.X_FRAMEWORK),
+        uri = uriByOcid(uriProperties.tender, createPCR.cpid, ocid),
+    )
+
+    return RelatedProcesses(listOf(relatedProcessFA, relatedProcessFE))
+}
 
 fun uri(prefix: String, cpid: Cpid) = "$prefix/${cpid.underlying}/${cpid.underlying}"
+
+fun uriByOcid(prefix: String, cpid: Cpid, ocid: Ocid) = "$prefix/${cpid.underlying}/${ocid.underlying}"
