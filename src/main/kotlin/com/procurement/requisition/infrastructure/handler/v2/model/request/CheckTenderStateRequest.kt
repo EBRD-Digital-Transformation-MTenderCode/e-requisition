@@ -1,10 +1,10 @@
 package com.procurement.requisition.infrastructure.handler.v2.model.request
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.procurement.requisition.application.service.model.OperationType
 import com.procurement.requisition.application.service.model.command.CheckTenderStateCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
-import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.infrastructure.handler.converter.asCpid
 import com.procurement.requisition.infrastructure.handler.converter.asEnum

@@ -1,4 +1,4 @@
-package com.procurement.requisition.domain.model
+package com.procurement.requisition.application.service.model
 
 import com.procurement.requisition.lib.enumerator.EnumElementProvider
 

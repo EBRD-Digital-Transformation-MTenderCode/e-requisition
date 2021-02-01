@@ -1,9 +1,9 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
+import com.procurement.requisition.application.service.model.OperationType
 import com.procurement.requisition.application.service.model.command.SetLotsStateCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
-import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.infrastructure.handler.converter.asCpid
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
@@ -15,7 +15,7 @@ import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.mapIndexedOrEmpty
 
-val allowedOperationTypes = OperationType.allowedElements
+private val allowedOperationTypes = OperationType.allowedElements
     .filter {
         when (it) {
             OperationType.COMPLETE_SOURCING,
