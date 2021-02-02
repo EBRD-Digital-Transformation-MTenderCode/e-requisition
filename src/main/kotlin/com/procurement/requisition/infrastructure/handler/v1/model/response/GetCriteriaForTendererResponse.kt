@@ -69,7 +69,7 @@ data class GetCriteriaForTendererResponse(
         fun GetCriteriaForTendererResult.Criterion.Classification.convert(): Criterion.Classification =
             Criterion.Classification(
                 id = this.id,
-                scheme = this.scheme.asString()
+                scheme = this.scheme
             )
 
         fun GetCriteriaForTendererResult.Criterion.RequirementGroup.convert(): Criterion.RequirementGroup =

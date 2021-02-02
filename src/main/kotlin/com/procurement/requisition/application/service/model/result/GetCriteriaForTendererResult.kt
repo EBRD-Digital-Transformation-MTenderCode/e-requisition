@@ -1,6 +1,5 @@
 package com.procurement.requisition.application.service.model.result
 
-import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.requirement.Requirement
 import com.procurement.requisition.domain.model.requirement.RequirementGroup
 import com.procurement.requisition.domain.model.requirement.RequirementGroupId
@@ -27,7 +26,7 @@ data class GetCriteriaForTendererResult(
 
         data class Classification(
             val id: String,
-            val scheme: ClassificationScheme
+            val scheme: String
         )
 
         data class RequirementGroup(

@@ -142,7 +142,7 @@ fun CreatePCRResult.Tender.Criterion.RequirementGroup.convert() = CreatedPCRResp
 
 fun CreatePCRResult.Tender.Criterion.Classification.convert() = CreatedPCRResponse.Tender.Criterion.Classification(
     id = id,
-    scheme = scheme.asString(),
+    scheme = scheme,
 )
 
 /**

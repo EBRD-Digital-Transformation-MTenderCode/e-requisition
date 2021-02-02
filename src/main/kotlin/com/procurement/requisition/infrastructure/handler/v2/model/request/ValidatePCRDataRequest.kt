@@ -153,8 +153,9 @@ data class ValidatePCRDataRequest(
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @field:JsonProperty("relatedItem") @param:JsonProperty("relatedItem") val relatedItem: String?,
 
-            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
+            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: CriterionClassification,
         ) {
+
             data class RequirementGroup(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
 
@@ -249,9 +250,14 @@ data class ValidatePCRDataRequest(
     ) {
         data class Criterion(
             @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
-            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: Classification,
+            @field:JsonProperty("classification") @param:JsonProperty("classification") val classification: CriterionClassification,
         )
     }
+
+    data class CriterionClassification(
+        @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
+        @field:JsonProperty("id") @param:JsonProperty("id") val id: String,
+    )
 
     data class Classification(
         @field:JsonProperty("scheme") @param:JsonProperty("scheme") val scheme: String,
