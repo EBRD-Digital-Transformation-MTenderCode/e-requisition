@@ -30,6 +30,7 @@ enum class Actions(override val key: String, override val kind: Action.Kind) : E
     SET_TENDER_STATUS_UNSUCCESSFUL(key = "setTenderUnsuccessful", kind = Action.Kind.COMMAND),
     SET_TENDER_SUSPENDED(key = "setTenderSuspended", kind = Action.Kind.COMMAND),
     SET_TENDER_UNSUSPENDED(key = "setTenderUnsuspended", kind = Action.Kind.COMMAND),
+    SET_UNSUCCESSFUL_STATE_FOR_LOTS(key = "setUnsuccessfulStateForLots", kind = Action.Kind.COMMAND),
     VALIDATE_PCR_DATA(key = "validatePcrData", kind = Action.Kind.QUERY),
     VALIDATE_REQUIREMENT_RESPONSES(key = "validateRequirementResponses", kind = Action.Kind.QUERY),
     ;
