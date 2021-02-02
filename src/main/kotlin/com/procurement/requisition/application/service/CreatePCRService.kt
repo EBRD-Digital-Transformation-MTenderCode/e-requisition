@@ -122,10 +122,11 @@ class CreatePCRService(
             documents = documents(command, lotsMapping),
             value = value(command)
         )
-        val ocid: Ocid = Ocid.SingleStage.generate(cpid = command.cpid, stage = Stage.PC, timestamp = nowDefaultUTC())
 
-        val relatedProcesses = relatedProcesses(command, uriProperties, ocid)
+        val relatedProcesses = relatedProcesses(command, uriProperties)
         val electronicAuctions = command.tender.electronicAuctions?.relatedIds(lotsMapping)
+
+        val ocid: Ocid = Ocid.SingleStage.generate(cpid = command.cpid, stage = Stage.PC, timestamp = nowDefaultUTC())
 
         val pcr = PCR(
             cpid = command.cpid,
@@ -402,7 +403,7 @@ fun value(createPCR: CreatePCRCommand) = createPCR.tender.value
         )
     }
 
-fun relatedProcesses(createPCR: CreatePCRCommand, uriProperties: UriProperties, ocid: Ocid): RelatedProcesses {
+fun relatedProcesses(createPCR: CreatePCRCommand, uriProperties: UriProperties): RelatedProcesses {
     val relatedProcessFA = RelatedProcess(
         id = RelatedProcessId.generate(),
         scheme = RelatedProcessScheme.OCID,
@@ -414,9 +415,9 @@ fun relatedProcesses(createPCR: CreatePCRCommand, uriProperties: UriProperties, 
     val relatedProcessFE = RelatedProcess(
         id = RelatedProcessId.generate(),
         scheme = RelatedProcessScheme.OCID,
-        identifier = ocid.underlying,
+        identifier = createPCR.ocid.underlying,
         relationship = Relationships(Relationship.X_FRAMEWORK),
-        uri = uriByOcid(uriProperties.tender, createPCR.cpid, ocid),
+        uri = uriByOcid(uriProperties.tender, createPCR.cpid, createPCR.ocid),
     )
 
     return RelatedProcesses(listOf(relatedProcessFA, relatedProcessFE))
