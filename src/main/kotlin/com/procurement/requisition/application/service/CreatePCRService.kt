@@ -254,7 +254,7 @@ fun criteria(
             classification = criterion.classification.let { classification ->
               CriterionClassification(
                   id = classification.id,
-                  scheme = classification.scheme
+                  scheme = classification.scheme.key
               )
             },
             requirementGroups = criterion.requirementGroups

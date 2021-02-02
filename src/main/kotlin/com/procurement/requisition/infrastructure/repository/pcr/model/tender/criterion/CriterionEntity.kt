@@ -63,7 +63,6 @@ fun CriterionEntity.deserialization(): Result<Criterion, JsonErrors> {
         .let { RequirementGroups(it) }
 
     val classification = classification?.mappingToDomain()
-        ?.onFailure { return Result.failure(JsonErrors.EmptyArray().repath(path = "/classification")) }
 
     return Criterion(
         id = id,
