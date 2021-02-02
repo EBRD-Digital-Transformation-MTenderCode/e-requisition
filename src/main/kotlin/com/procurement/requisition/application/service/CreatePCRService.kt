@@ -173,7 +173,7 @@ fun targetRelatedItem(
 
 fun criteriaRelatedItem(
     relatesTo: CriterionRelatesTo,
-    relatedItem: CriterionRelatedItem,
+    relatedItem: CriterionRelatedItem?,
     lotsMapping: Map<String, LotId>,
     itemsMapping: Map<String, ItemId>
 ): Result<String, InvalidArgumentValueIncident> = when (relatesTo) {
@@ -183,8 +183,8 @@ fun criteriaRelatedItem(
         expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT)
     ).asFailure()
 
-    CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem).underlying.asSuccess()
-    CriterionRelatesTo.LOT -> lotsMapping.getValue(relatedItem).underlying.asSuccess()
+    CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem!!).underlying.asSuccess()
+    CriterionRelatesTo.LOT -> lotsMapping.getValue(relatedItem!!).underlying.asSuccess()
 
     CriterionRelatesTo.TENDER -> InvalidArgumentValueIncident(
         name = "relatesTo",
@@ -306,7 +306,7 @@ fun criteria(
                 .let { relatesTo ->
                     criteriaRelatedItem(
                         relatesTo = relatesTo,
-                        relatedItem = criterion.relatedItem!!,
+                        relatedItem = criterion.relatedItem,
                         lotsMapping = lotsMapping,
                         itemsMapping = itemsMapping
                     )
