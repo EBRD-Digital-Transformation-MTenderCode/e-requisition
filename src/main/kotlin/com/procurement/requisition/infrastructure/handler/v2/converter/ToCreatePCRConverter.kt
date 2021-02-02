@@ -236,10 +236,10 @@ val allowedRelatesTo = CriterionRelatesTo.allowedElements
     .filter {
         when (it) {
             CriterionRelatesTo.ITEM,
-            CriterionRelatesTo.LOT -> true
+            CriterionRelatesTo.LOT,
+            CriterionRelatesTo.TENDER -> true
 
             CriterionRelatesTo.AWARD,
-            CriterionRelatesTo.TENDER,
             CriterionRelatesTo.TENDERER -> false
         }
     }
