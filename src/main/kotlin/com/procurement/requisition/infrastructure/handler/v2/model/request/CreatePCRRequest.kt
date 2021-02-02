@@ -16,6 +16,7 @@ import java.math.BigDecimal
 
 data class CreatePCRRequest(
     @field:JsonProperty("cpid") @param:JsonProperty("cpid") val cpid: String,
+    @field:JsonProperty("ocid") @param:JsonProperty("ocid") val ocid: String,
     @field:JsonProperty("date") @param:JsonProperty("date") val date: String,
     @field:JsonProperty("stateFE") @param:JsonProperty("stateFE") val stateFE: String,
     @field:JsonProperty("owner") @param:JsonProperty("owner") val owner: String,
