@@ -176,26 +176,21 @@ fun criteriaRelatedItem(
     relatedItem: CriterionRelatedItem?,
     lotsMapping: Map<String, LotId>,
     itemsMapping: Map<String, ItemId>
-): Result<String, InvalidArgumentValueIncident> = when (relatesTo) {
+): Result<String?, InvalidArgumentValueIncident> = when (relatesTo) {
+    CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem!!).underlying.asSuccess()
+    CriterionRelatesTo.LOT -> lotsMapping.getValue(relatedItem!!).underlying.asSuccess()
+    CriterionRelatesTo.TENDER -> null.asSuccess()
+
     CriterionRelatesTo.AWARD -> InvalidArgumentValueIncident(
         name = "relatesTo",
         value = relatesTo,
-        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT)
-    ).asFailure()
-
-    CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem!!).underlying.asSuccess()
-    CriterionRelatesTo.LOT -> lotsMapping.getValue(relatedItem!!).underlying.asSuccess()
-
-    CriterionRelatesTo.TENDER -> InvalidArgumentValueIncident(
-        name = "relatesTo",
-        value = relatesTo,
-        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT)
+        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT, CriterionRelatesTo.TENDER)
     ).asFailure()
 
     CriterionRelatesTo.TENDERER -> InvalidArgumentValueIncident(
         name = "relatesTo",
         value = relatesTo,
-        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT)
+        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT, CriterionRelatesTo.TENDER)
     ).asFailure()
 }
 
