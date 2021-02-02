@@ -6,7 +6,6 @@ import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.EntityBase
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
-import com.procurement.requisition.domain.model.classification.ClassificationScheme
 import com.procurement.requisition.domain.model.document.DocumentId
 import com.procurement.requisition.domain.model.document.DocumentType
 import com.procurement.requisition.domain.model.requirement.EligibleEvidenceType
@@ -116,7 +115,7 @@ data class CreatePCRCommand(
 
             data class Classification(
                 val id: String,
-                val scheme: ClassificationScheme
+                val scheme: String
             )
 
             data class RequirementGroup(
