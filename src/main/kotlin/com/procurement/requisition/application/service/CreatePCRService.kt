@@ -179,7 +179,7 @@ fun criteriaRelatedItem(
 ): Result<String?, InvalidArgumentValueIncident> = when (relatesTo) {
     CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem!!).underlying.asSuccess()
     CriterionRelatesTo.LOT -> lotsMapping.getValue(relatedItem!!).underlying.asSuccess()
-    CriterionRelatesTo.TENDER -> null.asSuccess()
+    CriterionRelatesTo.TENDER -> relatedItem.asSuccess()
 
     CriterionRelatesTo.AWARD -> InvalidArgumentValueIncident(
         name = "relatesTo",
