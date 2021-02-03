@@ -138,8 +138,10 @@ data class ValidatePCRDataCommand(
                         val title: String,
                         val type: EligibleEvidenceType,
                         val description: String?,
-                        val relatedDocument: String?,
-                    ): EntityBase<String>()
+                        val relatedDocument: RelatedDocument?,
+                    ) : EntityBase<String>() {
+                        data class RelatedDocument(val id: String)
+                    }
                 }
             }
         }

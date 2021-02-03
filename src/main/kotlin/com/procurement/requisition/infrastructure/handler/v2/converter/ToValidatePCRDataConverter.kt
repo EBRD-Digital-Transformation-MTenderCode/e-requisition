@@ -384,7 +384,9 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.Eligibl
         title = title,
         description = description,
         type = type,
-        relatedDocument = relatedDocument
+        relatedDocument = relatedDocument?.let {
+            ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence.RelatedDocument(it.id)
+        }
     ).asSuccess()
 }
 
