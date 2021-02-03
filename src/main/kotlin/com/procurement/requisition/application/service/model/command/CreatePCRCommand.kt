@@ -4,6 +4,7 @@ import com.procurement.requisition.application.service.model.StateFE
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.EntityBase
+import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
 import com.procurement.requisition.domain.model.document.DocumentId
@@ -26,6 +27,7 @@ import java.time.LocalDateTime
 
 data class CreatePCRCommand(
     val cpid: Cpid,
+    val ocid: Ocid,
     val date: LocalDateTime,
     val stateFE: StateFE,
     val owner: String,
