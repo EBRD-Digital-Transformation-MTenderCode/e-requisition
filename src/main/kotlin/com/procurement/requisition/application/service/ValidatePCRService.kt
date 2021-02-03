@@ -149,6 +149,8 @@ class ValidatePCRService(
         val isCriteriaNeed = isCriteriaNeed(command.tender.awardCriteria)
         if (isCriteriaNeed) validateCriteriaExistence(command.tender.criteria).onFailure { return it }
 
+        //VR.COM-17.1.44, VR.COM-17.1.45
+        checkEligibleEvidences(command).onFailure { return it }
 
         val mdmCriteriaByClassificationId = command.mdm.criteria.associateBy { it.classification.id }
         command.tender.criteria
@@ -316,6 +318,45 @@ class ValidatePCRService(
 
         return Validated.ok()
     }
+
+    private fun checkEligibleEvidences(command: ValidatePCRDataCommand): Validated<Failure> {
+        val eligibleEvidences = command.tender.criteria
+            .asSequence()
+            .flatMap { it.requirementGroups }
+            .flatMap { it.requirements }
+            .flatMap { it.eligibleEvidences }
+            .toList()
+
+        checkUniqueness(eligibleEvidences)
+            .onFailure { return it }
+
+        checkForMissingDocuments(command, eligibleEvidences)
+            .onFailure { return it }
+
+        return Validated.ok()
+    }
+
+    private fun checkForMissingDocuments(
+        command: ValidatePCRDataCommand,
+        eligibleEvidences: List<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence>
+    ): Validated<Failure> {
+        val documents = command.tender.documents.toSet { it.id }
+        val eligibleEvidencesDocuments = eligibleEvidences.mapNotNull { it.relatedDocument }.toSet()
+        val missingDocuments = eligibleEvidencesDocuments - documents
+
+        return if (missingDocuments.isNotEmpty())
+            ValidatePCRErrors.Criterion.RequirementGroup.Requirement.EligibleEvidence.MissingDocuments(missingDocuments)
+                .asValidatedError()
+        else Validated.ok()
+    }
+
+    private fun checkUniqueness(eligibleEvidences: List<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence>) =
+        if (eligibleEvidences.isNotUniqueIds()) {
+            ValidatePCRErrors.Criterion.RequirementGroup.Requirement.EligibleEvidence.DuplicateId("#/tender/criteria/requirementGroups/requirements/eligibleEvidences")
+                .asValidatedError()
+        } else
+            Validated.ok()
+
 
     private fun checkAwardCriteriaDetails(tender: ValidatePCRDataCommand.Tender) =
         if (tender.awardCriteria == AwardCriteria.PRICE_ONLY

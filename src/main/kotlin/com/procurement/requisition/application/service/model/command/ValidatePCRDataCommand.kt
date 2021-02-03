@@ -134,12 +134,12 @@ data class ValidatePCRDataCommand(
                     )
 
                     data class EligibleEvidence(
-                        val id: String,
+                        override val id: String,
                         val title: String,
                         val type: EligibleEvidenceType,
                         val description: String?,
                         val relatedDocument: String?,
-                    )
+                    ): EntityBase<String>()
                 }
             }
         }
