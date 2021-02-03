@@ -120,7 +120,14 @@
                   "endDate": "2020-10-19T10:22:42Z"
                 },
                 "dataType": "integer",
-                "expectedValue": 10
+                "expectedValue": 10,
+                "eligibleEvidences": [
+                  {
+                    "id": "string",
+                    "title": "string",
+                    "type": "reference"
+                  }
+                ]
               },
               {
                 "id": "string",
