@@ -341,7 +341,7 @@ class ValidatePCRService(
         eligibleEvidences: List<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence>
     ): Validated<Failure> {
         val documents = command.tender.documents.toSet { it.id }
-        val eligibleEvidencesDocuments = eligibleEvidences.mapNotNull { it.relatedDocument }.toSet()
+        val eligibleEvidencesDocuments = eligibleEvidences.mapNotNull { it.relatedDocument?.id }.toSet()
         val missingDocuments = eligibleEvidencesDocuments - documents
 
         return if (missingDocuments.isNotEmpty())
