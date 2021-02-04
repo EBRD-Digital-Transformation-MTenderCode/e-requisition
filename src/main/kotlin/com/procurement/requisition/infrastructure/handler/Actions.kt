@@ -21,6 +21,7 @@ enum class Actions(override val key: String, override val kind: Action.Kind) : E
     GET_AWARD_CRITERIA_AND_CONVERSIONS(key = "getAwardCriteriaAndConversions", kind = Action.Kind.QUERY),
     GET_CRITERIA_FOR_TENDERER(key = "getCriteriaForTenderer", kind = Action.Kind.QUERY),
     GET_CURRENCY(key = "getCurrency", kind = Action.Kind.QUERY),
+    GET_ITEMS_BY_LOT_IDS(key = "getItemsByLotIds", kind = Action.Kind.QUERY),
     GET_LOTS_AUCTION(key = "getLotsAuction", kind = Action.Kind.QUERY),
     GET_TENDER_OWNER(key = "getTenderOwner", kind = Action.Kind.QUERY),
     GET_TENDER_STATE(key = "getTenderState", kind = Action.Kind.QUERY),
