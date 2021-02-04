@@ -244,6 +244,12 @@ class ValidatePCRService(
         val isConversionsNeed = isConversionsNeed(command.tender.awardCriteria)
         if (!isConversionsNeed) validateConversionsNotExists(command.tender.conversions).onFailure { return it }
 
+        // VR.COM-17.1.24
+        if (command.tender.conversions.flatMap { it.coefficients }.isNotUniqueIds())
+            return ValidatePCRErrors.Conversion.Coefficient.DuplicateId(
+                path = "#/tender/conversions/coefficients"
+            ).asValidatedError()
+
         command.tender.conversions
             .forEachIndexed { conversionIdx, conversion ->
                 // VR.COM-17.1.23
@@ -251,12 +257,6 @@ class ValidatePCRService(
                     return ValidatePCRErrors.Conversion.InvalidRelatedItem(
                         path = "#/tender/conversions[$conversionIdx]",
                         relatedItem = conversion.relatedItem
-                    ).asValidatedError()
-
-                // VR.COM-17.1.24
-                if (conversion.coefficients.isNotUniqueIds())
-                    return ValidatePCRErrors.Conversion.Coefficient.DuplicateId(
-                        path = "#/tender/conversions[$conversionIdx]/coefficients"
                     ).asValidatedError()
 
                 //VR.COM-17.1.30
