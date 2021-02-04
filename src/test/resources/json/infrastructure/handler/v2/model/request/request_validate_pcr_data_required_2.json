@@ -35,6 +35,47 @@
         ]
       }
     ],
+    "criteria": [
+      {
+        "id": "string",
+        "title": "string",
+        "relatesTo": "lot",
+        "classification": {
+          "id": "string",
+          "scheme": "CPV"
+        },
+        "requirementGroups": [
+          {
+            "id": "string",
+            "requirements": [
+              {
+                "id": "string",
+                "title": "string",
+                "description": "string",
+                "period": {
+                  "startDate": "2020-10-19T10:22:42Z",
+                  "endDate": "2020-10-19T10:22:42Z"
+                },
+                "dataType": "integer",
+                "expectedValue": 10
+              },
+              {
+                "id": "string",
+                "title": "string",
+                "description": "string",
+                "period": {
+                  "startDate": "2020-10-19T10:22:42Z",
+                  "endDate": "2020-10-19T10:22:42Z"
+                },
+                "dataType": "integer",
+                "minValue": 1,
+                "maxValue": 5
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "mainProcurementCategory": "goods",
     "awardCriteria": "priceOnly",
     "awardCriteriaDetails": "automated"

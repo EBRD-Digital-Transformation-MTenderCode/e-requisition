@@ -205,8 +205,12 @@ data class ValidatePCRDataRequest(
                         @field:JsonProperty("description") @param:JsonProperty("description") val description: String?,
 
                         @JsonInclude(JsonInclude.Include.NON_NULL)
-                        @field:JsonProperty("relatedDocument") @param:JsonProperty("relatedDocument") val relatedDocument: String?,
-                    )
+                        @field:JsonProperty("relatedDocument") @param:JsonProperty("relatedDocument") val relatedDocument: RelatedDocument?,
+                    ) {
+                        data class RelatedDocument(
+                            @field:JsonProperty("id") @param:JsonProperty("id") val id: String
+                        )
+                    }
                 }
             }
         }

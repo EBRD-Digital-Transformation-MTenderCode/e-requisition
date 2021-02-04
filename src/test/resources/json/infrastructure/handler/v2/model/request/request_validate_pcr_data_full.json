@@ -170,7 +170,11 @@
                   {
                     "id": "string",
                     "title": "string",
-                    "type": "reference"
+                    "description": "string",
+                    "type": "reference",
+                    "relatedDocument": {
+                      "id": "string"
+                    }
                   }
                 ]
               }
