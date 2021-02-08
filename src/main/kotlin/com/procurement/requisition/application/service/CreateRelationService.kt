@@ -1,11 +1,11 @@
 package com.procurement.requisition.application.service
 
+import com.procurement.requisition.application.service.model.OperationType
 import com.procurement.requisition.application.service.model.command.CreateRelationCommand
 import com.procurement.requisition.application.service.model.result.CreateRelationResult
 import com.procurement.requisition.domain.failure.incident.InvalidArgumentValueIncident
 import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
-import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcess
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessId
 import com.procurement.requisition.domain.model.relatedprocesses.RelatedProcessScheme
@@ -53,10 +53,12 @@ fun relationship(operationType: OperationType): Result<Relationship, InvalidArgu
     when (operationType) {
         OperationType.CREATE_PCR -> Relationship.X_PRE_AWARD_CATALOG_REQUEST.asSuccess()
 
+        OperationType.COMPLETE_SOURCING,
         OperationType.PCR_PROTOCOL,
         OperationType.SUBMIT_BID_IN_PCR,
         OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,
-        OperationType.TENDER_PERIOD_END_IN_PCR -> InvalidArgumentValueIncident(
+        OperationType.TENDER_PERIOD_END_IN_PCR,
+        OperationType.WITHDRAW_PCR_PROTOCOL -> InvalidArgumentValueIncident(
             name = "operationType",
             value = operationType,
             expectedValue = listOf(Relationship.X_PRE_AWARD_CATALOG_REQUEST)

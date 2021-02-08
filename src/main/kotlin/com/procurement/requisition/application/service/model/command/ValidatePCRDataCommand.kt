@@ -1,9 +1,9 @@
 package com.procurement.requisition.application.service.model.command
 
+import com.procurement.requisition.application.service.model.OperationType
 import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.EntityBase
 import com.procurement.requisition.domain.model.MainProcurementCategory
-import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
@@ -107,7 +107,7 @@ data class ValidatePCRDataCommand(
             val requirementGroups: List<RequirementGroup>,
             val relatesTo: CriterionRelatesTo,
             val relatedItem: String?,
-            val classification: Classification
+            val classification: CriterionClassification
         ) : EntityBase<String>() {
 
             data class RequirementGroup(
@@ -134,12 +134,14 @@ data class ValidatePCRDataCommand(
                     )
 
                     data class EligibleEvidence(
-                        val id: String,
+                        override val id: String,
                         val title: String,
                         val type: EligibleEvidenceType,
                         val description: String?,
-                        val relatedDocument: String?,
-                    )
+                        val relatedDocument: RelatedDocument?,
+                    ) : EntityBase<String>() {
+                        data class RelatedDocument(val id: String)
+                    }
                 }
             }
         }
@@ -174,9 +176,14 @@ data class ValidatePCRDataCommand(
     ) {
         data class Criterion(
             val id: String,
-            val classification: Classification,
+            val classification: CriterionClassification,
         )
     }
+
+    data class CriterionClassification(
+        override val id: String,
+        val scheme: String,
+    ) : EntityBase<String>()
 
     data class Classification(
         override val id: String,

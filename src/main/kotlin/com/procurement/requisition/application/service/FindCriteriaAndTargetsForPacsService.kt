@@ -3,6 +3,9 @@ package com.procurement.requisition.application.service
 import com.procurement.requisition.application.service.error.FindCriteriaAndTargetsForPacsErrors
 import com.procurement.requisition.application.service.model.command.FindCriteriaAndTargetsForPacsCommand
 import com.procurement.requisition.application.service.model.result.FindCriteriaAndTargetsForPacsResult
+import com.procurement.requisition.domain.model.requirement.RequirementGroups
+import com.procurement.requisition.domain.model.requirement.RequirementStatus
+import com.procurement.requisition.domain.model.requirement.Requirements
 import com.procurement.requisition.domain.model.tender.criterion.Criteria
 import com.procurement.requisition.domain.model.tender.criterion.Criterion
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
@@ -35,6 +38,15 @@ class FindCriteriaAndTargetsForPacsService(
 
         val selectedCriteria = pcr.tender.criteria.select(lotIds, itemIds)
 
+        val criteriaWithActiveRequirements = selectedCriteria.map { criterion ->
+            val updatedRequirementGroups = criterion.requirementGroups
+                .map { requirementGroup ->
+                    val activeRequirements = requirementGroup.requirements.filter { it.status == RequirementStatus.ACTIVE }
+                    requirementGroup.copy(requirements = Requirements(activeRequirements))
+                }
+            criterion.copy(requirementGroups = RequirementGroups(updatedRequirementGroups))
+        }
+
         return FindCriteriaAndTargetsForPacsResult(
             tender = FindCriteriaAndTargetsForPacsResult.Tender(
                 targets = pcr.tender.targets
@@ -57,7 +69,7 @@ class FindCriteriaAndTargetsForPacsService(
                                 }
                         )
                     },
-                criteria = selectedCriteria
+                criteria = criteriaWithActiveRequirements
                     .map { criterion ->
                         FindCriteriaAndTargetsForPacsResult.Tender.Criterion(
                             id = criterion.id,
@@ -94,7 +106,7 @@ class FindCriteriaAndTargetsForPacsService(
         }
     }
 
-    fun Criterion.ofTender() = this.relatesTo == null || this.relatesTo == CriterionRelatesTo.TENDER
+    fun Criterion.ofTender() = this.relatesTo == CriterionRelatesTo.TENDER
 
     fun Criterion.ofLot(ids: Set<String>) = this.relatesTo == CriterionRelatesTo.LOT && this.relatedItem in ids
 

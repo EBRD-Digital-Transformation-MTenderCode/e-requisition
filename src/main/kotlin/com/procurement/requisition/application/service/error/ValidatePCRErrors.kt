@@ -154,6 +154,19 @@ sealed class ValidatePCRErrors(
                     )
 
                 class InvalidRange : RequirementGroup(code = "VR.COM-17.1.36", description = "")
+
+                sealed class EligibleEvidence(code: String, description: String) :
+                    Requirement(code = code, description = description) {
+
+                    class DuplicateId(path: String) :
+                        EligibleEvidence(code = "VR.COM-17.1.44", description = "Duplicate id. Path: '$path'.")
+
+                    class MissingDocuments(documentIds: Set<String>) :
+                        EligibleEvidence(
+                            code = "VR.COM-17.1.45",
+                            description = "Missing eligible evidence documents by id(s)'${documentIds.joinToString()}'."
+                        )
+                }
             }
         }
     }

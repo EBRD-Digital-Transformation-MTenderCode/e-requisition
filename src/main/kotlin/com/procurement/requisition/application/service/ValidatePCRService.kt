@@ -149,6 +149,8 @@ class ValidatePCRService(
         val isCriteriaNeed = isCriteriaNeed(command.tender.awardCriteria)
         if (isCriteriaNeed) validateCriteriaExistence(command.tender.criteria).onFailure { return it }
 
+        //VR.COM-17.1.44, VR.COM-17.1.45
+        checkEligibleEvidences(command).onFailure { return it }
 
         val mdmCriteriaByClassificationId = command.mdm.criteria.associateBy { it.classification.id }
         command.tender.criteria
@@ -242,6 +244,12 @@ class ValidatePCRService(
         val isConversionsNeed = isConversionsNeed(command.tender.awardCriteria)
         if (!isConversionsNeed) validateConversionsNotExists(command.tender.conversions).onFailure { return it }
 
+        // VR.COM-17.1.24
+        if (command.tender.conversions.flatMap { it.coefficients }.isNotUniqueIds())
+            return ValidatePCRErrors.Conversion.Coefficient.DuplicateId(
+                path = "#/tender/conversions/coefficients"
+            ).asValidatedError()
+
         command.tender.conversions
             .forEachIndexed { conversionIdx, conversion ->
                 // VR.COM-17.1.23
@@ -249,12 +257,6 @@ class ValidatePCRService(
                     return ValidatePCRErrors.Conversion.InvalidRelatedItem(
                         path = "#/tender/conversions[$conversionIdx]",
                         relatedItem = conversion.relatedItem
-                    ).asValidatedError()
-
-                // VR.COM-17.1.24
-                if (conversion.coefficients.isNotUniqueIds())
-                    return ValidatePCRErrors.Conversion.Coefficient.DuplicateId(
-                        path = "#/tender/conversions[$conversionIdx]/coefficients"
                     ).asValidatedError()
 
                 //VR.COM-17.1.30
@@ -316,6 +318,45 @@ class ValidatePCRService(
 
         return Validated.ok()
     }
+
+    private fun checkEligibleEvidences(command: ValidatePCRDataCommand): Validated<Failure> {
+        val eligibleEvidences = command.tender.criteria
+            .asSequence()
+            .flatMap { it.requirementGroups }
+            .flatMap { it.requirements }
+            .flatMap { it.eligibleEvidences }
+            .toList()
+
+        checkUniqueness(eligibleEvidences)
+            .onFailure { return it }
+
+        checkForMissingDocuments(command, eligibleEvidences)
+            .onFailure { return it }
+
+        return Validated.ok()
+    }
+
+    private fun checkForMissingDocuments(
+        command: ValidatePCRDataCommand,
+        eligibleEvidences: List<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence>
+    ): Validated<Failure> {
+        val documents = command.tender.documents.toSet { it.id }
+        val eligibleEvidencesDocuments = eligibleEvidences.mapNotNull { it.relatedDocument?.id }.toSet()
+        val missingDocuments = eligibleEvidencesDocuments - documents
+
+        return if (missingDocuments.isNotEmpty())
+            ValidatePCRErrors.Criterion.RequirementGroup.Requirement.EligibleEvidence.MissingDocuments(missingDocuments)
+                .asValidatedError()
+        else Validated.ok()
+    }
+
+    private fun checkUniqueness(eligibleEvidences: List<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence>) =
+        if (eligibleEvidences.isNotUniqueIds()) {
+            ValidatePCRErrors.Criterion.RequirementGroup.Requirement.EligibleEvidence.DuplicateId("#/tender/criteria/requirementGroups/requirements/eligibleEvidences")
+                .asValidatedError()
+        } else
+            Validated.ok()
+
 
     private fun checkAwardCriteriaDetails(tender: ValidatePCRDataCommand.Tender) =
         if (tender.awardCriteria == AwardCriteria.PRICE_ONLY

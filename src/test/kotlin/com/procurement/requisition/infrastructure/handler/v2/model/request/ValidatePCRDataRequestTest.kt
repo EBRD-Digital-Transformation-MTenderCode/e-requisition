@@ -19,4 +19,9 @@ class ValidatePCRDataRequestTest {
     fun required2() {
         testingBindingAndMapping<ValidatePCRDataRequest>("json/infrastructure/handler/v2/model/request/request_validate_pcr_data_required_2.json")
     }
+
+    @Test
+    fun required3() {
+        testingBindingAndMapping<ValidatePCRDataRequest>("json/infrastructure/handler/v2/model/request/request_validate_pcr_data_required_3.json")
+    }
 }
