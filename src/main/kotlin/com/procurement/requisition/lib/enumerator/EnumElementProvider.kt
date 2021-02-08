@@ -3,15 +3,11 @@ package com.procurement.requisition.lib.enumerator
 abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
                                                                    T : EnumElementProvider.Element {
 
-    @Target(AnnotationTarget.PROPERTY)
-    annotation class DeprecatedElement
-
-    @Target(AnnotationTarget.PROPERTY)
-    annotation class ExcludedElement
-
     interface Element {
         val key: String
         val isNeutralElement: Boolean
+            get() = false
+        val deprecated: Boolean
             get() = false
     }
 
@@ -25,17 +21,10 @@ abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
 
         fun <T> Collection<T>.keysAsStrings(): List<String> where T : Enum<T>,
                                                                   T : Element = this
-            .map { element -> element.key + if (element.isDeprecated()) " (Deprecated)" else "" }
-
-        private fun <E : Enum<E>> Enum<E>.isNotExcluded(): Boolean = this.findAnnotation<ExcludedElement, E>() == null
-        private fun <E : Enum<E>> Enum<E>.isDeprecated(): Boolean = this.findAnnotation<DeprecatedElement, E>() != null
-        private inline fun <reified A : Annotation, E : Enum<E>> Enum<E>.findAnnotation(): A? = this::class.java
-            .declaredFields
-            .find { field -> field.name == this.name }
-            ?.getAnnotation(A::class.java)
+            .map { element -> element.key + if (element.deprecated) " (Deprecated)" else "" }
     }
 
-    val allowedElements: Set<T> = info.values.filter { element -> element.isNotExcluded() }.toSet()
+    val allowedElements: Set<T> = info.values.toSet()
 
     private val elements: Map<String, T> = info.values.associateBy { it.key.toUpperCase() }
 

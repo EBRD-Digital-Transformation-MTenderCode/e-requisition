@@ -1,11 +1,11 @@
 package com.procurement.requisition.infrastructure.handler.v2.model.request
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.procurement.requisition.application.service.model.OperationType
 import com.procurement.requisition.application.service.model.command.CreateRelationCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.Ocid
-import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.infrastructure.handler.converter.asCpid
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asSingleStageOcid
@@ -25,10 +25,12 @@ private val allowedOperationType = OperationType.allowedElements
         when (it) {
             OperationType.CREATE_PCR -> true
 
+            OperationType.COMPLETE_SOURCING,
             OperationType.PCR_PROTOCOL,
             OperationType.SUBMIT_BID_IN_PCR,
             OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,
-            OperationType.TENDER_PERIOD_END_IN_PCR -> false
+            OperationType.TENDER_PERIOD_END_IN_PCR,
+            OperationType.WITHDRAW_PCR_PROTOCOL -> false
         }
     }
     .toSet()

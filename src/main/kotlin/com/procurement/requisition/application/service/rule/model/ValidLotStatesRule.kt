@@ -6,15 +6,24 @@ import com.procurement.requisition.domain.model.tender.lot.LotStatusDetails
 class ValidLotStatesRule(private val items: List<State>) {
 
     data class State(
-        val status: LotStatus,
-        val statusDetails: LotStatusDetails?
-    )
+        val status: Status,
+        val statusDetails: StatusDetails?
+    ) {
 
-    fun contains(status: LotStatus, statusDetails: LotStatusDetails): Boolean =
+        data class Status(
+            val value: LotStatus,
+        )
+
+        data class StatusDetails(
+            val value: LotStatusDetails?,
+        )
+    }
+
+    fun contains(status: LotStatus, statusDetails: LotStatusDetails?): Boolean =
         items.any { state ->
             if (state.statusDetails != null)
-                status == state.status && statusDetails == state.statusDetails
+                status == state.status.value && statusDetails == state.statusDetails.value
             else
-                state.status == status
+                state.status.value == status
         }
 }

@@ -127,6 +127,7 @@ class CreatePCRService(
         val electronicAuctions = command.tender.electronicAuctions?.relatedIds(lotsMapping)
 
         val ocid: Ocid = Ocid.SingleStage.generate(cpid = command.cpid, stage = Stage.PC, timestamp = nowDefaultUTC())
+
         val pcr = PCR(
             cpid = command.cpid,
             ocid = ocid,
@@ -173,29 +174,24 @@ fun targetRelatedItem(
 
 fun criteriaRelatedItem(
     relatesTo: CriterionRelatesTo,
-    relatedItem: CriterionRelatedItem,
+    relatedItem: CriterionRelatedItem?,
     lotsMapping: Map<String, LotId>,
     itemsMapping: Map<String, ItemId>
-): Result<String, InvalidArgumentValueIncident> = when (relatesTo) {
+): Result<String?, InvalidArgumentValueIncident> = when (relatesTo) {
+    CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem!!).underlying.asSuccess()
+    CriterionRelatesTo.LOT -> lotsMapping.getValue(relatedItem!!).underlying.asSuccess()
+    CriterionRelatesTo.TENDER -> relatedItem.asSuccess()
+
     CriterionRelatesTo.AWARD -> InvalidArgumentValueIncident(
         name = "relatesTo",
         value = relatesTo,
-        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT)
-    ).asFailure()
-
-    CriterionRelatesTo.ITEM -> itemsMapping.getValue(relatedItem).underlying.asSuccess()
-    CriterionRelatesTo.LOT -> lotsMapping.getValue(relatedItem).underlying.asSuccess()
-
-    CriterionRelatesTo.TENDER -> InvalidArgumentValueIncident(
-        name = "relatesTo",
-        value = relatesTo,
-        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT)
+        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT, CriterionRelatesTo.TENDER)
     ).asFailure()
 
     CriterionRelatesTo.TENDERER -> InvalidArgumentValueIncident(
         name = "relatesTo",
         value = relatesTo,
-        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT)
+        expectedValue = listOf(CriterionRelatesTo.ITEM, CriterionRelatesTo.LOT, CriterionRelatesTo.TENDER)
     ).asFailure()
 }
 
@@ -303,10 +299,10 @@ fun criteria(
                 .let { RequirementGroups(it) },
             relatesTo = criterion.relatesTo,
             relatedItem = criterion.relatesTo
-                ?.let { relatesTo ->
+                .let { relatesTo ->
                     criteriaRelatedItem(
                         relatesTo = relatesTo,
-                        relatedItem = criterion.relatedItem!!,
+                        relatedItem = criterion.relatedItem,
                         lotsMapping = lotsMapping,
                         itemsMapping = itemsMapping
                     )
@@ -407,14 +403,26 @@ fun value(createPCR: CreatePCRCommand) = createPCR.tender.value
         )
     }
 
-fun relatedProcesses(createPCR: CreatePCRCommand, uriProperties: UriProperties) = RelatedProcesses(
-    RelatedProcess(
+fun relatedProcesses(createPCR: CreatePCRCommand, uriProperties: UriProperties): RelatedProcesses {
+    val relatedProcessFA = RelatedProcess(
         id = RelatedProcessId.generate(),
         scheme = RelatedProcessScheme.OCID,
         identifier = createPCR.cpid.underlying,
         relationship = Relationships(Relationship.PARENT),
         uri = uri(uriProperties.tender, createPCR.cpid),
     )
-)
+
+    val relatedProcessFE = RelatedProcess(
+        id = RelatedProcessId.generate(),
+        scheme = RelatedProcessScheme.OCID,
+        identifier = createPCR.ocid.underlying,
+        relationship = Relationships(Relationship.X_FRAMEWORK),
+        uri = uriByOcid(uriProperties.tender, createPCR.cpid, createPCR.ocid),
+    )
+
+    return RelatedProcesses(listOf(relatedProcessFA, relatedProcessFE))
+}
 
 fun uri(prefix: String, cpid: Cpid) = "$prefix/${cpid.underlying}/${cpid.underlying}"
+
+fun uriByOcid(prefix: String, cpid: Cpid, ocid: Ocid) = "$prefix/${cpid.underlying}/${ocid.underlying}"

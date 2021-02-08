@@ -5,11 +5,11 @@ import com.procurement.requisition.application.repository.rule.deserializer.LotS
 import com.procurement.requisition.application.repository.rule.deserializer.LotStatesRuleDeserializer
 import com.procurement.requisition.application.repository.rule.deserializer.MinSpecificWeightPriceRuleDeserializer
 import com.procurement.requisition.application.repository.rule.deserializer.TenderStatesRuleDeserializer
+import com.procurement.requisition.application.service.model.OperationType
 import com.procurement.requisition.application.service.rule.model.LotStateForSettingRule
 import com.procurement.requisition.application.service.rule.model.MinSpecificWeightPriceRule
 import com.procurement.requisition.application.service.rule.model.ValidLotStatesRule
 import com.procurement.requisition.application.service.rule.model.ValidTenderStatesRule
-import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result

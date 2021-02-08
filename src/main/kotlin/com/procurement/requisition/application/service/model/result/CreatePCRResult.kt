@@ -140,7 +140,7 @@ data class CreatePCRResult(
 
             data class Classification(
                 val id: String,
-                val scheme: ClassificationScheme
+                val scheme: String
             )
 
         }

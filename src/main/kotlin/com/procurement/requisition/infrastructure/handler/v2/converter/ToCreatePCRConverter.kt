@@ -22,6 +22,7 @@ import com.procurement.requisition.infrastructure.handler.converter.asCpid
 import com.procurement.requisition.infrastructure.handler.converter.asDocumentId
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
+import com.procurement.requisition.infrastructure.handler.converter.asSingleStageOcid
 import com.procurement.requisition.infrastructure.handler.v2.model.request.CreatePCRRequest
 import com.procurement.requisition.lib.failureIfEmpty
 import com.procurement.requisition.lib.functional.Result
@@ -31,12 +32,14 @@ import com.procurement.requisition.lib.mapIndexedOrEmpty
 
 fun CreatePCRRequest.convert(): Result<CreatePCRCommand, JsonErrors> {
     val cpid = cpid.asCpid().onFailure { return it.repath(path = "/cpid") }
+    val ocid = ocid.asSingleStageOcid().onFailure { return it.repath(path = "/ocid") }
     val date = date.asLocalDateTime().onFailure { return it.repath(path = "/date") }
     val stateFE = stateFE.asEnum(target = StateFE).onFailure { return it.repath(path = "/stateFE") }
     val tender = tender.convert().onFailure { return it.repath("/tender") }
 
     return CreatePCRCommand(
         cpid = cpid,
+        ocid = ocid,
         date = date,
         stateFE = stateFE,
         owner = owner,
@@ -236,10 +239,10 @@ val allowedRelatesTo = CriterionRelatesTo.allowedElements
     .filter {
         when (it) {
             CriterionRelatesTo.ITEM,
-            CriterionRelatesTo.LOT -> true
+            CriterionRelatesTo.LOT,
+            CriterionRelatesTo.TENDER -> true
 
             CriterionRelatesTo.AWARD,
-            CriterionRelatesTo.TENDER,
             CriterionRelatesTo.TENDERER -> false
         }
     }
@@ -255,7 +258,7 @@ fun CreatePCRRequest.Tender.Criterion.convert(): Result<CreatePCRCommand.Tender.
             requirementGroup.convert().onFailure { return it.repath(path = "/requirementGroups[$idx]") }
         }
 
-    val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
+    val classification = classification.convert()
 
     return CreatePCRCommand.Tender.Criterion(
         id = id,
@@ -271,11 +274,8 @@ fun CreatePCRRequest.Tender.Criterion.convert(): Result<CreatePCRCommand.Tender.
 /**
  * Classification
  */
-fun CreatePCRRequest.Tender.Criterion.Classification.convert(): Result<CreatePCRCommand.Tender.Criterion.Classification, JsonErrors> {
-    val scheme = scheme.asEnum(target = ClassificationScheme)
-        .onFailure { return it.repath(path = "/scheme") }
-    return CreatePCRCommand.Tender.Criterion.Classification(id = id, scheme = scheme).asSuccess()
-}
+fun CreatePCRRequest.Tender.Criterion.Classification.convert(): CreatePCRCommand.Tender.Criterion.Classification =
+    CreatePCRCommand.Tender.Criterion.Classification(id = id, scheme = scheme)
 
 fun CreatePCRRequest.Tender.Criterion.RequirementGroup.convert(): Result<CreatePCRCommand.Tender.Criterion.RequirementGroup, JsonErrors> {
     val requirements = requirements

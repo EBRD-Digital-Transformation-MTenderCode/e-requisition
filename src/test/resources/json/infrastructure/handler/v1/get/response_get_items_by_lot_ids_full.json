@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "internalId": "string",
+      "description": "string",
+      "quantity": 0.000,
+      "classification": {
+        "id": "string",
+        "scheme": "CPV",
+        "description": "string"
+      },
+      "unit": {
+        "id": "string",
+        "name": "string"
+      },
+      "relatedLot": "string"
+    }
+  ]
+}

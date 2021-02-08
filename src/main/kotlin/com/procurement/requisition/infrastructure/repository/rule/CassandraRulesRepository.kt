@@ -2,11 +2,11 @@ package com.procurement.requisition.infrastructure.repository.rule
 
 import com.datastax.driver.core.Session
 import com.procurement.requisition.application.repository.rule.RulesRepository
-import com.procurement.requisition.infrastructure.repository.rule.error.RuleIncident
+import com.procurement.requisition.application.service.model.OperationType
 import com.procurement.requisition.domain.failure.incident.DatabaseIncident
-import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.infrastructure.extension.cassandra.tryExecute
+import com.procurement.requisition.infrastructure.repository.rule.error.RuleIncident
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.asFailure

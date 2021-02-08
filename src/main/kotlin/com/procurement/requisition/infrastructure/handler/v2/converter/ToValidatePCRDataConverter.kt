@@ -1,11 +1,11 @@
 package com.procurement.requisition.infrastructure.handler.v2.converter
 
+import com.procurement.requisition.application.service.model.OperationType
 import com.procurement.requisition.application.service.model.command.ValidatePCRDataCommand
 import com.procurement.requisition.domain.failure.error.JsonErrors
 import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.MainProcurementCategory
-import com.procurement.requisition.domain.model.OperationType
 import com.procurement.requisition.domain.model.ProcurementMethodDetails
 import com.procurement.requisition.domain.model.award.AwardCriteria
 import com.procurement.requisition.domain.model.award.AwardCriteriaDetails
@@ -79,10 +79,12 @@ private val allowedOperationType = OperationType.allowedElements
         when (it) {
             OperationType.CREATE_PCR -> true
 
+            OperationType.COMPLETE_SOURCING,
             OperationType.PCR_PROTOCOL,
             OperationType.SUBMIT_BID_IN_PCR,
             OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,
-            OperationType.TENDER_PERIOD_END_IN_PCR -> false
+            OperationType.TENDER_PERIOD_END_IN_PCR,
+            OperationType.WITHDRAW_PCR_PROTOCOL-> false
         }
     }
     .toSet()
@@ -290,7 +292,7 @@ fun ValidatePCRDataRequest.Tender.Criterion.convert(): Result<ValidatePCRDataCom
             requirementGroup.convert().onFailure { return it.repath(path = "/requirementGroups[$idx]") }
         }
 
-    val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
+    val classification = classification.convert()
 
     return ValidatePCRDataCommand.Tender.Criterion(
         id = id,
@@ -302,6 +304,12 @@ fun ValidatePCRDataRequest.Tender.Criterion.convert(): Result<ValidatePCRDataCom
         classification = classification
     ).asSuccess()
 }
+
+/**
+ * Classification
+ */
+fun ValidatePCRDataRequest.CriterionClassification.convert(): ValidatePCRDataCommand.CriterionClassification =
+    ValidatePCRDataCommand.CriterionClassification(id = id, scheme = scheme)
 
 fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.convert(): Result<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup, JsonErrors> {
     val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
@@ -376,7 +384,9 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.Eligibl
         title = title,
         description = description,
         type = type,
-        relatedDocument = relatedDocument
+        relatedDocument = relatedDocument?.let {
+            ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence.RelatedDocument(it.id)
+        }
     ).asSuccess()
 }
 
@@ -438,9 +448,7 @@ fun ValidatePCRDataRequest.Tender.Document.convert(): Result<ValidatePCRDataComm
 fun ValidatePCRDataRequest.Mdm.convert(): Result<ValidatePCRDataCommand.Mdm, JsonErrors> {
     val criteria = criteria
         .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "/criteria")) }
-        .mapIndexedOrEmpty { idx, criterion ->
-            criterion.convert().onFailure { return it.repath(path = "/criteria[$idx]") }
-        }
+        .map { criterion -> criterion.convert() }
 
     return ValidatePCRDataCommand.Mdm(criteria = criteria).asSuccess()
 }
@@ -448,8 +456,8 @@ fun ValidatePCRDataRequest.Mdm.convert(): Result<ValidatePCRDataCommand.Mdm, Jso
 /**
  * Mdm.Criterion
  */
-fun ValidatePCRDataRequest.Mdm.Criterion.convert(): Result<ValidatePCRDataCommand.Mdm.Criterion, JsonErrors> {
-    val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
+fun ValidatePCRDataRequest.Mdm.Criterion.convert(): ValidatePCRDataCommand.Mdm.Criterion {
+    val classification = classification.convert()
 
-    return ValidatePCRDataCommand.Mdm.Criterion(id = id, classification = classification).asSuccess()
+    return ValidatePCRDataCommand.Mdm.Criterion(id = id, classification = classification)
 }
