@@ -416,7 +416,7 @@ fun relatedProcesses(createPCR: CreatePCRCommand, uriProperties: UriProperties):
         id = RelatedProcessId.generate(),
         scheme = RelatedProcessScheme.OCID,
         identifier = createPCR.ocid.underlying,
-        relationship = Relationships(Relationship.X_FRAMEWORK),
+        relationship = Relationships(Relationship.FRAMEWORK),
         uri = uriByOcid(uriProperties.tender, createPCR.cpid, createPCR.ocid),
     )
 
