@@ -68,7 +68,7 @@ internal class GetOcidFromRelatedProcessServiceTest {
     fun get_success() {
         val command = getCommand()
         val expectedOcid = Ocid.SingleStage.tryCreateOrNull("ocds-b3wdp1-MD-1580458690892-EV-1580458791800")!!
-        val expectedRelationship = Relationship.X_FRAMEWORK
+        val expectedRelationship = Relationship.FRAMEWORK
         val pcr = generatePcr(command, expectedOcid, expectedRelationship)
         whenever(pcrManagement.find(pcr.cpid, pcr.ocid)).thenReturn(pcr.asSuccess())
         val actual = getOcidFromRelatedProcessService.get(command).orNull!!.ocid
@@ -85,7 +85,7 @@ internal class GetOcidFromRelatedProcessServiceTest {
         whenever(pcrManagement.find(pcr.cpid, pcr.ocid)).thenReturn(pcr.asSuccess())
         val actual = getOcidFromRelatedProcessService.get(command) as Result.Failure
         val expectedErrorCode ="VR.COM-17.15.2"
-        val expectedMessage = "No relatedProcesses with relationship 'x_framework' found."
+        val expectedMessage = "No relatedProcesses with relationship '${Relationship.FRAMEWORK}' found."
 
         assertEquals(expectedErrorCode, actual.reason.code)
         assertEquals(expectedMessage, actual.reason.description)

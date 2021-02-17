@@ -15,7 +15,7 @@ data class SetLotsStateResult(
         data class Lot(
             val id: LotId,
             val status: LotStatus,
-            val statusDetails: LotStatusDetails,
+            val statusDetails: LotStatusDetails?,
         )
     }
 }

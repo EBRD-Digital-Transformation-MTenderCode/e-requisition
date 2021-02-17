@@ -203,7 +203,7 @@ fun lots(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>) = createP
             title = lot.title,
             description = lot.description,
             status = LotStatus.ACTIVE,
-            statusDetails = LotStatusDetails.NONE,
+            statusDetails = null,
             classification = lot.classification,
             variants = lot.variants
                 .map { variant ->
@@ -416,7 +416,7 @@ fun relatedProcesses(createPCR: CreatePCRCommand, uriProperties: UriProperties):
         id = RelatedProcessId.generate(),
         scheme = RelatedProcessScheme.OCID,
         identifier = createPCR.ocid.underlying,
-        relationship = Relationships(Relationship.X_FRAMEWORK),
+        relationship = Relationships(Relationship.FRAMEWORK),
         uri = uriByOcid(uriProperties.tender, createPCR.cpid, createPCR.ocid),
     )
 

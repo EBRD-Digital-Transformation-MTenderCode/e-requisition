@@ -8,11 +8,8 @@ enum class LotStatusDetails(override val key: String) : EnumElementProvider.Elem
     CANCELLED("cancelled"),
     EMPTY("empty"),
     RECONSIDERATION("reconsideration"),
-    UNSUCCESSFUL("unsuccessful"),
-
-    NONE("") {
-        override val isNeutralElement: Boolean = true
-    };
+    UNSUCCESSFUL("unsuccessful")
+    ;
 
     override fun toString(): String = key
 
