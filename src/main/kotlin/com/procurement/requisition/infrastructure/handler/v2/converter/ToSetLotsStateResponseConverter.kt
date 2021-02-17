@@ -15,5 +15,5 @@ fun SetLotsStateResult.Tender.convert() = SetLotsStateResponse.Tender(
 fun SetLotsStateResult.Tender.Lot.convert() = SetLotsStateResponse.Tender.Lot(
     id = id.underlying,
     status = status.asString(),
-    statusDetails = statusDetails.asString()
+    statusDetails = statusDetails?.asString()
 )
