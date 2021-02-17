@@ -3,8 +3,8 @@ package com.procurement.requisition.infrastructure.api.v1
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
-import com.procurement.requisition.infrastructure.api.version.ApiVersion
 import com.procurement.requisition.infrastructure.api.command.id.CommandId
+import com.procurement.requisition.infrastructure.api.version.ApiVersion
 import com.procurement.requisition.lib.toList
 
 @JsonPropertyOrder("version", "id")
@@ -17,7 +17,7 @@ sealed class ApiResponseV1 {
             Failure(
                 id = id,
                 version = version,
-                error = Failure.Error(code = failure.code, description = failure.description).toList()
+                errors = Failure.Error(code = failure.code, description = failure.description).toList()
             )
     }
 
@@ -32,7 +32,7 @@ sealed class ApiResponseV1 {
     class Failure(
         @field:JsonProperty("version") @param:JsonProperty("version") override val version: ApiVersion,
         @field:JsonProperty("id") @param:JsonProperty("id") override val id: CommandId,
-        @field:JsonProperty("error") @param:JsonProperty("error") val error: List<Error>
+        @field:JsonProperty("errors") @param:JsonProperty("errors") val errors: List<Error>
     ) : ApiResponseV1() {
 
         class Error(

@@ -35,9 +35,6 @@ fun <T> String.asEnum(
     ?.asSuccess()
     ?: failure(JsonErrors.UnknownValue(expectedValues = allowedElements.keysAsStrings(), actualValue = this))
 
-fun <T> T.asStringOrNull(): String? where T : Enum<T>,
-                                          T : EnumElementProvider.Element = takeIf { !it.isNeutralElement }?.key
-
 fun <T> T.asString(): String where T : Enum<T>,
                                    T : EnumElementProvider.Element = key
 

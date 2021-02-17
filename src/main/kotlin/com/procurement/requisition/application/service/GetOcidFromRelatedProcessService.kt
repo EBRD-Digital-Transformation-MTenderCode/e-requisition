@@ -36,7 +36,7 @@ class GetOcidFromRelatedProcessService(
 
     private fun getAppropriateRelationship(operationType: GetOcidFromRelatedProcessCommand.OperationType): Relationship =
         when (operationType) {
-            GetOcidFromRelatedProcessCommand.OperationType.COMPLETE_SOURCING -> Relationship.X_FRAMEWORK
+            GetOcidFromRelatedProcessCommand.OperationType.COMPLETE_SOURCING -> Relationship.FRAMEWORK
         }
 
     private fun containsRelationship(relatedProcess: RelatedProcess, relationship: Relationship) =
