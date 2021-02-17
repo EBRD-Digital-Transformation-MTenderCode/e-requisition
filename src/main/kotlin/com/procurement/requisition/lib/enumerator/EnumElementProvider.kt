@@ -5,8 +5,6 @@ abstract class EnumElementProvider<T>(val info: EnumInfo<T>) where T : Enum<T>,
 
     interface Element {
         val key: String
-        val isNeutralElement: Boolean
-            get() = false
         val deprecated: Boolean
             get() = false
     }

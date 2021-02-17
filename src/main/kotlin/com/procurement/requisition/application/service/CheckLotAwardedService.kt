@@ -33,7 +33,7 @@ class CheckLotAwardedService(
 
     fun validateState(
         status: LotStatus,
-        statusDetails: LotStatusDetails
+        statusDetails: LotStatusDetails?
     ): Validated<CheckLotAwardedErrors.Lot.InvalidState> =
         if (status == LotStatus.ACTIVE && statusDetails != LotStatusDetails.AWARDED)
             Validated.ok()

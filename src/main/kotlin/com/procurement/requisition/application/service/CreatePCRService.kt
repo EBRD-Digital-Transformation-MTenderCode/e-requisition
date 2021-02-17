@@ -203,7 +203,7 @@ fun lots(createPCR: CreatePCRCommand, lotsMapping: Map<String, LotId>) = createP
             title = lot.title,
             description = lot.description,
             status = LotStatus.ACTIVE,
-            statusDetails = LotStatusDetails.NONE,
+            statusDetails = null,
             classification = lot.classification,
             variants = lot.variants
                 .map { variant ->

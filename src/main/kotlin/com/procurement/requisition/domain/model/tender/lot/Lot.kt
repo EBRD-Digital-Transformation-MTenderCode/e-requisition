@@ -9,7 +9,7 @@ data class Lot(
     val title: String,
     val description: String?,
     val status: LotStatus,
-    val statusDetails: LotStatusDetails,
+    val statusDetails: LotStatusDetails?,
     val classification: Classification,
     val variants: Variants
 ) : EntityBase<LotId>()
