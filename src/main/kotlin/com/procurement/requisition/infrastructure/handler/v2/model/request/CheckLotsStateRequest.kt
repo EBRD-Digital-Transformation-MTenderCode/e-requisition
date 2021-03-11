@@ -62,6 +62,7 @@ private val allowedOperationType = OperationType.allowedElements
     .asSequence()
     .filter {
         when (it) {
+            OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_SOURCING,
             OperationType.PCR_PROTOCOL,
             OperationType.SUBMIT_BID_IN_PCR,
