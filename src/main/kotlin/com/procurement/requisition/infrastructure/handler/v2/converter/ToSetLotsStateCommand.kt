@@ -26,7 +26,8 @@ private val allowedOperationTypes = OperationType.allowedElements
             OperationType.CREATE_PCR,
             OperationType.SUBMIT_BID_IN_PCR,
             OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,
-            OperationType.TENDER_PERIOD_END_IN_PCR -> false
+            OperationType.TENDER_PERIOD_END_IN_PCR,
+            OperationType.WITHDRAW_BID -> false
         }
     }.toSet()
 
