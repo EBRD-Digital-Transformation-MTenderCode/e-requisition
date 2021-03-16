@@ -59,6 +59,7 @@ fun relationship(operationType: OperationType): Result<Relationship, InvalidArgu
         OperationType.SUBMIT_BID_IN_PCR,
         OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,
         OperationType.TENDER_PERIOD_END_IN_PCR,
+        OperationType.WITHDRAW_BID,
         OperationType.WITHDRAW_PCR_PROTOCOL -> InvalidArgumentValueIncident(
             name = "operationType",
             value = operationType,

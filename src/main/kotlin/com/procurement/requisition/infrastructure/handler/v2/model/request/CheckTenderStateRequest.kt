@@ -54,6 +54,7 @@ private val allowedOperationType = OperationType.allowedElements
             OperationType.COMPLETE_SOURCING,
             OperationType.PCR_PROTOCOL,
             OperationType.SUBMIT_BID_IN_PCR,
+            OperationType.WITHDRAW_BID,
             OperationType.WITHDRAW_PCR_PROTOCOL -> true
 
             OperationType.CREATE_PCR,
