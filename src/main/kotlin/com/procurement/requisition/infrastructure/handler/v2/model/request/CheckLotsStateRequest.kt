@@ -70,7 +70,8 @@ private val allowedOperationType = OperationType.allowedElements
 
             OperationType.CREATE_PCR,
             OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,
-            OperationType.TENDER_PERIOD_END_IN_PCR -> false
+            OperationType.TENDER_PERIOD_END_IN_PCR,
+            OperationType.WITHDRAW_BID -> false
         }
     }
     .toSet()

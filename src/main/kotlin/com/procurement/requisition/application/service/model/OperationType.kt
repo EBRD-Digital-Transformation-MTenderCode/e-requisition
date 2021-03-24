@@ -11,6 +11,7 @@ enum class OperationType(override val key: String) : EnumElementProvider.Element
     SUBMIT_BID_IN_PCR("submitBidInPcr"),
     TENDER_PERIOD_END_AUCTION_IN_PCR("tenderPeriodEndAuctionInPcr"),
     TENDER_PERIOD_END_IN_PCR("tenderPeriodEndInPcr"),
+    WITHDRAW_BID("withdrawBid"),
     WITHDRAW_PCR_PROTOCOL("withdrawPcrProtocol");
 
     override fun toString(): String = key
