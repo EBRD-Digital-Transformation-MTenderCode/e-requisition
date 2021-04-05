@@ -27,6 +27,7 @@ private val allowedOperationType = OperationType.allowedElements
 
             OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_SOURCING,
+            OperationType.CREATE_RFQ,
             OperationType.PCR_PROTOCOL,
             OperationType.SUBMIT_BID_IN_PCR,
             OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,

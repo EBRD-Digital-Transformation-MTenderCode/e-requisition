@@ -36,6 +36,7 @@ private val allowedProcurementMethodDetails = ProcurementMethodDetails.allowedEl
     .asSequence()
     .filter {
         when (it) {
+            ProcurementMethodDetails.RFQ, ProcurementMethodDetails.TEST_RFQ,
             ProcurementMethodDetails.CF, ProcurementMethodDetails.TEST_CF,
             ProcurementMethodDetails.OF, ProcurementMethodDetails.TEST_OF -> true
 
@@ -51,7 +52,6 @@ private val allowedProcurementMethodDetails = ProcurementMethodDetails.allowedEl
             ProcurementMethodDetails.NP, ProcurementMethodDetails.TEST_NP,
             ProcurementMethodDetails.OP, ProcurementMethodDetails.TEST_OP,
             ProcurementMethodDetails.OT, ProcurementMethodDetails.TEST_OT,
-            ProcurementMethodDetails.RFQ, ProcurementMethodDetails.TEST_RFQ,
             ProcurementMethodDetails.RT, ProcurementMethodDetails.TEST_RT,
             ProcurementMethodDetails.SV, ProcurementMethodDetails.TEST_SV -> false
         }
@@ -64,6 +64,7 @@ private val allowedOperationType = OperationType.allowedElements
         when (it) {
             OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_SOURCING,
+            OperationType.CREATE_RFQ,
             OperationType.PCR_PROTOCOL,
             OperationType.SUBMIT_BID_IN_PCR,
             OperationType.WITHDRAW_PCR_PROTOCOL -> true
