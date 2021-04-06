@@ -12,7 +12,7 @@ import java.math.BigDecimal
 class QuantityDeserializer : JsonDeserializer<BigDecimal>() {
     companion object {
         fun deserialize(text: String): BigDecimal = try {
-            BigDecimal(text)
+            BigDecimal(text).setScale(3)
         } catch (exception: Exception) {
             throw QuantityValueException(quantity = text, description = exception.message ?: "")
         }
