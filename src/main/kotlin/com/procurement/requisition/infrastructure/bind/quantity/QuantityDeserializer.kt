@@ -13,11 +13,12 @@ class QuantityDeserializer : JsonDeserializer<BigDecimal>() {
     companion object {
         private val MAX_ALLOWED_SCALE = 3
         fun deserialize(text: String): BigDecimal = try {
-            val scale = BigDecimal(text).scale()
+            val receivedDecimalValue = BigDecimal(text)
+            val scale = receivedDecimalValue.scale()
             if (scale > MAX_ALLOWED_SCALE)
                 throw IllegalArgumentException("Attribute 'quantity' is an invalid scale '$scale', the maximum scale: '$MAX_ALLOWED_SCALE'.")
 
-            BigDecimal(text).setScale(MAX_ALLOWED_SCALE)
+            receivedDecimalValue.setScale(MAX_ALLOWED_SCALE)
         } catch (exception: Exception) {
             throw QuantityValueException(quantity = text, description = exception.message ?: "")
         }
