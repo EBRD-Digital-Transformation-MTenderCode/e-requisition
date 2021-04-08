@@ -8,6 +8,7 @@ enum class Actions(override val key: String, override val kind: Action.Kind) : E
     GET_OCID_FROM_RELATED_PROCESS(key = "getOcidFromRelatedProcess", kind = Action.Kind.COMMAND),
     CHECK_ACCESS_TO_TENDER(key = "checkAccessToTender", kind = Action.Kind.QUERY),
     CHECK_LOTS_STATE(key = "checkLotsState", kind = Action.Kind.QUERY),
+    CHECK_ITEMS_DATA_FOR_RFQ(key = "checkItemsDataForRfq", kind = Action.Kind.QUERY),
     CHECK_LOTS_STATUS(key = "checkLotsStatus", kind = Action.Kind.QUERY),
     CHECK_LOT_AWARDED(key = "checkLotAwarded", kind = Action.Kind.QUERY),
     CHECK_TENDER_STATE(key = "checkTenderState", kind = Action.Kind.QUERY),
