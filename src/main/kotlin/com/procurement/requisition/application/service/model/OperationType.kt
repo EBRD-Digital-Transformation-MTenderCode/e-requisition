@@ -7,6 +7,7 @@ enum class OperationType(override val key: String) : EnumElementProvider.Element
     AWARD_CONSIDERATION("awardConsideration"),
     COMPLETE_SOURCING("completeSourcing"),
     CREATE_PCR("createPcr"),
+    CREATE_RFQ("createRfq"),
     PCR_PROTOCOL("pcrProtocol"),
     SUBMIT_BID_IN_PCR("submitBidInPcr"),
     TENDER_PERIOD_END_AUCTION_IN_PCR("tenderPeriodEndAuctionInPcr"),
