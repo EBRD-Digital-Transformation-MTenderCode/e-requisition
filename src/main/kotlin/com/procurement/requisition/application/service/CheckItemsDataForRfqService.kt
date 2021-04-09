@@ -50,7 +50,7 @@ class CheckItemsDataForRfqService(private val pcrManagement: PCRManagementServic
 
         receivedItems.forEach { receivedItem ->
             val storedItem = storedItemsById.getValue(receivedItem.id)
-            if (receivedItem.quantity != storedItem.quantity)
+            if (receivedItem.quantity > storedItem.quantity)
                 return CheckItemsDataForRfqErrors.QuantityMismatch(receivedItem.id, storedItem.id).asValidatedError()
         }
 
