@@ -221,4 +221,14 @@ sealed class ValidatePCRErrors(
         class InvalidValue(awardCriteriaDetails: String) :
             AwardCriteriaDetails(code = "VR.COM-17.1.40", description = "Invalid awardCriteriaDetails '$awardCriteriaDetails'.")
     }
+
+    sealed class ElectronicAuctions(code: String, description: String) :
+        ValidatePCRErrors(code = code, description = description) {
+
+        class MissingElectronicAuctions() :
+            ElectronicAuctions(code = "VR.COM-17.1.46", description = "Missing electronic auctions.")
+
+        class RedundantElectronicAuctions() :
+            ElectronicAuctions(code = "VR.COM-17.1.46", description = "Request contains redundant electronic auctions.")
+    }
 }
