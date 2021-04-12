@@ -52,8 +52,10 @@ data class ValidatePCRDataRequest(
         @field:JsonProperty("awardCriteriaDetails") @param:JsonProperty("awardCriteriaDetails") val awardCriteriaDetails: String,
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>?
+        @field:JsonProperty("documents") @param:JsonProperty("documents") val documents: List<Document>?,
 
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @field:JsonProperty("electronicAuctions") @param:JsonProperty("electronicAuctions") val electronicAuctions: ElectronicAuctions?
     ) {
 
         data class Lot(
@@ -247,6 +249,14 @@ data class ValidatePCRDataRequest(
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
             @field:JsonProperty("relatedLots") @param:JsonProperty("relatedLots") val relatedLots: List<String>?
         )
+
+        data class ElectronicAuctions(
+            @field:JsonProperty("details") @param:JsonProperty("details") val details: List<Detail>
+        ) {
+            data class Detail(
+                @field:JsonProperty("id") @param:JsonProperty("id") val id: String
+            )
+        }
     }
 
     data class Mdm(

@@ -43,7 +43,8 @@ data class ValidatePCRDataCommand(
         val mainProcurementCategory: MainProcurementCategory,
         val awardCriteria: AwardCriteria,
         val awardCriteriaDetails: AwardCriteriaDetails,
-        val documents: List<Document>
+        val documents: List<Document>,
+        val electronicAuctions: ElectronicAuctions?
     ) {
 
         data class Lot(
@@ -169,6 +170,14 @@ data class ValidatePCRDataCommand(
             val description: String?,
             val relatedLots: List<String>
         ) : EntityBase<String>()
+
+        data class ElectronicAuctions(
+            val details: List<Detail>
+        ) {
+            data class Detail(
+                val id: String
+            )
+        }
     }
 
     data class Mdm(
