@@ -146,6 +146,9 @@ fun ValidatePCRDataRequest.Tender.convert(): Result<ValidatePCRDataCommand.Tende
         .mapIndexedOrEmpty { idx, document ->
             document.convert().onFailure { return it.repath(path = "/documents[$idx]") }
         }
+    val electronicAuctions = electronicAuctions?.convert()
+        ?.onFailure { return it.repath(path = "/electronicAuctions") }
+
 
     return ValidatePCRDataCommand.Tender(
         title = title,
@@ -160,8 +163,17 @@ fun ValidatePCRDataRequest.Tender.convert(): Result<ValidatePCRDataCommand.Tende
         mainProcurementCategory = mainProcurementCategory,
         awardCriteria = awardCriteria,
         awardCriteriaDetails = awardCriteriaDetails,
-        documents = documents
+        documents = documents,
+        electronicAuctions = electronicAuctions
     ).asSuccess()
+}
+
+private fun ValidatePCRDataRequest.Tender.ElectronicAuctions.convert(): Result<ValidatePCRDataCommand.Tender.ElectronicAuctions, JsonErrors> {
+    val details = details
+        .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "details")) }
+        .map { detail -> ValidatePCRDataCommand.Tender.ElectronicAuctions.Detail(detail.id) }
+
+    return ValidatePCRDataCommand.Tender.ElectronicAuctions(details).asSuccess()
 }
 
 /**
