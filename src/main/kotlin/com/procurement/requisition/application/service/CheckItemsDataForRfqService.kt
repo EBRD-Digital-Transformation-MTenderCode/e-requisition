@@ -26,14 +26,13 @@ class CheckItemsDataForRfqService(private val pcrManagement: PCRManagementServic
         val storedLotsIds = pcr.tender.lots.toSet { it.id }
 
         checkLotsExists(receivedLot, storedLotsIds).onFailure { return it }
-        checkLotsRelatedWithItems(storedLotsIds, receivedItems).onFailure { return it }
         checkItemsData(receivedLot, receivedItems, pcr.tender.items).onFailure { return it }
 
         return Validated.ok()
     }
 
-    private fun checkItemsData(receivedLot: LotId, receivedItems: List<Command.Tender.Item>, storedLots: Items): Validated<CheckItemsDataForRfqErrors> {
-        val storedItemsForLot = storedLots
+    private fun checkItemsData(receivedLot: LotId, receivedItems: List<Command.Tender.Item>, storedItems: Items): Validated<CheckItemsDataForRfqErrors> {
+        val storedItemsForLot = storedItems
             .groupBy { it.relatedLot }
             .getValue(receivedLot)
             .associateBy { it.classification.id }
@@ -75,14 +74,6 @@ class CheckItemsDataForRfqService(private val pcrManagement: PCRManagementServic
         return Validated.ok()
     }
 
-    private fun checkLotsRelatedWithItems(storedLotsIds: Set<LotId>, items: List<Command.Tender.Item>): Validated<CheckItemsDataForRfqErrors> {
-        items.forEach { item ->
-            if (item.relatedLot !in storedLotsIds)
-                return CheckItemsDataForRfqErrors.InvalidRelatedLot(item.id, item.relatedLot).asValidatedError()
-        }
-
-        return Validated.ok()
-    }
 
     private fun checkLotsExists(receivedLots: LotId, storedLots: Set<LotId>): Validated<CheckItemsDataForRfqErrors> {
         if (receivedLots !in storedLots)
