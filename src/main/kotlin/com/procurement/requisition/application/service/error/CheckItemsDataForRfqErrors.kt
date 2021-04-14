@@ -43,4 +43,10 @@ sealed class CheckItemsDataForRfqErrors(
             description = "Unit in received item ('$receivedItem') mismatch with quantity in stored item ('$storedItem')."
         )
 
+    class InvalidLotsCount :
+        CheckItemsDataForRfqErrors(
+            code = "VR.COM-17.18.8",
+            description = "Expected only one lot in request."
+        )
+
 }
