@@ -17,8 +17,7 @@
         "quantity": 2.341,
         "unit": {
           "id": "string"
-        },
-        "relatedLot": "string"
+        }
       }
     ]
   }
