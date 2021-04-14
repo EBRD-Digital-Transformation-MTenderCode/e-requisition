@@ -25,12 +25,6 @@ sealed class CheckItemsDataForRfqErrors(
             description = "Lot '$lotId' is not found."
         )
 
-    class InvalidRelatedLot(itemId: ItemId, relatedLot: LotId) :
-        CheckItemsDataForRfqErrors(
-            code = "VR.COM-17.18.3",
-            description = "Cannot found related lot '$relatedLot' specified in item '$itemId'."
-        )
-
     class ClassificationMismatch :
         CheckItemsDataForRfqErrors(
             code = "VR.COM-17.18.4",
