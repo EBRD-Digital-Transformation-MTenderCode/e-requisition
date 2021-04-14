@@ -13,6 +13,7 @@ import com.procurement.requisition.lib.functional.Validated
 import com.procurement.requisition.lib.functional.asFailure
 import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.functional.asValidatedError
+import com.procurement.requisition.lib.getDuplicate
 import org.springframework.stereotype.Service
 import com.procurement.requisition.application.service.model.command.CheckItemsDataForRfqCommand as Command
 
@@ -45,6 +46,7 @@ class CheckItemsDataForRfqService(private val pcrManagement: PCRManagementServic
         val storedItemsByReceivedId = getStoredItemsByReceived(receivedItems, storedItemsForLot).onFailure { return it.reason.asValidatedError() }
         checkItemQuantity(receivedItems, storedItemsByReceivedId).onFailure { return it }
         checkItemUnit(receivedItems, storedItemsByReceivedId).onFailure { return it }
+        checkItemClassification(receivedItems).onFailure { return it }
 
         return Validated.ok()
     }
@@ -65,6 +67,15 @@ class CheckItemsDataForRfqService(private val pcrManagement: PCRManagementServic
             if (receivedItem.unit.id != storedItem.unit.id)
                 return CheckItemsDataForRfqErrors.UnitMismatch(receivedItem = receivedItem.id, storedItem = storedItem.id).asValidatedError()
         }
+
+        return Validated.ok()
+    }
+
+    private fun checkItemClassification(receivedItems: List<Command.Tender.Item>): Validated<CheckItemsDataForRfqErrors> {
+        val duplicatedClassification = receivedItems.getDuplicate { it.classification.id }
+        if (duplicatedClassification != null)
+            return CheckItemsDataForRfqErrors.DuplicateItemClassification(duplicatedClassification.classification.id)
+                .asValidatedError()
 
         return Validated.ok()
     }

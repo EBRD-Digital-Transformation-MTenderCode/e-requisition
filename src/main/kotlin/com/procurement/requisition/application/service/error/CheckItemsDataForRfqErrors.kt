@@ -43,6 +43,12 @@ sealed class CheckItemsDataForRfqErrors(
             description = "Unit in received item ('$receivedItem') mismatch with quantity in stored item ('$storedItem')."
         )
 
+    class DuplicateItemClassification(classification: String) :
+        CheckItemsDataForRfqErrors(
+            code = "VR.COM-17.18.7",
+            description = "Item classification contains duplicate '$classification'."
+        )
+
     class InvalidLotsCount :
         CheckItemsDataForRfqErrors(
             code = "VR.COM-17.18.8",
