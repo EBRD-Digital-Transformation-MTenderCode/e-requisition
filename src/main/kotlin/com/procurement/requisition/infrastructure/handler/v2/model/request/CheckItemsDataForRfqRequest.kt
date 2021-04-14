@@ -42,8 +42,7 @@ data class CheckItemsDataForRfqRequest(
             @JsonSerialize(using = QuantitySerializer::class)
             @field:JsonProperty("quantity") @param:JsonProperty("quantity") val quantity: BigDecimal,
 
-            @field:JsonProperty("unit") @param:JsonProperty("unit") val unit: Unit,
-            @field:JsonProperty("relatedLot") @param:JsonProperty("relatedLot") val relatedLot: String
+            @field:JsonProperty("unit") @param:JsonProperty("unit") val unit: Unit
         ) {
             data class Unit(
                 @field:JsonProperty("id") @param:JsonProperty("id") val id: String
@@ -92,14 +91,12 @@ fun CheckItemsDataForRfqRequest.Tender.Item.convert(): Result<CheckItemsDataForR
     val id = id.asItemId().onFailure { return it.repath(path = "/id") }
     val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
     val unit = unit.convert()
-    val relatedLot = relatedLot.asLotId().onFailure { return it.repath(path = "/relatedLot") }
 
     return CheckItemsDataForRfqCommand.Tender.Item(
         id = id,
         quantity = quantity,
         classification = classification,
-        unit = unit,
-        relatedLot = relatedLot
+        unit = unit
     ).asSuccess()
 }
 

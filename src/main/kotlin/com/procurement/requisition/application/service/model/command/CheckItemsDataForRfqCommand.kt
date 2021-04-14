@@ -24,8 +24,7 @@ data class CheckItemsDataForRfqCommand(
             val id: ItemId,
             val classification: Classification,
             val quantity: BigDecimal,
-            val unit: Unit,
-            val relatedLot: LotId
+            val unit: Unit
         ) {
             data class Unit(val id: String)
 
