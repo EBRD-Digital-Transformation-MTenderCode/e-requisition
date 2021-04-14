@@ -31,10 +31,10 @@ sealed class CheckItemsDataForRfqErrors(
             description = "Cannot found related lot '$relatedLot' specified in item '$itemId'."
         )
 
-    class ClassificationMismatch(itemId: ItemId, relatedLot: LotId) :
+    class ClassificationMismatch :
         CheckItemsDataForRfqErrors(
             code = "VR.COM-17.18.4",
-            description = "Classification in item '$itemId' mismatch with classification into related lot '${relatedLot}'."
+            description = "Classifications in items from request mismatch with classifications into items associated with lot from request."
         )
 
     class QuantityMismatch(receivedItem: ItemId, storedItem: ItemId) :
