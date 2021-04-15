@@ -2,8 +2,6 @@ package com.procurement.requisition.application.service
 
 import com.procurement.requisition.application.service.error.CheckItemsDataForRfqErrors
 import com.procurement.requisition.domain.model.tender.item.Item
-import com.procurement.requisition.domain.model.tender.item.ItemId
-import com.procurement.requisition.domain.model.tender.item.Items
 import com.procurement.requisition.domain.model.tender.lot.LotId
 import com.procurement.requisition.domain.model.tender.lot.Lots
 import com.procurement.requisition.lib.fail.Failure
@@ -11,9 +9,7 @@ import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.success
 import com.procurement.requisition.lib.functional.Validated
 import com.procurement.requisition.lib.functional.asFailure
-import com.procurement.requisition.lib.functional.asSuccess
 import com.procurement.requisition.lib.functional.asValidatedError
-import com.procurement.requisition.lib.getDuplicate
 import org.springframework.stereotype.Service
 import com.procurement.requisition.application.service.model.command.CheckItemsDataForRfqCommand as Command
 
@@ -21,14 +17,20 @@ import com.procurement.requisition.application.service.model.command.CheckItemsD
 class CheckItemsDataForRfqService(private val pcrManagement: PCRManagementService) {
 
     fun check(command: Command): Validated<Failure> {
-        val receivedLotId= getLotsCount(command.tender.lots).onFailure { return it.reason.asValidatedError() }
+        val receivedLotId = getLotsCount(command.tender.lots).onFailure { return it.reason.asValidatedError() }
 
         val pcr = pcrManagement.find(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it.reason.asValidatedError() }
-            ?: return CheckItemsDataForRfqErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid).asValidatedError()
+            ?: return CheckItemsDataForRfqErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid)
+                .asValidatedError()
 
         checkLotsExists(receivedLotId, pcr.tender.lots).onFailure { return it }
-        checkItemsData(receivedLotId, command.tender.items, pcr.tender.items).onFailure { return it }
+
+        val storedItemsForLot = pcr.tender.items
+            .filter { it.relatedLot == receivedLotId }
+
+        checkReceivedItemsByStored(command.tender.items, storedItemsForLot)
+            .onFailure { return it.reason.asValidatedError() }
 
         return Validated.ok()
     }
@@ -39,59 +41,22 @@ class CheckItemsDataForRfqService(private val pcrManagement: PCRManagementServic
         else
             success(lots.first().id)
 
-    private fun checkItemsData(receivedLotId: LotId, receivedItems: List<Command.Tender.Item>, storedItems: Items): Validated<CheckItemsDataForRfqErrors> {
-        val storedItemsForLot = storedItems
-            .filter { it.relatedLot == receivedLotId }
-
-        val storedItemsByReceivedId = getStoredItemsByReceived(receivedItems, storedItemsForLot).onFailure { return it.reason.asValidatedError() }
-        checkItemQuantity(receivedItems, storedItemsByReceivedId).onFailure { return it }
-        checkItemUnit(receivedItems, storedItemsByReceivedId).onFailure { return it }
-        checkItemClassification(receivedItems).onFailure { return it }
-
-        return Validated.ok()
-    }
-
-    private fun checkItemQuantity(receivedItems: List<Command.Tender.Item>, storedItemsByReceivedId: Map<ItemId, Item>): Validated<CheckItemsDataForRfqErrors> {
-        receivedItems.forEach { receivedItem ->
-            val storedItem = storedItemsByReceivedId.getValue(receivedItem.id)
-            if (receivedItem.quantity > storedItem.quantity)
-                return CheckItemsDataForRfqErrors.QuantityMismatch(receivedItem = receivedItem.id, storedItem = storedItem.id).asValidatedError()
-        }
-
-        return Validated.ok()
-    }
-
-    private fun checkItemUnit(receivedItems: List<Command.Tender.Item>, storedItemsByReceivedId: Map<ItemId, Item>): Validated<CheckItemsDataForRfqErrors> {
-        receivedItems.forEach { receivedItem ->
-            val storedItem = storedItemsByReceivedId.getValue(receivedItem.id)
-            if (receivedItem.unit.id != storedItem.unit.id)
-                return CheckItemsDataForRfqErrors.UnitMismatch(receivedItem = receivedItem.id, storedItem = storedItem.id).asValidatedError()
-        }
-
-        return Validated.ok()
-    }
-
-    private fun checkItemClassification(receivedItems: List<Command.Tender.Item>): Validated<CheckItemsDataForRfqErrors> {
-        val duplicatedClassification = receivedItems.getDuplicate { it.classification.id }
-        if (duplicatedClassification != null)
-            return CheckItemsDataForRfqErrors.DuplicateItemClassification(duplicatedClassification.classification.id)
-                .asValidatedError()
-
-        return Validated.ok()
-    }
-
-    private fun getStoredItemsByReceived(receivedItems: List<Command.Tender.Item>, storedItems: List<Item>): Result<Map<ItemId, Item>, CheckItemsDataForRfqErrors> {
+    private fun checkReceivedItemsByStored(
+        receivedItems: List<Command.Tender.Item>,
+        storedItems: List<Item>
+    ): Validated<CheckItemsDataForRfqErrors> {
         val storedItemsByClassification = storedItems.asSequence()
             .associateBy { it.classification.id to it.classification.scheme }
 
-        return receivedItems
+        receivedItems
             .associate { receivedItem ->
                 val key = receivedItem.classification.id to receivedItem.classification.scheme
                 val targetItem = storedItemsByClassification[key]
-                    ?: return CheckItemsDataForRfqErrors.ClassificationMismatch().asFailure()
+                    ?: return CheckItemsDataForRfqErrors.ClassificationMismatch().asValidatedError()
                 receivedItem.id to targetItem
             }
-            .asSuccess()
+
+        return Validated.ok()
     }
 
     private fun checkLotsExists(receivedLotId: LotId, storedLots: Lots): Validated<CheckItemsDataForRfqErrors> {
