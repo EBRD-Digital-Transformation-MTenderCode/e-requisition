@@ -215,6 +215,13 @@
       }
     ],
     "awardCriteria": "priceOnly",
-    "awardCriteriaDetails": "automated"
+    "awardCriteriaDetails": "automated",
+    "electronicAuctions": {
+      "details": [
+        {
+          "id": "string"
+        }
+      ]
+    }
   }
 }

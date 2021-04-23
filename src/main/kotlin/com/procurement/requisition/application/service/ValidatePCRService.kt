@@ -21,6 +21,7 @@ import com.procurement.requisition.domain.model.requirement.MaxValue
 import com.procurement.requisition.domain.model.requirement.MinValue
 import com.procurement.requisition.domain.model.requirement.Requirement
 import com.procurement.requisition.domain.model.requirement.isDataTypeMatched
+import com.procurement.requisition.domain.model.tender.ProcurementMethodModality.ELECTRONIC_AUCTION
 import com.procurement.requisition.domain.model.tender.ProcurementMethodModality.REQUIRES_ELECTRONIC_CATALOGUE
 import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
@@ -316,6 +317,10 @@ class ValidatePCRService(
         //VR.COM-17.1.40
         checkAwardCriteriaDetails(command.tender).onFailure { return it }
 
+        //VR.COM-17.1.46, VR.COM-17.1.47
+        checkElectronicAuction(command.tender).onFailure { return it }
+
+
         return Validated.ok()
     }
 
@@ -364,6 +369,19 @@ class ValidatePCRService(
             ValidatePCRErrors.AwardCriteriaDetails.InvalidValue(tender.awardCriteriaDetails.toString())
                 .asValidatedError()
         else Validated.ok()
+
+    private fun checkElectronicAuction(tender: ValidatePCRDataCommand.Tender): Validated<Failure> {
+        when (tender.mustContainElectronicAuctions()) {
+            true -> if (tender.electronicAuctions == null)
+                return ValidatePCRErrors.ElectronicAuctions.MissingElectronicAuctions().asValidatedError()
+            false -> if (tender.electronicAuctions != null)
+                return ValidatePCRErrors.ElectronicAuctions.RedundantElectronicAuctions().asValidatedError()
+        }
+        return Validated.ok()
+    }
+
+    private fun ValidatePCRDataCommand.Tender.mustContainElectronicAuctions() =
+        procurementMethodModalities.contains(ELECTRONIC_AUCTION)
 
     fun checkMinSpecificWeightedPrice(command: ValidatePCRDataCommand): Validated<Failure> {
         val minSpecificWeightPrice = rulesService
