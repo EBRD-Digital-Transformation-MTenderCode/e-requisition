@@ -36,7 +36,7 @@ class CheckLotsStateService(
                 lotsById[lot.id]
                     ?.apply {
                         if (!validLotStateRules.contains(status, statusDetails))
-                            return CheckLotsStateErrors.Lot.InvalidState(lotId = lot.id, status = tender.status)
+                            return CheckLotsStateErrors.Lot.InvalidState(lotId = lot.id, status = status)
                                 .asValidatedError()
                     }
                     ?: return CheckLotsStateErrors.Lot.Unknown(lotId = lot.id).asValidatedError()

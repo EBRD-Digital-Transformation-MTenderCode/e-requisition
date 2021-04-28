@@ -4,6 +4,7 @@ import com.procurement.requisition.domain.model.Cpid
 import com.procurement.requisition.domain.model.Ocid
 import com.procurement.requisition.domain.model.tender.TenderStatus
 import com.procurement.requisition.domain.model.tender.lot.LotId
+import com.procurement.requisition.domain.model.tender.lot.LotStatus
 import com.procurement.requisition.lib.fail.Failure
 
 sealed class CheckLotsStateErrors(
@@ -26,7 +27,7 @@ sealed class CheckLotsStateErrors(
                 description = "Lot by id '${lotId.underlying}' is not found."
             )
 
-        class InvalidState(lotId: LotId, status: TenderStatus) :
+        class InvalidState(lotId: LotId, status: LotStatus) :
             Lot(
                 code = "VR.COM-17.10.3",
                 description = "Lot with id '$lotId' has invalid status '${status.key}'."
