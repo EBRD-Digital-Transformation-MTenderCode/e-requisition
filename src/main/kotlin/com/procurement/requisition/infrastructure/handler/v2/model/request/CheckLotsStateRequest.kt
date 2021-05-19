@@ -69,6 +69,7 @@ private val allowedOperationType = OperationType.allowedElements
             OperationType.SUBMIT_BID_IN_PCR,
             OperationType.WITHDRAW_PCR_PROTOCOL -> true
 
+            OperationType.CREATE_CONFIRMATION_RESPONSE_BY_SUPPLIER,
             OperationType.CREATE_PCR,
             OperationType.NEXT_STEP_AFTER_SUPPLIERS_CONFIRMATION,
             OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,
