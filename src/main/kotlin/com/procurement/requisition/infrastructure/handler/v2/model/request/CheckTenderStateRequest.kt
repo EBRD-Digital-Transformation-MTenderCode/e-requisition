@@ -52,6 +52,7 @@ private val allowedOperationType = OperationType.allowedElements
         when (it) {
             OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_SOURCING,
+            OperationType.NEXT_STEP_AFTER_SUPPLIERS_CONFIRMATION,
             OperationType.PCR_PROTOCOL,
             OperationType.SUBMIT_BID_IN_PCR,
             OperationType.WITHDRAW_BID,

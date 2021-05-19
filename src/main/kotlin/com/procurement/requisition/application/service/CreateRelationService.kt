@@ -56,6 +56,7 @@ fun relationship(operationType: OperationType): Result<Relationship, InvalidArgu
         OperationType.AWARD_CONSIDERATION,
         OperationType.COMPLETE_SOURCING,
         OperationType.CREATE_RFQ,
+        OperationType.NEXT_STEP_AFTER_SUPPLIERS_CONFIRMATION,
         OperationType.PCR_PROTOCOL,
         OperationType.SUBMIT_BID_IN_PCR,
         OperationType.TENDER_PERIOD_END_AUCTION_IN_PCR,

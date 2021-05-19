@@ -8,6 +8,7 @@ enum class OperationType(override val key: String) : EnumElementProvider.Element
     COMPLETE_SOURCING("completeSourcing"),
     CREATE_PCR("createPcr"),
     CREATE_RFQ("createRfq"),
+    NEXT_STEP_AFTER_SUPPLIERS_CONFIRMATION("nextStepAfterSuppliersConfirmation"),
     PCR_PROTOCOL("pcrProtocol"),
     SUBMIT_BID_IN_PCR("submitBidInPcr"),
     TENDER_PERIOD_END_AUCTION_IN_PCR("tenderPeriodEndAuctionInPcr"),
