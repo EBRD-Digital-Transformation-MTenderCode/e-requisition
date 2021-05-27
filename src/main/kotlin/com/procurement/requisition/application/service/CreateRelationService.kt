@@ -53,6 +53,7 @@ fun relationship(operationType: OperationType): Result<Relationship, InvalidArgu
     when (operationType) {
         OperationType.CREATE_PCR -> Relationship.X_PRE_AWARD_CATALOG_REQUEST.asSuccess()
 
+        OperationType.APPLY_CONFIRMATIONS,
         OperationType.AWARD_CONSIDERATION,
         OperationType.COMPLETE_SOURCING,
         OperationType.CREATE_CONFIRMATION_RESPONSE_BY_SUPPLIER,

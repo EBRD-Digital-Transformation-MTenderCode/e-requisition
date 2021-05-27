@@ -25,6 +25,7 @@ private val allowedOperationType = OperationType.allowedElements
         when (it) {
             OperationType.CREATE_PCR -> true
 
+            OperationType.APPLY_CONFIRMATIONS,
             OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_SOURCING,
             OperationType.CREATE_CONFIRMATION_RESPONSE_BY_SUPPLIER,

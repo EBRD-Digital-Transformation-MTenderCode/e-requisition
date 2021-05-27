@@ -22,6 +22,7 @@ private val allowedOperationTypes = OperationType.allowedElements
             OperationType.PCR_PROTOCOL,
             OperationType.WITHDRAW_PCR_PROTOCOL -> true
 
+            OperationType.APPLY_CONFIRMATIONS,
             OperationType.AWARD_CONSIDERATION,
             OperationType.CREATE_CONFIRMATION_RESPONSE_BY_SUPPLIER,
             OperationType.CREATE_PCR,
