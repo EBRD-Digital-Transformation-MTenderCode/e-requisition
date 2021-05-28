@@ -33,7 +33,7 @@ class FindCriteriaAndTargetsForPACsHandler(
 
         return findCriteriaAndTargetsForPacsService.find(command)
             .flatMap { result ->
-                ApiResponseV2.Success(version = descriptor.version, id = descriptor.id, result = result.convert())
+                ApiResponseV2.Success(version = descriptor.version, id = descriptor.id, result = result?.convert())
                     .trySerialization(transform)
                     .mapFailure { failure ->
                         InternalServerError(description = failure.description, reason = failure.reason)
