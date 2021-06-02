@@ -23,7 +23,7 @@ class FindCriteriaAndTargetsForPacsService(
     private val pcrManagement: PCRManagementService
 ) {
 
-    fun find(command: FindCriteriaAndTargetsForPacsCommand): Result<FindCriteriaAndTargetsForPacsResult, Failure> {
+    fun find(command: FindCriteriaAndTargetsForPacsCommand): Result<FindCriteriaAndTargetsForPacsResult?, Failure> {
         val pcr = pcrManagement.find(cpid = command.cpid, ocid = command.ocid)
             .onFailure { return it }
             ?: return FindCriteriaAndTargetsForPacsErrors.PCRNotFound(cpid = command.cpid, ocid = command.ocid)
@@ -46,6 +46,9 @@ class FindCriteriaAndTargetsForPacsService(
                 }
             criterion.copy(requirementGroups = RequirementGroups(updatedRequirementGroups))
         }
+
+        if (pcr.tender.targets.isEmpty() && criteriaWithActiveRequirements.isEmpty())
+            return null.asSuccess()
 
         return FindCriteriaAndTargetsForPacsResult(
             tender = FindCriteriaAndTargetsForPacsResult.Tender(
