@@ -4,6 +4,7 @@ import com.procurement.requisition.lib.enumerator.EnumElementProvider
 
 enum class OperationType(override val key: String) : EnumElementProvider.Element {
 
+    APPLY_CONFIRMATIONS("applyConfirmations"),
     AWARD_CONSIDERATION("awardConsideration"),
     COMPLETE_SOURCING("completeSourcing"),
     CREATE_CONFIRMATION_RESPONSE_BY_SUPPLIER("createConfirmationResponseBySupplier"),

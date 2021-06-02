@@ -50,6 +50,7 @@ private val allowedOperationType = OperationType.allowedElements
     .asSequence()
     .filter {
         when (it) {
+            OperationType.APPLY_CONFIRMATIONS,
             OperationType.AWARD_CONSIDERATION,
             OperationType.COMPLETE_SOURCING,
             OperationType.CREATE_CONFIRMATION_RESPONSE_BY_SUPPLIER,
