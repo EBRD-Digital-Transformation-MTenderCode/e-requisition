@@ -249,6 +249,10 @@ fun ValidatePCRDataRequest.Tender.Target.convert(): Result<ValidatePCRDataComman
     val relatesTo = relatesTo.asEnum(target = TargetRelatesTo)
         .onFailure { return it.repath(path = "/relatesTo") }
 
+    val id = id.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/id"))  }
+
+    val title = title.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/title"))  }
+
     val observations = observations
         .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "observations")) }
         .mapIndexedOrEmpty { observationIdx, observation ->
@@ -266,6 +270,9 @@ fun ValidatePCRDataRequest.Tender.Target.convert(): Result<ValidatePCRDataComman
 
 fun ValidatePCRDataRequest.Tender.Target.Observation.convert():
     Result<ValidatePCRDataCommand.Tender.Target.Observation, JsonErrors> {
+
+    val notes = notes.failureIfBlank { return failure(JsonErrors.EmptyString().repath("/notes")) }
+    val id = id.failureIfBlank { return failure(JsonErrors.EmptyString().repath("//=id")) }
 
     val period = period?.convert()?.onFailure { return it.repath(path = "/period") }
     val unit = unit.convert().onFailure { return it.repath(path = "/unit") }
@@ -291,8 +298,14 @@ fun ValidatePCRDataRequest.Tender.Target.Observation.Period.convert():
 }
 
 fun ValidatePCRDataRequest.Tender.Target.Observation.Dimensions.convert():
-    Result<ValidatePCRDataCommand.Tender.Target.Observation.Dimensions, JsonErrors> =
-    ValidatePCRDataCommand.Tender.Target.Observation.Dimensions(requirementClassIdPR = requirementClassIdPR).asSuccess()
+    Result<ValidatePCRDataCommand.Tender.Target.Observation.Dimensions, JsonErrors> {
+
+    val requirementClassIdPR =
+        requirementClassIdPR.failureIfBlank { return failure(JsonErrors.EmptyString().repath("/requirementClassIdPR")) }
+
+    return ValidatePCRDataCommand.Tender.Target.Observation.Dimensions(requirementClassIdPR = requirementClassIdPR)
+        .asSuccess()
+}
 
 /**
  * Criterion
@@ -300,6 +313,7 @@ fun ValidatePCRDataRequest.Tender.Target.Observation.Dimensions.convert():
 fun ValidatePCRDataRequest.Tender.Criterion.convert(): Result<ValidatePCRDataCommand.Tender.Criterion, JsonErrors> {
     val title = title.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/title")) }
     val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
+    val id = id.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/id")) }
 
     val relatesTo = relatesTo.asEnum(target = CriterionRelatesTo)
         .onFailure { return it.repath(path = "/relatesTo") }
@@ -331,6 +345,7 @@ fun ValidatePCRDataRequest.CriterionClassification.convert(): ValidatePCRDataCom
 
 fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.convert(): Result<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup, JsonErrors> {
     val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
+    val id = id.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/id")) }
 
     val requirements = requirements
         .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "requirements")) }
@@ -396,6 +411,9 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.Eligibl
     Result<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence, JsonErrors> {
     val type = type.asEnum(target = EligibleEvidenceType)
         .onFailure { return it.repath(path = "/type") }
+    val id = id.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/id")) }
+    val title = title.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/title")) }
+    val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
 
     return ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement.EligibleEvidence(
         id = id,
@@ -414,6 +432,7 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.Eligibl
 fun ValidatePCRDataRequest.Tender.Conversion.convert(): Result<ValidatePCRDataCommand.Tender.Conversion, JsonErrors> {
     val rationale = rationale.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/rationale")) }
     val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
+    val id = id.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/id")) }
 
     val relatesTo = relatesTo.asEnum(target = ConversionRelatesTo)
         .onFailure { return it.repath(path = "/relatesTo") }
