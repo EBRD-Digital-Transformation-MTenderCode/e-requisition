@@ -10,6 +10,8 @@ import com.procurement.requisition.application.service.SpecificWeightedPrice.Ope
 import com.procurement.requisition.application.service.error.ValidatePCRErrors
 import com.procurement.requisition.application.service.model.command.ValidatePCRDataCommand
 import com.procurement.requisition.application.service.rule.RulesService
+import com.procurement.requisition.domain.failure.error.JsonErrors
+import com.procurement.requisition.domain.failure.error.repath
 import com.procurement.requisition.domain.failure.incident.InvalidArgumentValueIncident
 import com.procurement.requisition.domain.model.DynamicValue
 import com.procurement.requisition.domain.model.award.AwardCriteria
@@ -27,6 +29,7 @@ import com.procurement.requisition.domain.model.tender.TargetRelatesTo
 import com.procurement.requisition.domain.model.tender.conversion.ConversionRelatesTo
 import com.procurement.requisition.domain.model.tender.criterion.CriterionCategory
 import com.procurement.requisition.domain.model.tender.criterion.CriterionRelatesTo
+import com.procurement.requisition.infrastructure.handler.v2.converter.extension.checkForBlank
 import com.procurement.requisition.lib.fail.Failure
 import com.procurement.requisition.lib.functional.Validated
 import com.procurement.requisition.lib.functional.asValidatedError
@@ -41,6 +44,7 @@ class ValidatePCRService(
 ) {
 
     fun validate(command: ValidatePCRDataCommand): Validated<Failure> {
+        validateTextAttributes(command).onFailure { return it }
         // VR.COM-17.1.1
         if (command.tender.lots.isNotUniqueIds())
             return ValidatePCRErrors.Lot.DuplicateId().asValidatedError()
@@ -320,6 +324,111 @@ class ValidatePCRService(
         //VR.COM-17.1.46, VR.COM-17.1.47
         checkElectronicAuction(command.tender).onFailure { return it }
 
+
+        return Validated.ok()
+    }
+
+    private fun validateTextAttributes(command: ValidatePCRDataCommand): Validated<Failure> {
+        command.tender.apply {
+            title.checkForBlank("tender.title").onFailure { return it }
+            description.checkForBlank("tender.description").onFailure { return it }
+
+            lots.mapIndexed{lotIndex, lot ->
+                lot.internalId.checkForBlank("tender.lots[$lotIndex].internalId")
+                    .onFailure { return it }
+
+                lot.title.checkForBlank("tender.lots[$lotIndex].internalId")
+                    .onFailure { return it }
+
+                lot.description.checkForBlank("tender.lots[$lotIndex].description")
+                    .onFailure { return it }
+
+                lot.variants.mapIndexed { variantIndex, variant ->
+                    variant.variantsDetails.checkForBlank("tender.lots[$lotIndex].variants[$variantIndex].variantsDetails")
+                        .onFailure { return it }
+                }
+            }
+            items.mapIndexed { itemIndex, item ->
+                item.internalId.checkForBlank("tender.items[$itemIndex].internalId")
+                    .onFailure { return it }
+
+                item.description.checkForBlank("tender.items[$itemIndex].description")
+                    .onFailure { return it }
+            }
+            targets.mapIndexed { targetIndex, target ->
+                target.id.checkForBlank("tender.targets[$targetIndex].description")
+                    .onFailure { return it }
+
+                target.title.checkForBlank("tender.targets[$targetIndex].description")
+                    .onFailure { return it }
+
+                target.observations.mapIndexed { observationIndex, observation ->
+                    observation.notes.checkForBlank("tender.targets[$targetIndex].observations[$observationIndex].notes")
+                        .onFailure { return it }
+
+                    observation.id.checkForBlank("tender.targets[$targetIndex].observations[$observationIndex].id")
+                        .onFailure { return it }
+
+                    observation.dimensions?.apply {
+                        requirementClassIdPR.checkForBlank("tender.targets[$targetIndex].observations[$observationIndex].dimensions")
+                            .onFailure { return it }
+                    }
+                }
+            }
+            criteria.mapIndexed { criteriaIndex, criterion ->
+                criterion.description.checkForBlank("tender.criteria[$criteriaIndex].description")
+                    .onFailure { return it }
+
+                criterion.id.checkForBlank("tender.criteria[$criteriaIndex].id")
+                    .onFailure { return it }
+
+                criterion.title.checkForBlank("tender.criteria[$criteriaIndex].title")
+                    .onFailure { return it }
+
+                criterion.requirementGroups.mapIndexed { requirementGroupIndex, requirementGroup ->
+                    requirementGroup.description.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].description")
+                        .onFailure { return it }
+
+                    requirementGroup.id.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].id")
+                        .onFailure { return it }
+                    requirementGroup.requirements.mapIndexed { requirementIndex, requirement ->
+                        requirement.description.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].description")
+                            .onFailure { return it }
+
+                        requirement.title.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].title")
+                            .onFailure { return it }
+
+                        requirement.eligibleEvidences.mapIndexed { eligibleEvidenceIndex, eligibleEvidence ->
+                            eligibleEvidence.id.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].eligibleEvidences[$eligibleEvidenceIndex].id")
+                                .onFailure { return it }
+
+                            eligibleEvidence.title.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].eligibleEvidences[$eligibleEvidenceIndex].title")
+                                .onFailure { return it }
+
+                            eligibleEvidence.description.checkForBlank("tender.criteria[$criteriaIndex].requirementGroups[$requirementGroupIndex].requirements[$requirementIndex].eligibleEvidences[$eligibleEvidenceIndex].description")
+                                .onFailure { return it }
+                        }
+                    }
+                }
+            }
+            conversions.mapIndexed { conversionIndex, conversion ->
+                conversion.rationale.checkForBlank("tender.conversions[$conversionIndex].rationale")
+                    .onFailure { return it }
+
+                conversion.description.checkForBlank("tender.conversions[$conversionIndex].description")
+                    .onFailure { return it }
+
+                conversion.id.checkForBlank("tender.conversions[$conversionIndex].id")
+                    .onFailure { return it }
+            }
+            documents.mapIndexed { documentIndex, document ->
+                document.title.checkForBlank("tender.documents[$documentIndex].title")
+                    .onFailure { return it }
+
+                document.description.checkForBlank("tender.documents[$documentIndex].description")
+                    .onFailure { return it }
+            }
+        }
 
         return Validated.ok()
     }
