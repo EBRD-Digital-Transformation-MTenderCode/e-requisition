@@ -359,7 +359,7 @@ class ValidatePCRService(
                 target.id.checkForBlank("tender.targets[$targetIndex].description")
                     .onFailure { return it }
 
-                target.title.checkForBlank("tender.targets[$targetIndex].description")
+                target.title.checkForBlank("tender.targets[$targetIndex].title")
                     .onFailure { return it }
 
                 target.observations.mapIndexed { observationIndex, observation ->
