@@ -337,7 +337,7 @@ class ValidatePCRService(
                 lot.internalId.checkForBlank("tender.lots[$lotIndex].internalId")
                     .onFailure { return it }
 
-                lot.title.checkForBlank("tender.lots[$lotIndex].internalId")
+                lot.title.checkForBlank("tender.lots[$lotIndex].title")
                     .onFailure { return it }
 
                 lot.description.checkForBlank("tender.lots[$lotIndex].description")
@@ -356,7 +356,7 @@ class ValidatePCRService(
                     .onFailure { return it }
             }
             targets.mapIndexed { targetIndex, target ->
-                target.id.checkForBlank("tender.targets[$targetIndex].description")
+                target.id.checkForBlank("tender.targets[$targetIndex].id")
                     .onFailure { return it }
 
                 target.title.checkForBlank("tender.targets[$targetIndex].title")
@@ -370,7 +370,7 @@ class ValidatePCRService(
                         .onFailure { return it }
 
                     observation.dimensions?.apply {
-                        requirementClassIdPR.checkForBlank("tender.targets[$targetIndex].observations[$observationIndex].dimensions")
+                        requirementClassIdPR.checkForBlank("tender.targets[$targetIndex].observations[$observationIndex].dimensions.requirementClassIdPR")
                             .onFailure { return it }
                     }
                 }
