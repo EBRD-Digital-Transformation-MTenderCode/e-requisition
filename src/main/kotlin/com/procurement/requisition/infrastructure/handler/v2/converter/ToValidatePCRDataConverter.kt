@@ -272,7 +272,7 @@ fun ValidatePCRDataRequest.Tender.Target.Observation.convert():
     Result<ValidatePCRDataCommand.Tender.Target.Observation, JsonErrors> {
 
     val notes = notes.failureIfBlank { return failure(JsonErrors.EmptyString().repath("/notes")) }
-    val id = id.failureIfBlank { return failure(JsonErrors.EmptyString().repath("//=id")) }
+    val id = id.failureIfBlank { return failure(JsonErrors.EmptyString().repath("/id")) }
 
     val period = period?.convert()?.onFailure { return it.repath(path = "/period") }
     val unit = unit.convert().onFailure { return it.repath(path = "/unit") }
