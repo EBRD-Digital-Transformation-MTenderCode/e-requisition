@@ -22,7 +22,6 @@ import com.procurement.requisition.domain.model.tender.criterion.CriterionRelate
 import com.procurement.requisition.infrastructure.handler.converter.asEnum
 import com.procurement.requisition.infrastructure.handler.converter.asLocalDateTime
 import com.procurement.requisition.infrastructure.handler.v2.model.request.ValidatePCRDataRequest
-import com.procurement.requisition.lib.failureIfBlank
 import com.procurement.requisition.lib.failureIfEmpty
 import com.procurement.requisition.lib.functional.Result
 import com.procurement.requisition.lib.functional.Result.Companion.failure
@@ -99,8 +98,6 @@ private val allowedOperationType = OperationType.allowedElements
  * Tender
  */
 fun ValidatePCRDataRequest.Tender.convert(): Result<ValidatePCRDataCommand.Tender, JsonErrors> {
-    val title = title.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/title")) }
-    val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
 
     val classification = classification.convert()
         .onFailure { return it.repath(path = "/classification") }
@@ -198,10 +195,6 @@ fun ValidatePCRDataRequest.Unit.convert(): Result<ValidatePCRDataCommand.Unit, J
  * Lot
  */
 fun ValidatePCRDataRequest.Tender.Lot.convert(): Result<ValidatePCRDataCommand.Tender.Lot, JsonErrors> {
-    val internalId = internalId.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/internalId")) }
-    val title = title.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/title")) }
-    val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
-
     val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
     val variants = variants.map { variant ->
         variant.convert().onFailure { return it.repath(path = "/variants") }
@@ -217,18 +210,14 @@ fun ValidatePCRDataRequest.Tender.Lot.convert(): Result<ValidatePCRDataCommand.T
     ).asSuccess()
 }
 
-fun ValidatePCRDataRequest.Tender.Lot.Variant.convert(): Result<ValidatePCRDataCommand.Tender.Lot.Variant, JsonErrors> {
-    val variantsDetails = variantsDetails.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/variantsDetails")) }
-    return ValidatePCRDataCommand.Tender.Lot.Variant(hasVariants = hasVariants, variantsDetails = variantsDetails).asSuccess()
-}
+fun ValidatePCRDataRequest.Tender.Lot.Variant.convert(): Result<ValidatePCRDataCommand.Tender.Lot.Variant, JsonErrors> =
+    ValidatePCRDataCommand.Tender.Lot.Variant(hasVariants = hasVariants, variantsDetails = variantsDetails).asSuccess()
+
 
 /**
  * Item
  */
 fun ValidatePCRDataRequest.Tender.Item.convert(): Result<ValidatePCRDataCommand.Tender.Item, JsonErrors> {
-    val internalId = internalId.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/internalId")) }
-    val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
-
     val classification = classification.convert().onFailure { return it.repath(path = "/classification") }
     val unit = unit.convert().onFailure { return it.repath(path = "/unit") }
     return ValidatePCRDataCommand.Tender.Item(
@@ -266,7 +255,6 @@ fun ValidatePCRDataRequest.Tender.Target.convert(): Result<ValidatePCRDataComman
 
 fun ValidatePCRDataRequest.Tender.Target.Observation.convert():
     Result<ValidatePCRDataCommand.Tender.Target.Observation, JsonErrors> {
-
     val period = period?.convert()?.onFailure { return it.repath(path = "/period") }
     val unit = unit.convert().onFailure { return it.repath(path = "/unit") }
     val dimensions = dimensions?.convert()?.onFailure { return it.repath(path = "/dimensions") }
@@ -292,15 +280,13 @@ fun ValidatePCRDataRequest.Tender.Target.Observation.Period.convert():
 
 fun ValidatePCRDataRequest.Tender.Target.Observation.Dimensions.convert():
     Result<ValidatePCRDataCommand.Tender.Target.Observation.Dimensions, JsonErrors> =
-    ValidatePCRDataCommand.Tender.Target.Observation.Dimensions(requirementClassIdPR = requirementClassIdPR).asSuccess()
+    ValidatePCRDataCommand.Tender.Target.Observation.Dimensions(requirementClassIdPR = requirementClassIdPR)
+        .asSuccess()
 
 /**
  * Criterion
  */
 fun ValidatePCRDataRequest.Tender.Criterion.convert(): Result<ValidatePCRDataCommand.Tender.Criterion, JsonErrors> {
-    val title = title.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/title")) }
-    val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
-
     val relatesTo = relatesTo.asEnum(target = CriterionRelatesTo)
         .onFailure { return it.repath(path = "/relatesTo") }
 
@@ -330,8 +316,6 @@ fun ValidatePCRDataRequest.CriterionClassification.convert(): ValidatePCRDataCom
     ValidatePCRDataCommand.CriterionClassification(id = id, scheme = scheme)
 
 fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.convert(): Result<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup, JsonErrors> {
-    val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
-
     val requirements = requirements
         .failureIfEmpty { return failure(JsonErrors.EmptyArray().repath(path = "requirements")) }
         .mapIndexed { idx, requirement ->
@@ -350,8 +334,6 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.convert(): Result<V
  */
 fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.convert():
     Result<ValidatePCRDataCommand.Tender.Criterion.RequirementGroup.Requirement, JsonErrors> {
-    val title = title.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/title")) }
-    val description = title.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
 
     val period = period?.convert()?.onFailure { return it.repath(path = "/period") }
     val dataType = dataType.asEnum(target = DynamicValue.DataType)
@@ -412,9 +394,6 @@ fun ValidatePCRDataRequest.Tender.Criterion.RequirementGroup.Requirement.Eligibl
  * Conversion
  */
 fun ValidatePCRDataRequest.Tender.Conversion.convert(): Result<ValidatePCRDataCommand.Tender.Conversion, JsonErrors> {
-    val rationale = rationale.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/rationale")) }
-    val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
-
     val relatesTo = relatesTo.asEnum(target = ConversionRelatesTo)
         .onFailure { return it.repath(path = "/relatesTo") }
 
@@ -441,9 +420,6 @@ fun ValidatePCRDataRequest.Tender.Conversion.Coefficient.convert(): Result<Valid
  * Document
  */
 fun ValidatePCRDataRequest.Tender.Document.convert(): Result<ValidatePCRDataCommand.Tender.Document, JsonErrors> {
-    val title = title.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/title")) }
-    val description = description.failureIfBlank { return failure(JsonErrors.EmptyString().repath(path = "/description")) }
-
     val documentType = documentType.asEnum(target = DocumentType)
         .onFailure { return it.repath(path = "/documentType") }
     val relatedLots = relatedLots
